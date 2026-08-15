@@ -28,5 +28,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Install reference dependency
+        run: python -m pip install numpy
       - name: Verify frozen/reference parity
         run: python scripts/verify_reference.py
