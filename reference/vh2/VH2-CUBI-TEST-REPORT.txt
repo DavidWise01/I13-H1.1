@@ -1,0 +1,28 @@
+VH2 CUBI HYPOTHESIS TEST
+
+PASS  code-space dimension is 2
+      rank(P)=2
+PASS  five physical qubits
+      Hilbert dimension=2^5=32
+PASS  logical basis orthogonal
+      <0L|1L>=(6.474326757668899e-17+0j)
+PASS  logical X maps |0L> to |1L>
+      F=1.000000000000
+PASS  logical Z eigenvalues
+      ZL|0L>=+|0L>, ZL|1L>=-|1L>
+PASS  15 single-qubit Pauli syndromes unique
+      unique=15/15
+PASS  all nonzero syndromes used
+      15 nonzero four-bit syndromes
+PASS  corrects every single-qubit Pauli error
+      worst recovery fidelity=1.000000000000
+PASS  3-mode ternary controller can govern protected logical operations
+      mode fidelities={'0': 1.0000000000000004, '1': 1.0000000000000004, '2': 1.0000000000000004}
+PASS  ternary quantum state does NOT fit [[5,1,3]] code space
+      required rank>=3, actual rank=2
+
+TOTAL: 10/10 PASS
+
+INTERPRETATION
+PASSING MODEL: ternary controller above one [[5,1,3]] protected logical qubit.
+REJECTED MODEL: ternary quantum logical basis inside the same [[5,1,3]] block.

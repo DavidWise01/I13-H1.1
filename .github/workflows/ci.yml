@@ -20,3 +20,13 @@ jobs:
         run: cargo test --all-targets
       - name: Build Wasm core
         run: cargo build --release --target wasm32-unknown-unknown
+
+  reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify frozen/reference parity
+        run: python scripts/verify_reference.py

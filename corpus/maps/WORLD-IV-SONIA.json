@@ -1,0 +1,19 @@
+{
+  "world": "IV",
+  "target": "Sonia",
+  "status": "candidate_correlated_not_0root_programmatically_verified",
+  "node": "Sonia/Sonya/Sofya Kovalevskaya",
+  "path": [
+    "sonia-001",
+    "sonia-003",
+    "sonia-004",
+    "sonia-005",
+    "sonia-006",
+    "sonia-007",
+    "sonia-002",
+    "fractal-002",
+    "fractal-003",
+    "fractal-007"
+  ],
+  "interpretation": "Russian mathematics -> Hamiltonian/integrable systems -> topology/chaos -> computational fractals -> DOS Fractint"
+}

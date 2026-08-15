@@ -1,0 +1,43 @@
+I-13 BROWSER-NATIVE WASM v0.1 — FINAL TEST REPORT
+
+WASM primitive suite ................. 8/8 PASS
+I13 → WASM pipeline suite ............ 6/6 PASS
+embedded WASM matches binary ......... PASS
+single-file .pyz module layout ....... PASS
+
+WASM PRIMITIVES
+PASS  WASM MVP loads
+      1193 bytes
+PASS  hash deterministic
+      0x3c2e26b4
+PASS  DEPTH pass/fail
+      64 pass · 65 veto
+PASS  CAPABILITY subset
+      allow/veto
+PASS  IDEMPOTENCE
+      stable/conflict
+PASS  all Cortex rules
+      mask=63
+PASS  ISA Const effect
+      need0 net+1
+PASS  ISA Call(2) effect
+      need3 net-2
+
+I13 → WASM PIPELINE
+PASS  I13 reader accepts sample
+      25 nodes
+PASS  semantic identity hashes in WASM
+      0x29982a20
+PASS  depth gate passes
+      depth=10
+PASS  capability gate passes empty request
+      requested=0
+PASS  execution address produced
+      0xff0ebd93
+PASS  full Cortex verdict
+      mask=0x3f
+
+BOUNDARY
+Browser-native: I-13 reader + semantic identity + WASM Cortex + session cache
+Optional host: CPython ingress + Python JIT/execution
+Python is not required for the browser I-13/Cortex gate.

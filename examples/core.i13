@@ -1,0 +1,172 @@
+// HTML CENTER I-13 CORE
+// topology: [ 0 | HTML(00) | 0 ]
+//
+// I-13 owns the routing law. The host owns I/O only.
+// channel ids:
+// 0 PROCESS | 1 SOCKET | 2 NETWORK | 3 FILESYSTEM
+// 4 RUNTIME | 5 NAMESPACE | 6 CAPABILITY | 7 KERNEL
+
+I CHANNELS <- 8
+I EXPECTED_ROUTES <- 56
+
+// ---- channel fence -------------------------------------------------
+def valid_channel(I ch) {
+    if ch < 0 {
+        -> 0
+    }
+    if ch >= CHANNELS {
+        -> 0
+    }
+    -> 1
+}
+
+def valid_route(I from, I to) {
+    if valid_channel(from) == 0 {
+        -> 0
+    }
+    if valid_channel(to) == 0 {
+        -> 0
+    }
+    if from == to {
+        -> 0
+    }
+    -> 1
+}
+
+// ---- source payload selection -------------------------------------
+// No arrays/records are assumed. Eight numeric channel payloads are
+// passed explicitly so the program stays inside the documented I-13
+// surface.
+def source_payload(
+    I from,
+    I process,
+    I socket,
+    I network,
+    I filesystem,
+    I runtime,
+    I namespace,
+    I capability,
+    I kernel
+) {
+    if from == 0 { -> process }
+    if from == 1 { -> socket }
+    if from == 2 { -> network }
+    if from == 3 { -> filesystem }
+    if from == 4 { -> runtime }
+    if from == 5 { -> namespace }
+    if from == 6 { -> capability }
+    if from == 7 { -> kernel }
+    -> 0
+}
+
+// route returns the source payload. HTML(00) already knows `to` and
+// deposits the returned value into that hosted channel.
+def route(
+    I from,
+    I to,
+    I process,
+    I socket,
+    I network,
+    I filesystem,
+    I runtime,
+    I namespace,
+    I capability,
+    I kernel
+) {
+    if valid_route(from, to) == 0 {
+        -> 0
+    }
+    -> source_payload(
+        from,
+        process,
+        socket,
+        network,
+        filesystem,
+        runtime,
+        namespace,
+        capability,
+        kernel
+    )
+}
+
+// ---- complete ordered route count ---------------------------------
+// 8 * 7 = 56. Recursion depth is tiny here.
+def count_to(I from, I to) {
+    if to >= CHANNELS {
+        -> 0
+    }
+    if from == to {
+        -> count_to(from, to + 1)
+    }
+    -> 1 + count_to(from, to + 1)
+}
+
+def count_from(I from) {
+    if from >= CHANNELS {
+        -> 0
+    }
+    -> count_to(from, 0) + count_from(from + 1)
+}
+
+def route_count() {
+    -> count_from(0)
+}
+
+// ---- fail-static ---------------------------------------------------
+// fresh=1 accepts the new control/probe value.
+// fresh=0 preserves last-known data instead of erasing the channel.
+def fail_static(I fresh, I current, I last) {
+    if fresh == 1 {
+        -> current
+    }
+    -> last
+}
+
+// ---- corrected I-13 planes ----------------------------------------
+// Use basis points for the self-test. I-13 constants are f64, so exact
+// equality on decimal fractions would make the test depend on binary
+// floating-point representation. Whole basis-point values are exact here.
+def designate_sum() {
+    -> 2967 + 1425 + 963
+}
+
+def bind_sum() {
+    -> 523 + 408 + 182
+}
+
+def decide_sum() {
+    -> 301 + 276 + 201
+}
+
+def transform_sum() {
+    -> 750 + 192 + 138
+}
+
+def plane_test() {
+    if designate_sum() != 5355 { -> 0 }
+    if bind_sum() != 1113 { -> 0 }
+    if decide_sum() != 778 { -> 0 }
+    if transform_sum() != 1080 { -> 0 }
+    -> 1
+}
+
+// ---- 12 verbs + declaration keyword I = 13 ------------------------
+def alphabet_test() {
+    I verbs <- 12
+    I declaration <- 1
+    if verbs + declaration != 13 {
+        -> 0
+    }
+    -> 1
+}
+
+// ---- boot gate -----------------------------------------------------
+def core_selftest() {
+    if alphabet_test() == 0 { -> 0 }
+    if plane_test() == 0 { -> 0 }
+    if route_count() != EXPECTED_ROUTES { -> 0 }
+    -> 1
+}
+
+I CORE_OK <- core_selftest()
+I ROUTES <- route_count()
