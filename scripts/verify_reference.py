@@ -2,6 +2,7 @@
 from __future__ import annotations
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -9,8 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def load(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -57,6 +59,10 @@ def main() -> None:
     for token in ["OP_CONST=0", "OP_HALT=14", "GFX_CLEAR=1", "GFX_ROTATE=6", "MAX_FRAMES 64", "i13_vm_exec_program"]:
         assert token in legacy_c
     assert "OP_BR" not in legacy_c
+
+    brief = (ROOT / "reference/I-13-BRIEF.md").read_text(encoding="utf-8")
+    for token in ["Twelve verbs + `I` = 13 is the name", "There is no `br` opcode", "net = binds − k", "I.p — the osmotic bind"]:
+        assert token in brief
 
     i13 = (ROOT / "spec/I13.md").read_text(encoding="utf-8")
     words = ["I", "Name", "Constant", "Attribute", "Assign", "Arg", "Return", "Expr", "If", "Compare", "Call", "FunctionDef", "BinOp"]
