@@ -53,6 +53,11 @@ def main() -> None:
     assert "PASSING MODEL: ternary controller above one [[5,1,3]] protected logical qubit." in vh2_text
     assert "REJECTED MODEL: ternary quantum logical basis inside the same [[5,1,3]] block." in vh2_text
 
+    legacy_c = (ROOT / "reference/legacy/i13_cortex_vm_v04.c").read_text(encoding="utf-8")
+    for token in ["OP_CONST=0", "OP_HALT=14", "GFX_CLEAR=1", "GFX_ROTATE=6", "MAX_FRAMES 64", "i13_vm_exec_program"]:
+        assert token in legacy_c
+    assert "OP_BR" not in legacy_c
+
     i13 = (ROOT / "spec/I13.md").read_text(encoding="utf-8")
     words = ["I", "Name", "Constant", "Attribute", "Assign", "Arg", "Return", "Expr", "If", "Compare", "Call", "FunctionDef", "BinOp"]
     assert all(word in i13 for word in words)
