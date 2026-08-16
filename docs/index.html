@@ -3,94 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>I13 · Icarium</title>
-<style>
-  :root{
-    --bg:#070b12;
-    --panel:#0e1622;
-    --line:#26364a;
-    --text:#eef5ff;
-    --muted:#8fa6c0;
-    --seed:#ffffff;
-    --designate:#60ccff;
-    --bind:#72efc5;
-    --decide:#b18cff;
-    --transform:#ffc76a;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-  body{display:grid;place-items:center;padding:32px}
-  main{width:min(980px,100%)}
-  header{text-align:center;margin-bottom:30px}
-  h1{margin:0;font-size:clamp(2rem,6vw,4.5rem);letter-spacing:.08em}
-  .sub{margin:10px 0 0;color:var(--muted);font-size:.9rem;letter-spacing:.18em;text-transform:uppercase}
-  .core{width:110px;height:110px;margin:0 auto 34px;border:2px solid var(--seed);border-radius:50%;display:grid;place-items:center;font-size:3.2rem;font-weight:800;background:#111b29;box-shadow:0 0 36px #ffffff18}
-  .planes{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-  .plane{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:16px;min-width:0}
-  .plane h2{margin:0 0 14px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase}
-  .words{display:grid;gap:10px}
-  .word{min-height:62px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;text-align:center;padding:10px;font-size:1rem;background:#0a111b}
-  .designate h2{color:var(--designate)}
-  .bind h2{color:var(--bind)}
-  .decide h2{color:var(--decide)}
-  .transform h2{color:var(--transform)}
-  .designate .word{border-color:#60ccff55}
-  .bind .word{border-color:#72efc555}
-  .decide .word{border-color:#b18cff55}
-  .transform .word{border-color:#ffc76a55}
-  footer{text-align:center;color:var(--muted);margin-top:26px;font-size:.78rem}
-  @media(max-width:760px){.planes{grid-template-columns:1fr 1fr}}
-  @media(max-width:460px){body{padding:18px}.planes{grid-template-columns:1fr}.core{width:90px;height:90px;font-size:2.5rem}}
-</style>
+<title>I13 · Icarium H1.1</title>
+<style>html,body{margin:0;padding:0;background:#fff}object{display:block;width:100%;height:2940px;border:0}</style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>ICARIUM</h1>
-    <p class="sub">I13 · thirteen words</p>
-  </header>
-
-  <div class="core">I</div>
-
-  <section class="planes" aria-label="I13 canonical words">
-    <article class="plane designate">
-      <h2>Designate</h2>
-      <div class="words">
-        <div class="word">Name</div>
-        <div class="word">Constant</div>
-        <div class="word">Attribute</div>
-      </div>
-    </article>
-
-    <article class="plane bind">
-      <h2>Bind</h2>
-      <div class="words">
-        <div class="word">Assign</div>
-        <div class="word">Arg</div>
-        <div class="word">Return</div>
-      </div>
-    </article>
-
-    <article class="plane decide">
-      <h2>Decide</h2>
-      <div class="words">
-        <div class="word">Expr</div>
-        <div class="word">If</div>
-        <div class="word">Compare</div>
-      </div>
-    </article>
-
-    <article class="plane transform">
-      <h2>Transform</h2>
-      <div class="words">
-        <div class="word">Call</div>
-        <div class="word">FunctionDef</div>
-        <div class="word">BinOp</div>
-      </div>
-    </article>
-  </section>
-
-  <footer>12 semantic verbs + declaration keyword I = 13</footer>
-</main>
+<object data="i13.svg" type="image/svg+xml" aria-label="I13 H1.1 trunk">
+  <a href="i13.svg">Open the I13 SVG</a>
+</object>
 </body>
 </html>
