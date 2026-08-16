@@ -42,15 +42,17 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 
 > **8086 pairs with embedded-8051** as the microprocessor-programming contrast:
 > x86 (Coffron, 8086/8088 + IBM PC) vs 8051 MCU. Different ISA, same theme.
-## E1. HUMANITIES / CLASSICS (topic) — Late-Antique Greek Rhetoric (-ology: Greek rhetoric & declamation)
+## E1. HUMANITIES / CLASSICS (topic) — Late-Antique Greek Rhetoric + Art History (-ology: Greek rhetoric & declamation; Art History / satirical prints)
 | Skill | Layer | Status | Tool |
 |---|---|---|---|
 | `libanius-1517` | humanities-classics | VERIFIED | `libanius_portal.html` |
+| `works-of-hogarth` | humanities-classics | VERIFIED | `hogarth_portal.html` |
 
-> **E1 = mesh broadening:** the oldest (1517) & first *non-technical* node. It
-> spans the mesh from pure-STEM into humanities — proof the ology is
-> domain-agnostic. Pairs with nothing technical; contrasts the entire
-> computing tier by being the least-technical, oldest entry.
+> **E1 = mesh broadening:** the oldest (1517) & first *non-technical* node
+> (libanius), joined by the first *Art-History* node (hogarth, 1833). Spans the
+> mesh from pure-STEM into humanities + art — proof the ology is domain-agnostic.
+> Neither pairs with anything technical; both contrast the computing tier by
+> being non-technical, old texts the user picked for age.
 
 ## E2. CS FOUNDATIONS (topic) — Computer Science / Algorithms (-ology: algorithms & data structures)
 | Skill | Layer | Status | Tool |
@@ -90,6 +92,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **Computer Science (algorithms)** → E2 (data-structures-algorithms)
 - **Programming Languages (C++)** → E3 (fundamentals-cpp)
 - **Late-Antique Greek Rhetoric** → E1 (libanius-1517)
+- **Art History / Satirical Prints** → E1 (works-of-hogarth)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
 - **Conspiracy Studies / Contested Narrative** → F-contested (eyes-wide-open)
 - **Media Literacy / Propaganda Inoculation** → cross-cutting (C + F pair)
@@ -101,7 +104,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 4. `cultural-myth` — rape-of-the-mind, eyes-wide-open
 5. `cs-foundations` — data-structures-algorithms
 6. `pl-foundations` — fundamentals-cpp
-7. `humanities-classics` — libanius-1517
+7. `humanities-classics` — libanius-1517, works-of-hogarth
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.
