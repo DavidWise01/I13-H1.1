@@ -39,6 +39,14 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 | `retro-game-books` | computing-history | VERIFIED (index) | `retro_catalog.html` + `retro_fetch.py` |
 | `embedded-8051` | computing/embedded | VERIFIED | `embedded_workbench.html` (full HTML) |
 
+## E2. CS FOUNDATIONS (topic) — Computer Science / Algorithms (-ology: algorithms & data structures)
+| Skill | Layer | Status | Tool |
+|---|---|---|---|
+| `data-structures-algorithms` | cs-foundations | VERIFIED | `dsa_explorer.html` |
+
+> **E2 sits under E** as the algorithmic backbone: the DSA theory the Python-fluency
+> tier (A) applies. Karumanchi (2017) is a published textbook — VERIFIED, not contested.
+
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |
 |---|---|---|---|---|
@@ -57,6 +65,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **Information Security** → C (google-hacking)
 - **Software Design Patterns** → D (learning-patterns)
 - **History of Computing** → E (byte, retro-games, embedded-8051)
+- **Computer Science (algorithms)** → E2 (data-structures-algorithms)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
 - **Conspiracy Studies / Contested Narrative** → F-contested (eyes-wide-open)
 - **Media Literacy / Propaganda Inoculation** → cross-cutting (C + F pair)
@@ -66,6 +75,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 2. `tooling-reference` — google-hacking, learning-patterns
 3. `computing-history` — byte-magazine, retro-game-books, embedded-8051
 4. `cultural-myth` — rape-of-the-mind, eyes-wide-open
+5. `cs-foundations` — data-structures-algorithms
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.
