@@ -29,7 +29,6 @@
    "size": 9221196,
    "plat": [
     "Apple",
-    "PET",
     "TRS-80"
    ],
    "lang": "mixed"
@@ -44,7 +43,8 @@
    "name": "35AmazingGamesForYourCommodore1281986",
    "size": 12082513,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 128"
    ],
    "lang": "mixed"
   },
@@ -52,7 +52,8 @@
    "name": "35AmazingGamesForYourCommodore641984",
    "size": 11111909,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -81,14 +82,17 @@
   {
    "name": "ABitOfLogoMagicForTheTi994a-AdventuresForIntermediateProgrammers1984",
    "size": 8700715,
-   "plat": [],
+   "plat": [
+    "TI-99"
+   ],
    "lang": "Logo"
   },
   {
    "name": "AdventureGamesForTheCommodore641984",
    "size": 69533769,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -96,7 +100,8 @@
    "name": "AdventureGamewritersHandbookForCommodore641985",
    "size": 11794037,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -117,7 +122,9 @@
   {
    "name": "AnimationGamesAndSoundForTheTi994a1984",
    "size": 14218336,
-   "plat": [],
+   "plat": [
+    "TI-99"
+   ],
    "lang": "mixed"
   },
   {
@@ -132,7 +139,8 @@
    "name": "ArcadeGamesForTheCommodore641985",
    "size": 18177925,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -220,7 +228,8 @@
    "name": "BrainGamesForKidsAndAdultsUsingTheCommodore641984",
    "size": 22820038,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -228,7 +237,8 @@
    "name": "CastlesKingdoms-AdventuresForYourCommodore641985",
    "size": 11588270,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -236,7 +246,8 @@
    "name": "Commodore64-AssemblyLanguageArcadeProgramming1985",
    "size": 26907368,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -244,7 +255,8 @@
    "name": "Commodore64AdvancedGameDesign1985",
    "size": 16860015,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -252,7 +264,8 @@
    "name": "Commodore64Adventures-AGuideToPlayingAndWritingAdventures1983",
    "size": 51236542,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -260,7 +273,8 @@
    "name": "Commodore64FunAndGames1984",
    "size": 20444543,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -268,7 +282,8 @@
    "name": "Commodore64FunAndGamesVolume21985",
    "size": 26196146,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -276,7 +291,8 @@
    "name": "Commodore64GameConstructionKit1984",
    "size": 9030363,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -284,7 +300,8 @@
    "name": "Commodore64GamesBook1983",
    "size": 5877947,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -292,7 +309,8 @@
    "name": "Commodore64GamesBook21984",
    "size": 15163147,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -300,7 +318,8 @@
    "name": "Commodore64GamesForKids1984",
    "size": 26050133,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -308,7 +327,8 @@
    "name": "Commodore64InWonderland-23ProgramsForLearningAndFun1984",
    "size": 13378598,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -316,7 +336,8 @@
    "name": "Commodore64Puzzlements1984",
    "size": 8077741,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -331,7 +352,6 @@
    "size": 7490429,
    "plat": [
     "Apple",
-    "PET",
     "TRS-80"
    ],
    "lang": "mixed"
@@ -359,7 +379,6 @@
    "size": 20623899,
    "plat": [
     "Apple",
-    "PET",
     "TRS-80"
    ],
    "lang": "mixed"
@@ -370,6 +389,7 @@
    "plat": [
     "Apple",
     "Commodore",
+    "Commodore 64",
     "TRS-80",
     "VIC-20"
    ],
@@ -379,7 +399,8 @@
    "name": "ComputesFirstBookOfCommodore64Games1983",
    "size": 18145140,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -399,7 +420,8 @@
    "name": "ComputesMachineLanguageGamesForTheCommodore641986",
    "size": 19395990,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -407,7 +429,8 @@
    "name": "ComputesMoreMachineLanguageGamesForTheCommodore641987",
    "size": 25338092,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -415,7 +438,8 @@
    "name": "ComputesSecondBookOfCommodore64Games1984",
    "size": 23694918,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -429,7 +453,8 @@
    "name": "ComputesThirdBookOfCommodore64Games1987",
    "size": 29098639,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -446,7 +471,8 @@
    "name": "CrazyGamesForYourCommodore641984",
    "size": 5160737,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -466,7 +492,8 @@
    "name": "CreatingAdventuresOnYourCommodore641984",
    "size": 10404074,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -474,7 +501,8 @@
    "name": "CreatingArcadeGamesOnTheCommodore641984",
    "size": 30919875,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -528,7 +556,8 @@
    "name": "ExploringAdventuresOnTheCommodore641983",
    "size": 34427241,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -536,7 +565,8 @@
    "name": "FantasticGamesForTheCommodore641984",
    "size": 8775239,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -558,7 +588,8 @@
    "name": "FurtherAdventuresOnTheCommodore641281986",
    "size": 20610831,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -582,7 +613,8 @@
    "name": "GamesCommodore64ComputersPlay1984",
    "size": 12130874,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -628,7 +660,8 @@
    "name": "GoldenFlutesGreatEscapes-HowToWriteAdventureGamesForTheCommodore64-1984",
    "size": 24680921,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -654,7 +687,8 @@
    "name": "HowToWriteExcitingGamesForTheCommodore641984",
    "size": 9005192,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -680,7 +714,8 @@
    "name": "MakeProgrammingYourCommodore64AGame-DiveBomber1984",
    "size": 5934291,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -700,7 +735,8 @@
    "name": "MindMoves-StrategyBrainGamesForTheCommodore641984",
    "size": 40776006,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -719,17 +755,13 @@
   {
    "name": "PetFunAndGames-SelectedCursorPrograms1981",
    "size": 13246338,
-   "plat": [
-    "PET"
-   ],
+   "plat": [],
    "lang": "mixed"
   },
   {
    "name": "PetGamesAndRecreations1981",
    "size": 5743455,
-   "plat": [
-    "PET"
-   ],
+   "plat": [],
    "lang": "mixed"
   },
   {
@@ -742,7 +774,8 @@
    "name": "SpaceAdventuresForTheCommodore641984",
    "size": 137269698,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -780,7 +813,8 @@
    "name": "StimulatingSimulationsForTheCommodore641977",
    "size": 1884383,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -828,7 +862,8 @@
    "name": "TheCommodore64GamesBook-21SensationalGames1983",
    "size": 44729605,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -900,6 +935,7 @@
    "plat": [
     "Apple",
     "Commodore",
+    "Commodore 64",
     "TRS-80",
     "VIC-20"
    ],
@@ -909,7 +945,8 @@
    "name": "WinningGamesOnTheCommodore641984",
    "size": 16709087,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   },
@@ -983,7 +1020,8 @@
    "name": "ZappersForTheCommodore64-HaveFunAndLearnToProgramWith30UnforgettableGames1984",
    "size": 14806155,
    "plat": [
-    "Commodore"
+    "Commodore",
+    "Commodore 64"
    ],
    "lang": "mixed"
   }
