@@ -78,12 +78,10 @@ text{fill:var(--ink)}
 .voxel{stroke:var(--wasm);fill:#eff6ff;fill-opacity:.42}
 .queen{fill:var(--cortex)}
 
-/* I / root */
 #root > circle.node{fill:var(--root);stroke:var(--root)}
 #root > circle.node + text{fill:#ffffff}
 #root > .title{fill:#0f172a}
 
-/* The four I13 semantic planes */
 #words > rect:nth-of-type(-n+3){fill:var(--designate-bg);stroke:var(--designate)}
 #words > rect:nth-of-type(n+4):nth-of-type(-n+6){fill:var(--bind-bg);stroke:var(--bind)}
 #words > rect:nth-of-type(n+7):nth-of-type(-n+9){fill:var(--decide-bg);stroke:var(--decide)}
@@ -93,7 +91,6 @@ text{fill:var(--ink)}
 #words > text:nth-of-type(9){fill:var(--decide)}
 #words > text:nth-of-type(13){fill:var(--transform)}
 
-/* Trunk engine families. */
 #module-layer [data-module="reader"] .box,
 #module-layer [data-module="norm"] .box{fill:var(--i13-bg);stroke:var(--i13)}
 #module-layer [data-module="reader"] circle,
@@ -133,7 +130,6 @@ text{fill:var(--ink)}
 #module-layer [data-module="ology"] .box{fill:var(--live-bg);stroke:var(--live);stroke-width:2.2}
 #module-layer [data-module="ology"] circle{fill:var(--live);stroke:var(--live)}
 
-/* Keep badges restrained but inherit each stage's family tone. */
 #module-layer [data-module="reader"] .tag,
 #module-layer [data-module="norm"] .tag{fill:var(--i13-bg);stroke:var(--i13)}
 #module-layer [data-module="python"] .tag,
@@ -149,7 +145,8 @@ text{fill:var(--ink)}
 #module-layer [data-module="corpus"] .tag{fill:var(--corpus-bg);stroke:var(--corpus)}
 #module-layer [data-module="ology"] .tag{fill:var(--live-bg);stroke:var(--live)}
 
-/* Current OLOGY lab: blue geometry, rose Queen, green live boundary. */
+.i13-exploded-panel[data-family="la"] .ev-shell{stroke:var(--la,#0f766e)}
+
 #lab > line.line{stroke:var(--live);stroke-width:2.5}
 #lab > .module-title{fill:var(--live)}
 #lab > g:nth-of-type(1) > .box{fill:#f8fbff;stroke:var(--wasm)}
@@ -183,6 +180,7 @@ text{fill:var(--ink)}
 <script src="stages/stage8-gfx.js"></script>
 <script src="stages/stage9-cortex-child.js"></script>
 <script src="stages/stage10-pulse.js"></script>
+<script src="stages/stage11-vh1.js"></script>
 <script src="stages/stage6-ology-live.js"></script>
 </body>
 </html>
