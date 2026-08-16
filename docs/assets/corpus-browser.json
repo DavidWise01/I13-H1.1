@@ -1,0 +1,1085 @@
+{
+  "addressing": {
+    "fingerprint": "FNV-1a-32(canonical-id)",
+    "layout": "x:16|y:16",
+    "surface_bits": 32,
+    "voxel_depth": "local z; root records start at z=0"
+  },
+  "counts": {
+    "directed_edges": 374,
+    "edges": 187,
+    "evidence": 51,
+    "nodes": 54,
+    "vogel": 3,
+    "world_steps": 9
+  },
+  "fingerprints": {
+    "corpus": 763486185,
+    "world": 1215511460
+  },
+  "mesh_schema": "i13-h1.1-corpus-mesh/0.1",
+  "nodes": [
+    {
+      "address": 2124832153,
+      "creator": "Luigi Menabrea; Augusta Ada Lovelace",
+      "domain": [
+        "ada_lovelace",
+        "algorithm",
+        "analytical_engine",
+        "history_computing"
+      ],
+      "evidence": true,
+      "id": "ada-001",
+      "kind": "primary_text",
+      "ordinal": 0,
+      "title": "Sketch of the Analytical Engine / Notes by the Translator",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 32422,
+      "y": 23961
+    },
+    {
+      "address": 2074499296,
+      "creator": "Augusta Ada Lovelace",
+      "domain": [
+        "ada_lovelace",
+        "analytical_engine"
+      ],
+      "evidence": true,
+      "id": "ada-002",
+      "kind": "primary_text",
+      "ordinal": 1,
+      "title": "Ada Lovelace Notes mirror",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 31654,
+      "y": 22752
+    },
+    {
+      "address": 2091276915,
+      "creator": "Charles Babbage",
+      "domain": [
+        "analytical_engine",
+        "babbage",
+        "history_computing"
+      ],
+      "evidence": true,
+      "id": "ada-003",
+      "kind": "primary_text",
+      "ordinal": 2,
+      "title": "Passages from the life of a philosopher",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 31910,
+      "y": 23155
+    },
+    {
+      "address": 2175165010,
+      "creator": "Thomas J. Misa",
+      "domain": [
+        "ada_lovelace",
+        "algorithm",
+        "babbage"
+      ],
+      "evidence": true,
+      "id": "ada-004",
+      "kind": "paper",
+      "ordinal": 3,
+      "title": "Charles Babbage, Ada Lovelace, and the Bernoulli Numbers",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 33190,
+      "y": 25170
+    },
+    {
+      "address": 2191942629,
+      "creator": "Ra\u00fal Rojas",
+      "domain": [
+        "babbage",
+        "linear_equations",
+        "programming"
+      ],
+      "evidence": true,
+      "id": "ada-005",
+      "kind": "paper",
+      "ordinal": 4,
+      "title": "The First Computer Program",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 33446,
+      "y": 25573
+    },
+    {
+      "address": 2141609772,
+      "creator": "Ra\u00fal Rojas",
+      "domain": [
+        "analytical_engine",
+        "architecture",
+        "babbage"
+      ],
+      "evidence": true,
+      "id": "ada-006",
+      "kind": "paper",
+      "ordinal": 5,
+      "title": "How Charles Babbage invented the Computer",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 32678,
+      "y": 24364
+    },
+    {
+      "address": 3676282443,
+      "creator": "Internet Archive",
+      "domain": [
+        "dos",
+        "software_archive"
+      ],
+      "evidence": false,
+      "id": "dos-001",
+      "kind": "collection",
+      "ordinal": 6,
+      "title": "Software Library: MS-DOS",
+      "v": [
+        "vogel",
+        "voxel"
+      ],
+      "x": 56095,
+      "y": 40523
+    },
+    {
+      "address": 3693060062,
+      "creator": "David I. Schneider",
+      "domain": [
+        "dos",
+        "qbasic",
+        "structured_programming"
+      ],
+      "evidence": true,
+      "id": "dos-002",
+      "kind": "book",
+      "ordinal": 7,
+      "title": "Microsoft QBASIC: an introduction to structured programming",
+      "v": [
+        "vector"
+      ],
+      "x": 56351,
+      "y": 40926
+    },
+    {
+      "address": 3709837681,
+      "creator": "David I. Schneider",
+      "domain": [
+        "dos",
+        "programming",
+        "qbasic"
+      ],
+      "evidence": true,
+      "id": "dos-003",
+      "kind": "book",
+      "ordinal": 8,
+      "title": "QBasic programming",
+      "v": [
+        "vector"
+      ],
+      "x": 56607,
+      "y": 41329
+    },
+    {
+      "address": 3726615300,
+      "creator": "Kris A. Jamsa",
+      "domain": [
+        "dos",
+        "programming",
+        "qbasic"
+      ],
+      "evidence": true,
+      "id": "dos-004",
+      "kind": "book",
+      "ordinal": 9,
+      "title": "MS-DOS QBasic",
+      "v": [
+        "vector"
+      ],
+      "x": 56863,
+      "y": 41732
+    },
+    {
+      "address": 3743392919,
+      "creator": "Douglas Hergert",
+      "domain": [
+        "dos",
+        "quickbasic",
+        "structured_programming"
+      ],
+      "evidence": true,
+      "id": "dos-005",
+      "kind": "book",
+      "ordinal": 10,
+      "title": "Microsoft QuickBASIC",
+      "v": [
+        "vector"
+      ],
+      "x": 57119,
+      "y": 42135
+    },
+    {
+      "address": 3760170538,
+      "creator": "Walter J. Savitch",
+      "domain": [
+        "compiler",
+        "dos",
+        "pascal"
+      ],
+      "evidence": true,
+      "id": "dos-006",
+      "kind": "book",
+      "ordinal": 11,
+      "title": "Turbo Pascal 4.0/5.0",
+      "v": [
+        "vector"
+      ],
+      "x": 57375,
+      "y": 42538
+    },
+    {
+      "address": 3776948157,
+      "creator": "Jeff Duntemann",
+      "domain": [
+        "compiler",
+        "dos",
+        "pascal"
+      ],
+      "evidence": true,
+      "id": "dos-007",
+      "kind": "book",
+      "ordinal": 12,
+      "title": "Complete Turbo Pascal",
+      "v": [
+        "vector"
+      ],
+      "x": 57631,
+      "y": 42941
+    },
+    {
+      "address": 3347524068,
+      "creator": "Beno\u00eet B. Mandelbrot",
+      "domain": [
+        "fractal",
+        "geometry"
+      ],
+      "evidence": true,
+      "id": "fractal-001",
+      "kind": "book",
+      "ordinal": 13,
+      "title": "The Fractal Geometry of Nature",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 51079,
+      "y": 10724
+    },
+    {
+      "address": 3397856925,
+      "creator": "Robert L. Devaney et al.",
+      "domain": [
+        "chaos",
+        "computer_graphics",
+        "fractal"
+      ],
+      "evidence": true,
+      "id": "fractal-002",
+      "kind": "book",
+      "ordinal": 14,
+      "title": "Chaos and fractals: the mathematics behind the computer graphics",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 51847,
+      "y": 11933
+    },
+    {
+      "address": 3381079306,
+      "creator": "Robert L. Devaney",
+      "domain": [
+        "chaos",
+        "computer_experiments",
+        "fractal"
+      ],
+      "evidence": true,
+      "id": "fractal-003",
+      "kind": "book",
+      "ordinal": 15,
+      "title": "Chaos, fractals, and dynamics: computer experiments in mathematics",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 51591,
+      "y": 11530
+    },
+    {
+      "address": 3297191211,
+      "creator": "Paul S. Addison",
+      "domain": [
+        "chaos",
+        "fractal",
+        "nonlinear_dynamics"
+      ],
+      "evidence": true,
+      "id": "fractal-004",
+      "kind": "book",
+      "ordinal": 16,
+      "title": "Fractals and chaos: an illustrated course",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 50311,
+      "y": 9515
+    },
+    {
+      "address": 3280413592,
+      "creator": "Heinz-Otto Peitgen; Hartmut J\u00fcrgens; Dietmar Saupe",
+      "domain": [
+        "chaos",
+        "computer_graphics",
+        "fractal"
+      ],
+      "evidence": true,
+      "id": "fractal-005",
+      "kind": "book",
+      "ordinal": 17,
+      "title": "Chaos and fractals",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 50055,
+      "y": 9112
+    },
+    {
+      "address": 3330746449,
+      "creator": "Marat Akhmet; Mehmet Onur Fen; Ejaily Milad Alejaily",
+      "domain": [
+        "dynamical_systems",
+        "fractal"
+      ],
+      "evidence": true,
+      "id": "fractal-006",
+      "kind": "paper",
+      "ordinal": 18,
+      "title": "Finding Dynamics for Fractals",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 50823,
+      "y": 10321
+    },
+    {
+      "address": 3313968830,
+      "creator": "Stone Soup Group / Fractint Development Team",
+      "domain": [
+        "dos",
+        "fractal",
+        "graphics",
+        "software"
+      ],
+      "evidence": false,
+      "id": "fractal-007",
+      "kind": "software",
+      "ordinal": 19,
+      "title": "Fractint",
+      "v": [
+        "vogel",
+        "voxel"
+      ],
+      "x": 50567,
+      "y": 9918
+    },
+    {
+      "address": 37284626,
+      "creator": "Marc Berger",
+      "domain": [
+        "computer_graphics",
+        "dos_era",
+        "pascal"
+      ],
+      "evidence": true,
+      "id": "gfx-001",
+      "kind": "book",
+      "ordinal": 20,
+      "title": "Computer graphics with Pascal",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 568,
+      "y": 60178
+    },
+    {
+      "address": 20507007,
+      "creator": "Alan H. Watt",
+      "domain": [
+        "3d",
+        "computer_graphics",
+        "rendering",
+        "volume_rendering"
+      ],
+      "evidence": true,
+      "id": "gfx-002",
+      "kind": "book",
+      "ordinal": 21,
+      "title": "3D computer graphics",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 312,
+      "y": 59775
+    },
+    {
+      "address": 1804597280,
+      "creator": "Kenneth Hoffman; Ray Kunze",
+      "domain": [
+        "linear_algebra"
+      ],
+      "evidence": true,
+      "id": "la-001",
+      "kind": "book",
+      "ordinal": 22,
+      "title": "Linear Algebra",
+      "v": [
+        "vector"
+      ],
+      "x": 27535,
+      "y": 63520
+    },
+    {
+      "address": 1854930137,
+      "creator": "I. N. Herstein",
+      "domain": [
+        "linear_algebra",
+        "matrix"
+      ],
+      "evidence": true,
+      "id": "la-002",
+      "kind": "book",
+      "ordinal": 23,
+      "title": "Matrix theory and linear algebra",
+      "v": [
+        "vector"
+      ],
+      "x": 28303,
+      "y": 64729
+    },
+    {
+      "address": 1838152518,
+      "creator": "Robert Roth Stoll",
+      "domain": [
+        "linear_algebra",
+        "matrix"
+      ],
+      "evidence": true,
+      "id": "la-003",
+      "kind": "book",
+      "ordinal": 24,
+      "title": "Linear algebra and matrix theory",
+      "v": [
+        "vector"
+      ],
+      "x": 28047,
+      "y": 64326
+    },
+    {
+      "address": 1888485375,
+      "creator": "Lloyd N. Trefethen; David Bau III",
+      "domain": [
+        "eigen",
+        "linear_algebra",
+        "numerical_analysis"
+      ],
+      "evidence": true,
+      "id": "la-004",
+      "kind": "book",
+      "ordinal": 25,
+      "title": "Numerical linear algebra",
+      "v": [
+        "vector"
+      ],
+      "x": 28815,
+      "y": 65535
+    },
+    {
+      "address": 1871707756,
+      "creator": "Paul A. White",
+      "domain": [
+        "analytic_geometry",
+        "matrix",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-005",
+      "kind": "book",
+      "ordinal": 26,
+      "title": "Vector analytic geometry",
+      "v": [
+        "vector"
+      ],
+      "x": 28559,
+      "y": 65132
+    },
+    {
+      "address": 1922040613,
+      "creator": "James Byrnie Shaw",
+      "domain": [
+        "calculus",
+        "physics",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-006",
+      "kind": "book",
+      "ordinal": 27,
+      "title": "Vector calculus with applications to physics",
+      "v": [
+        "vector"
+      ],
+      "x": 29328,
+      "y": 805
+    },
+    {
+      "address": 1905262994,
+      "creator": "Durgaprasanna P. Bhattacharyya",
+      "domain": [
+        "calculus",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-007",
+      "kind": "thesis/book",
+      "ordinal": 28,
+      "title": "Vector calculus",
+      "v": [
+        "vector"
+      ],
+      "x": 29072,
+      "y": 402
+    },
+    {
+      "address": 1955595851,
+      "creator": "P. R. Baxandall",
+      "domain": [
+        "calculus",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-008",
+      "kind": "book",
+      "ordinal": 29,
+      "title": "Vector calculus",
+      "v": [
+        "vector"
+      ],
+      "x": 29840,
+      "y": 1611
+    },
+    {
+      "address": 1938818232,
+      "creator": "Richard L. Bishop; Samuel I. Goldberg",
+      "domain": [
+        "geometry",
+        "manifold",
+        "tensor"
+      ],
+      "evidence": true,
+      "id": "la-009",
+      "kind": "book",
+      "ordinal": 30,
+      "title": "Tensor analysis on manifolds",
+      "v": [
+        "vector"
+      ],
+      "x": 29584,
+      "y": 1208
+    },
+    {
+      "address": 109910666,
+      "creator": "G. E. Hay",
+      "domain": [
+        "tensor",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-010",
+      "kind": "book",
+      "ordinal": 31,
+      "title": "Vector and Tensor Analysis",
+      "v": [
+        "vector"
+      ],
+      "x": 1677,
+      "y": 6794
+    },
+    {
+      "address": 126688285,
+      "creator": "Robert C. Wrede",
+      "domain": [
+        "tensor",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-011",
+      "kind": "book",
+      "ordinal": 32,
+      "title": "Introduction to vector and tensor analysis",
+      "v": [
+        "vector"
+      ],
+      "x": 1933,
+      "y": 7197
+    },
+    {
+      "address": 76355428,
+      "creator": "Louis Brand",
+      "domain": [
+        "tensor",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-012",
+      "kind": "book",
+      "ordinal": 33,
+      "title": "Vector and tensor analysis",
+      "v": [
+        "vector"
+      ],
+      "x": 1165,
+      "y": 5988
+    },
+    {
+      "address": 93133047,
+      "creator": "Peter D. Lax",
+      "domain": [
+        "difference_equations",
+        "differential_equations",
+        "matrix"
+      ],
+      "evidence": true,
+      "id": "la-013",
+      "kind": "monograph",
+      "ordinal": 34,
+      "title": "Differential equations, difference equations and matrix theory",
+      "v": [
+        "vector"
+      ],
+      "x": 1421,
+      "y": 6391
+    },
+    {
+      "address": 42800190,
+      "creator": "Michael D. Greenberg",
+      "domain": [
+        "differential_equations",
+        "linear_algebra"
+      ],
+      "evidence": true,
+      "id": "la-014",
+      "kind": "book",
+      "ordinal": 35,
+      "title": "Differential Equations and Linear Algebra",
+      "v": [
+        "vector"
+      ],
+      "x": 653,
+      "y": 5182
+    },
+    {
+      "address": 59577809,
+      "creator": "Vasily E. Tarasov",
+      "domain": [
+        "fractal",
+        "noninteger_dimension",
+        "vector"
+      ],
+      "evidence": true,
+      "id": "la-015",
+      "kind": "paper",
+      "ordinal": 36,
+      "title": "Vector Calculus in Non-Integer Dimensional Space and its Applications to Fractal Media",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 909,
+      "y": 5585
+    },
+    {
+      "address": 994512511,
+      "creator": "Rex L. Hutton",
+      "domain": [
+        "number_systems",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-001",
+      "kind": "book",
+      "ordinal": 37,
+      "title": "Number systems: an intuitive approach",
+      "v": [
+        "vector"
+      ],
+      "x": 15175,
+      "y": 3711
+    },
+    {
+      "address": 1011290130,
+      "creator": "Norman R. Scott",
+      "domain": [
+        "computer_arithmetic",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-002",
+      "kind": "book",
+      "ordinal": 38,
+      "title": "Computer number systems and arithmetic",
+      "v": [
+        "vector"
+      ],
+      "x": 15431,
+      "y": 4114
+    },
+    {
+      "address": 1028067749,
+      "creator": "Solomon Feferman",
+      "domain": [
+        "algebra",
+        "analysis",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-003",
+      "kind": "book",
+      "ordinal": 39,
+      "title": "The number systems: foundations of algebra and analysis",
+      "v": [
+        "vector"
+      ],
+      "x": 15687,
+      "y": 4517
+    },
+    {
+      "address": 910624416,
+      "creator": "Earl E. Swartzlander",
+      "domain": [
+        "computer_arithmetic",
+        "floating_point"
+      ],
+      "evidence": true,
+      "id": "radix-004",
+      "kind": "book",
+      "ordinal": 40,
+      "title": "Computer arithmetic",
+      "v": [
+        "vector"
+      ],
+      "x": 13895,
+      "y": 1696
+    },
+    {
+      "address": 927402035,
+      "creator": "Amos R. Omondi",
+      "domain": [
+        "computer_arithmetic",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-005",
+      "kind": "book",
+      "ordinal": 41,
+      "title": "Computer arithmetic systems",
+      "v": [
+        "vector"
+      ],
+      "x": 14151,
+      "y": 2099
+    },
+    {
+      "address": 944179654,
+      "creator": "Nabil Nassif et al.",
+      "domain": [
+        "linear_algebra",
+        "numerical_analysis",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-006",
+      "kind": "book",
+      "ordinal": 42,
+      "title": "Introduction to numerical analysis and scientific computing",
+      "v": [
+        "vector"
+      ],
+      "x": 14407,
+      "y": 2502
+    },
+    {
+      "address": 960957273,
+      "creator": "Richard P. Brent; Paul Zimmermann",
+      "domain": [
+        "computer_arithmetic",
+        "fft",
+        "floating_point"
+      ],
+      "evidence": true,
+      "id": "radix-007",
+      "kind": "paper/book",
+      "ordinal": 43,
+      "title": "Modern Computer Arithmetic",
+      "v": [
+        "vector"
+      ],
+      "x": 14663,
+      "y": 2905
+    },
+    {
+      "address": 1111955844,
+      "creator": "Richard P. Brent",
+      "domain": [
+        "floating_point",
+        "radix"
+      ],
+      "evidence": true,
+      "id": "radix-008",
+      "kind": "paper",
+      "ordinal": 44,
+      "title": "On the precision attainable with various floating-point number systems",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 16967,
+      "y": 6532
+    },
+    {
+      "address": 1128733463,
+      "creator": "Yao Yao",
+      "domain": [
+        "quantum",
+        "second_quantization",
+        "ternary"
+      ],
+      "evidence": true,
+      "id": "radix-009",
+      "kind": "paper",
+      "ordinal": 45,
+      "title": "Balanced ternary formalism of second quantization",
+      "v": [
+        "vector"
+      ],
+      "x": 17223,
+      "y": 6935
+    },
+    {
+      "address": 4053168027,
+      "creator": "NDSU Mathematics",
+      "domain": [
+        "differential_equations",
+        "kovalevskaya",
+        "russian_math",
+        "sonia"
+      ],
+      "evidence": false,
+      "id": "sonia-001",
+      "kind": "biographical_technical",
+      "ordinal": 46,
+      "title": "Sonia Kovalevsky biography / mathematical work",
+      "v": [
+        "vector",
+        "vogel"
+      ],
+      "x": 61846,
+      "y": 28571
+    },
+    {
+      "address": 4069945646,
+      "creator": "Frank Y. Wang",
+      "domain": [
+        "chaos",
+        "history_math",
+        "sonia"
+      ],
+      "evidence": true,
+      "id": "sonia-002",
+      "kind": "paper",
+      "ordinal": 47,
+      "title": "Pioneer Women in Chaos Theory",
+      "v": [
+        "vector",
+        "vs"
+      ],
+      "x": 62102,
+      "y": 28974
+    },
+    {
+      "address": 4086723265,
+      "creator": "Encyclopedia of Mathematics",
+      "domain": [
+        "hamiltonian",
+        "integrable_system",
+        "rigid_body",
+        "sonia"
+      ],
+      "evidence": true,
+      "id": "sonia-003",
+      "kind": "reference",
+      "ordinal": 48,
+      "title": "Kowalewski / Kovalevskaya top",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 62358,
+      "y": 29377
+    },
+    {
+      "address": 4103500884,
+      "creator": "A. V. Borisov; I. S. Mamaev; A. G. Kholmskaya",
+      "domain": [
+        "hamiltonian",
+        "integrable_system",
+        "poisson",
+        "sonia"
+      ],
+      "evidence": true,
+      "id": "sonia-004",
+      "kind": "paper",
+      "ordinal": 49,
+      "title": "Kovalevskaya Top and Generalizations of Integrable Systems",
+      "v": [
+        "vector"
+      ],
+      "x": 62614,
+      "y": 29780
+    },
+    {
+      "address": 4120278503,
+      "creator": "H. R. Dullin; P. H. Richter; A. P. Veselov",
+      "domain": [
+        "abelian_integrals",
+        "action_variables",
+        "hamiltonian",
+        "sonia"
+      ],
+      "evidence": true,
+      "id": "sonia-005",
+      "kind": "paper",
+      "ordinal": 50,
+      "title": "Action variables of the Kovalevskaya top",
+      "v": [
+        "vector"
+      ],
+      "x": 62870,
+      "y": 30183
+    },
+    {
+      "address": 4137056122,
+      "creator": "Mikhail P. Kharlamov; Pavel E. Ryabov",
+      "domain": [
+        "bifurcation",
+        "hamiltonian",
+        "sonia",
+        "topology"
+      ],
+      "evidence": true,
+      "id": "sonia-006",
+      "kind": "paper",
+      "ordinal": 51,
+      "title": "Topological atlas of the Kovalevskaya top in a double field",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 63126,
+      "y": 30586
+    },
+    {
+      "address": 4153833741,
+      "creator": "A. V. Bolsinov; P. H. Richter; A. T. Fomenko",
+      "domain": [
+        "hamiltonian",
+        "liouville",
+        "sonia",
+        "topology"
+      ],
+      "evidence": true,
+      "id": "sonia-007",
+      "kind": "paper",
+      "ordinal": 52,
+      "title": "The method of loop molecules and the topology of the Kovalevskaya top",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 63382,
+      "y": 30989
+    },
+    {
+      "address": 3902169456,
+      "creator": "K. P. Hadeler; E. N. Selivanova",
+      "domain": [
+        "integrable_system",
+        "quartic_integral",
+        "sonia",
+        "sphere"
+      ],
+      "evidence": true,
+      "id": "sonia-008",
+      "kind": "paper",
+      "ordinal": 53,
+      "title": "On the Case of Kovalevskaya and New Examples of Integrable Conservative Systems on S^2",
+      "v": [
+        "vector",
+        "voxel"
+      ],
+      "x": 59542,
+      "y": 24944
+    }
+  ],
+  "runtime_authority": "Stage 14.2 Rust/Wasm walker; manifest is labels/metadata only",
+  "schema": "i13-h1.1-corpus-browser/0.1",
+  "source_schema": "i13-h1.1-corpus-index/0.1",
+  "world_path": {
+    "interpretation": "Russian mathematics -> Hamiltonian/integrable systems -> topology/chaos -> computational fractals -> DOS Fractint",
+    "path": [
+      "sonia-001",
+      "sonia-003",
+      "sonia-004",
+      "sonia-005",
+      "sonia-006",
+      "sonia-007",
+      "sonia-002",
+      "fractal-002",
+      "fractal-003",
+      "fractal-007"
+    ],
+    "status": "candidate_correlated_not_0root_programmatically_verified",
+    "target": "Sonia",
+    "world": "IV"
+  }
+}
