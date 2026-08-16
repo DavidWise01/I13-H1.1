@@ -153,14 +153,15 @@ text{fill:var(--ink)}
 <script src="stages/stage10-pulse.js"></script>
 <script>
 (() => {
-  const load = (src) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.async = false;
-    document.body.appendChild(s);
-  };
-  load('stages/stage11-vh1.js');
-  load('stages/stage12-vh2-cubi.js');
+  const s = document.createElement('script');
+  s.src = 'stages/stage11-vh1.js';
+  s.async = false;
+  document.body.appendChild(s);
+
+  const s2 = document.createElement('script');
+  s2.src = 'stages/stage12-vh2-cubi.js';
+  s2.async = false;
+  document.body.appendChild(s2);
 })();
 </script>
 <script src="stages/stage6-ology-live.js"></script>
