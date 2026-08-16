@@ -43,11 +43,14 @@ jobs:
         run: node --check docs/stages/ivm-reader.js
       - name: Check Stage 4 JavaScript syntax
         run: node --check docs/stages/stage4-toolchain.js
+      - name: Check Stage 6 JavaScript syntax
+        run: node --check docs/stages/stage6-ology-live.js
       - name: Check Pages wiring
         run: |
           grep -q 'src="exploded-view.js"' docs/index.html
           grep -q 'src="stages/ivm-reader.js"' docs/index.html
           grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
+          grep -q 'src="stages/stage6-ology-live.js"' docs/index.html
       - name: Check Stage 5 bounded layout contract
         run: |
           grep -q "version: '0.2.0'" docs/exploded-view.js
@@ -58,6 +61,17 @@ jobs:
           grep -q 'expandMachine' docs/exploded-view.js
           grep -q 'collapseMachine' docs/exploded-view.js
           grep -q 'toggleMachine' docs/exploded-view.js
+      - name: Check Stage 6 live observer contract
+        run: |
+          grep -q "version: '0.1.0'" docs/stages/stage6-ology-live.js
+          grep -q "const MODULE_ID = 'ology'" docs/stages/stage6-ology-live.js
+          grep -q 'LIVE LAB' docs/stages/stage6-ology-live.js
+          grep -q 'LIVE · CURRENT' docs/stages/stage6-ology-live.js
+          grep -q 'MutationObserver' docs/stages/stage6-ology-live.js
+          grep -q 'stage6-ology-status' docs/stages/stage6-ology-live.js
+          grep -q 'jumpToLab' docs/stages/stage6-ology-live.js
+          grep -q 'window.I13OlogyLive' docs/stages/stage6-ology-live.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage6-ology-live.js
       - name: Check canonical IVM opcode set
         run: |
           node <<'NODE'
@@ -101,7 +115,7 @@ jobs:
           NODE
       - name: Keep deeper stages unmounted
         run: |
-          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 2
+          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 3
           ! grep -Fq "I13Exploded.mount('jit'" docs/stages/stage4-toolchain.js
           ! grep -Fq "I13Exploded.mount('gfx'" docs/stages/stage4-toolchain.js
           ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage4-toolchain.js
