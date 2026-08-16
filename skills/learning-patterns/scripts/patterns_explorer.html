@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Learning Patterns — patterns.dev Explorer</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--err:#ff5c7a;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px;max-width:1100px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px;cursor:pointer}
+  .card:hover{border-color:var(--acc)}
+  .tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32;margin-bottom:6px}
+  .tag.render{background:#2a1f0f;color:var(--amber);border-color:#3a2c12}
+  .card h3{margin:0 0 4px;font-size:14px;color:var(--fg)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .detail{margin-top:14px;background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:16px;display:none}
+  .detail.show{display:block}
+  .detail h2{margin:0 0 8px;color:var(--acc)}
+  .detail .body{white-space:pre-wrap;color:var(--fg)}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Learning Patterns Explorer</h1>
+  <div class="sub">Lydia Hallie &amp; Addy Osmani &mdash; patterns.dev (JS/React design + rendering patterns). Self-contained; data distilled from archive.org OCR.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="filter patterns (e.g. state, render, perf)…" style="flex:1;min-width:220px">
+    <select id="cat">
+      <option value="">all categories</option>
+      <option value="design">design</option>
+      <option value="rendering">rendering/perf</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="detail" id="detail">
+    <h2 id="d-title"></h2>
+    <div class="body" id="d-body"></div>
+  </div>
+</main>
+<footer>
+  Source: archive.org item <code>learning-patterns</code> (OCR <code>corpus/learning-patterns_djvu.txt</code>).
+  This is the patterns.dev guide &mdash; NOT a study-skills book. Open via file:// or any static host.
+</footer>
+<script>
+const DATA = [
+  {cat:"design", name:"Proxy Pattern", body:"Intercept get/set on a target object via a Proxy. Use for validation, logging, lazy init. Perf caution: avoid on hot paths — each handler invocation can negatively affect performance."},
+  {cat:"design", name:"Provider Pattern", body:"Share global data (theme, UI state, auth) through React Context. Great for state needed by many nested components without prop-drilling."},
+  {cat:"design", name:"Observer Pattern", body:"Publish/subscribe: observers subscribe to a subject and are notified on change. ReactiveX combines Observer + Iterator. Caution: a complex observer can cause perf issues."},
+  {cat:"design", name:"Module Pattern", body:"Encapsulate private parts of code behind a closure, exposing only a public API. Classic way to get privacy before ES modules."},
+  {cat:"design", name:"Render Props Pattern", body:"A prop whose value is a function/component, used to share behavior/state. Often preferred over HOC; largely replaced by Hooks for data sharing."},
+  {cat:"design", name:"Hooks Pattern", body:"React Hooks (useState/useEffect/useReducer/useContext) as the modern replacement for HOC & Render Props for most shared-state problems. Not strictly a 'design pattern' but central."},
+  {cat:"design", name:"Higher-Order Component (HOC)", body:"A function that takes a component and returns a new component wrapping it. Useful for cross-cutting concerns; often replaceable by Hooks."},
+  {cat:"design", name:"Factory Pattern", body:"Factory functions create and return new objects/instances. Useful when constructing multiple similar or relatively complex objects."},
+  {cat:"design", name:"Compound Pattern", body:"Related components (menus, tabs, items) share implicit state via Context API. Ideal for building a component library with declarative parent/child composition."},
+  {cat:"design", name:"Flyweight Pattern", body:"Conserve memory when creating many similar objects by sharing intrinsic state. Useful at scale."},
+  {cat:"design", name:"Container/Presentational", body:"Separate logic (container) from view (presentational). Largely superseded by Hooks, which remove the extra wrapper layer."},
+  {cat:"design", name:"Prototype Pattern", body:"Share properties among many objects via the prototype chain, enabling inheritance/property access without duplication."},
+  {cat:"rendering", name:"Client-Side Rendering (CSR)", body:"Browser renders after downloading + executing a JS bundle. Simple to deploy but slower first paint / weaker SEO without extra work."},
+  {cat:"rendering", name:"Server-Side Rendering (SSR)", body:"Server renders HTML per request. Faster first paint, better SEO. Need to manage hydration carefully."},
+  {cat:"rendering", name:"Static Rendering", body:"Pre-render HTML at build time. Fastest TTI for mostly-static content. Chrome team encourages static/SSR over full rehydration."},
+  {cat:"rendering", name:"Hydration", body:"Attaching JS event handlers to server/static HTML so it becomes interactive. Full rehydration can be heavy; progressive hydration is preferred."},
+  {cat:"rendering", name:"Progressive Rendering", body:"Stream/partially hydrate content so the most important parts become interactive first. Key to performance with modern frameworks."}
+];
+
+const grid = document.getElementById("grid");
+const detail = document.getElementById("detail");
+const q = document.getElementById("q");
+const cat = document.getElementById("cat");
+
+function render(){
+  const term = q.value.toLowerCase();
+  const c = cat.value;
+  grid.innerHTML = "";
+  DATA.filter(d =>
+    (!c || d.cat === c) &&
+    (term === "" || d.name.toLowerCase().includes(term) || d.body.toLowerCase().includes(term))
+  ).forEach((d, i) => {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `<span class="tag ${d.cat==='rendering'?'render':''}">${d.cat}</span><h3>${d.name}</h3><p>${d.body.slice(0,90)}…</p>`;
+    el.onclick = () => show(d);
+    grid.appendChild(el);
+  });
+  detail.classList.remove("show");
+}
+function show(d){
+  document.getElementById("d-title").textContent = d.name + "  (" + d.cat + ")";
+  document.getElementById("d-body").textContent = d.body;
+  detail.classList.add("show");
+  detail.scrollIntoView({behavior:"smooth"});
+}
+q.oninput = render; cat.onchange = render;
+render();
+</script>
+</body>
+</html>
