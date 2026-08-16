@@ -1,0 +1,1608 @@
+Duccio Dogheria 
+
+
+INTERNET 
+Th 
+
+
+an unofficial guide 
+to the World’s most 
+innovative digital library 
+
+
+STRAD PrDe aypssCr HE 
+
+
+STA 
+
+
+Non esistono 
+diritti d’autore, 
+solo doveri 
+
+
+Jean-Lue Godard 
+MILLELIREPERSEMPRE 
+
+
+é un'‘idea di 
+Marcello Baraghini 
+con la collaborazione di 
+Claudio Scaia 
+
+
+direttore editoriale 
+Marcello Baraghini 
+
+
+editing e correzione 
+Anna Baraghini 
+copertina e impaginazione 
+Claudio Scaia e Lorenzo Goatelli 
+
+
+Traduzione 
+Mark Mendati (Studio IY) 
+
+
+LE STRADE BIANCHE DI STAMPA ALTERNATIVA 
+Via Zuccarelli, 25 Pitigliano (GR) 
+0564615317 
+stradebianchelibri@gmail.com 
+www.stradebianchelibri.com 
+
+
+What is Internet Archive 
+
+
+Internet Archive (www.archive.org) stands as the 
+world’s foremost digital library, liberated, free, de- 
+void of advertisements, and driven by non-commer- 
+cial objectives. Alongside Wikipedia, it ranks among 
+the few non-profit entities listed among the 300 most 
+visited sites globally. Established in 1996, its primary 
+aim was to offer unrestricted and universal access to 
+knowledge by making various types of documentation 
+available online: primarily books and magazines, but 
+also encompassing images, videos, audios of all kinds, 
+software, and even web pages. Currently (Novembrer 
+2024), Internet Archive hosts over 42 million texts, 13 
+million audio files, 13 million videos, nearly 3 million 
+TV broadcasts, almost 5 million images, over a million 
+software files, and 260 thousand audio concerts, all 
+organized within 2,5 million collections. 
+
+
+The founder, Brewster Kahle (1960), holds a significant 
+position in the history of computing and the digital 
+era. Following his graduation from the Massachuset- 
+ts Institute of Technology in 1982, he served as chief 
+engineer for Thinking Machine Company, and in 1992, 
+he was among the developers of the Internet WAIS 
+search system, a precursor to the World Wide Web. In 
+the same year he founded Internet Archive, Kahle also 
+co-founded Alexa Internet, which was later acquired 
+
+
+3 
+
+
+by Amazon. Thanks to its inherently decentralized vi- 
+sion of the web, aiming to make every user an active 
+participant, Internet Archive marvelously hosts an ar- 
+ray of content, from medieval parchment manuscripts 
+to those written on palm leaves from Southeast Asia, 
+from incunabula to native digital documents, from 
+vintage computer viruses enjoyed safely through si- 
+mulators to hundreds of thousands of digitized 78 
+RPM records, from underground publishing to docu- 
+mentary sources of all kinds (audio, video, web) for 
+contemporary historians, from sci-fi B movies to 3D 
+printer programs (as early as the first months of 2020, 
+there were STL files available for printing COVID-19 
+masks at home), from children’s literature to acade- 
+mic literature spanning every research field. 
+
+
+Internet Archive (hereafter IA) features accounts from 
+major universities, museums, libraries, and other in- 
+ternational institutions, but also and especially pages 
+created by individual scholars, collectors, and enthu- 
+siasts eager to share their interests with others by of- 
+fering their collections. In its own way, IA is also social! 
+All uploaded documents can be shared and reviewed, 
+with comments often supplementing and enriching 
+their descriptions in a participatory manner. 
+
+
+The extensive digitization effort promoted by IA and 
+its users also serves as an excellent response to the 
+
+
+4 
+
+
+longstanding problem of media obsolescence , inclu- 
+ding digital media, which is often overlooked: Digital 
+decay is constantly looming, as media such as floppy 
+disks, CDs, CD-ROMs, USB drives, memory cards, and 
+external hard drives often have a shorter and more 
+fragile lifespan compared to older media such as vinyl 
+reco- rds, audio cassettes, and film reels. 
+
+
+Everything published on IA can be freely accessed 
+online through the browser and mostly downloaded, 
+although it’s rarely necessary since the documenta- 
+tion is always accessibile — connection permitting — 
+and secure. 
+
+Reliability is ensured not only by nearly 30 years of 
+experience but also by the powerful servers located 
+at IA’s headquarters in San Francisco (housed in a for- 
+mer neoclassical-style church in the Richmond distri- 
+ct, chosen for its fagade resembling that of a classical 
+temple, the logo of IA) and mirrored copies in the Bi- 
+bliotheca Alexandrina in Alexandria, Egypt, and in Am- 
+sterdam. Additionally, in 2022, Internet Archive Cana- 
+da (https://internetarchivecanada.org) was officially 
+inaugurated, a twin non-profit entity — though legally 
+autonomous — of Internet Archive. 
+
+
+Using IA for research is simple, easy, and intuitive: 
+from the homepage, you can utilize the free-text se- 
+arch box, which captures not only author and title but 
+
+
+5 
+
+
+also all metadata associated with the individual do- 
+cument; or, once you become more proficient, you 
+can undertake an advanced search; or yet, especially 
+recommended for initial explorations of the platform, 
+you can browse through various sections of the site, 
+found in both the top bar and the center of the scre- 
+en, identified by pictograms. Particular attention to 
+content accessibility has been directed towards peo- 
+ple with visual impairments, for example, by making 
+many texts available in DAISY (Digital Accessible Infor- 
+mation System) format. 
+
+
+Exploring IA’s content is so straightforward and intuiti- 
+ve that it seems unnecessary to spend more words on 
+it; just let your interests and curiosity guide you to di- 
+scover the hidden worlds within this portal, including 
+special sections like Open Library and Books to Bor- 
+row, which allow account holders controlled digital 
+lending (CDL) of recently published books protected 
+by copyright, for a specified but renewable period. 
+
+
+We will dedicate only a brief chapter to search 
+methods in conclusion, because the intention of these 
+pages is rather different: to introduce an active use of 
+IA, allowing anyone to take the first steps in creating 
+an account, populating a content page, and enriching 
+the metadata to subsequently optimize searches by 
+users. We will explore how to enhance the presentati- 
+
+
+6 
+
+
+on of cards and provide some small, valuable tips to 
+address some of the most common doubts among 
+newcomers, which may not be addressed in available 
+tutorials but only in the experience of those who have 
+been operating on the platform for some time. For 
+anything not found here or in the tutorials, we encou- 
+rage you to consult the Help Center pages (https:// 
+help.archive.org/) or the recent New to the Archive? 
+section, or directly contact the Internet Archive staff 
+(info@archive.org), who have always been responsive 
+and punctual in their responses. 
+
+
+Creating an account 
+
+
+From public cultural institutions to individual enthu- 
+siasts, anyo- ne can freely and easily open and mana- 
+ge an account on IA. Doing so is straightforward: from 
+the portal’s homepage, click on Sign up to the right of 
+the top bar, and an entry form will appear (fig. 1). 
+You’ll need to provide a valid email address, to whi- 
+ch a confirmation email will be sent; the name you 
+want to give to your user page, visible to other users; 
+a password for access, which will then be automatical- 
+ly stored for subsequent logins. 
+
+
+All entered data can be easily modified as needed, 
+except for the address of your user page (which can 
+still be changed by contacting IA staff). 
+
+
+ri 
+
+
+Once the user page is open, although it may still lack 
+content, it can be enriched by a description of any len- 
+gth, visible beneath your name; to insert it, simply cli- 
+ck on Edit at the top right and then fill in the Descrip- 
+tion field. You can also add a logo image to your page, 
+which can also be modified at any time: just upload an 
+image or drag it to the icon to the left of your name. 
+
+
+© 
+
+
+Sign up for an account 
+
+
+Get your virtual library card and access 65+ million free and borrowable books, movies, 
+audio, images, software, and more! Already have one? Log In! 
+
+
+SG Accedi con Google 
+
+
+Or 
+
+
+Enter email address Up to 127 characters 
+Choose a screen name (this is how others will see you) 3 to 127 characters 
+
+
+Choose a password 3 to 100 characters 
+
+
+Fig. 1 - What you need to create an account 
+
+
+Uploading an item 
+
+
+After creating your user page, the next step is popu- 
+lating it with content. Uploading a document is strai- 
+ghtforward: first, click on Upload in the top right cor- 
+ner. Unless you are a musical band — in which case 
+you'll need to select the Live Music Archive uploader 
+option -, in the dialog box that appears, click on Uplo- 
+ad files and then select or drag the file (of any type) 
+you want to upload. Unlike many other platforms, IA 
+imposes no limits on file size or quantity. For system 
+convenience, IA generally suggests not exceeding 50 
+GB per document and, in the case of a document 
+consisting of multiple files (such as a series of photo- 
+graphs), not exceeding a total of 1000 files. 
+
+
+In the dialog that opens, you’ll need to input all me- 
+tadata (data about data) related to your document 
+(hereafter referred to as “item”: this is the term used 
+by the platform). Metadata is essential not only for 
+proper archiving of your document but also to ensure 
+that your item doesn’t remain an isolated star in the 
+IA galaxy but is easily searchable by other users. IA 
+adheres to the international metadata standard called 
+Dublin Core: some fields, marked with an asterisk, are 
+mandatory and will already appear pre-filled during 
+input (but still editable). IA guarantees maximum fre- 
+edom in filling out and managing metadata: except for 
+
+
+9 
+
+
+the marked fields, there are no insertion constraints, 
+no imposed descriptive standards, only simple sugge- 
+stions, which you can find in the Help section (Exam- 
+ple of good metadata for items). 
+
+This freedom also extends to the ability to add addi- 
+tional metadata to your items, both to describe any 
+specificities of the uploaded resource and to enhan- 
+ce the user search experience: do you want to add a 
+specific metadata about the signature/location of the 
+item in your library or collection? You can do that. Do 
+you want to add metadata about the printing tech- 
+nique of your item (e.g., for photographs or graphic 
+works)? You can do that. Do you want to add meta- 
+data linking to the Wikidata page of the author of the 
+work? You can do that... 
+
+
+Too much freedom can sometimes be exhilarating, and 
+the risk of confusion is always around the corner. The- 
+refore, it’s essential to have at least some coherence 
+and uniformity in metadata entry within the same col- 
+lection: for example, if you decide to enclose the titles 
+of periodicals in quotation marks, ALWAYS write them 
+in quotation marks; if you use a specific format for the 
+Creator field (i.e., the author), such as name-surna- 
+me or surname-name separated by a comma, ALWAYS 
+use that format consistently. Therefore, we advise you 
+to draft your own rules for metdata entry, referring as 
+needed to the best practices found on IA and always 
+
+
+10 
+
+
+keeping in mind what your goals and priorities are. 
+Now let’s briefly summarize the fields you'll be requi- 
+red to fill in on the input screen (Fig. 2): 
+
+
+Page Title is the first mandatory field: it will be pre-fil- 
+led with the same name as the uploaded file. You can 
+modify it as you like, but, as mentioned, consistently 
+with other inserted items: for example, if you use the 
+string Author’s name and surname, Title, Year of pub- 
+
+
+Click on any field below to edit it 
+
+
+Page Title“ — [Prova Caricamento Internet Archive. 72) 
+
+
+Page URL * le prova-caricamento- ~ 
+internet-archive.-7z 
+
+
+Description * 
+
+Subject Tags * 
+
+Creator 
+
+Date 
+
+Collection* | Community Audio v 
+Test Item No v 
+Language 
+
+
+License 
+
+
+More Options Add additional metadata.. 
+
+
+Fig. 2 - The metadata entry mask 
+
+
+11 
+
+
+lication (e.g., G. Debord, The Society of the Spectacle, 
+1967) in the Page Title field, use that formula consi- 
+stently. From the Page Title field, the Identifier will be 
+automatically derived, which is the unique alphanu- 
+meric reference to your item within IA. 
+
+
+Page URL is the web address of your item, always star- 
+ting with https://archive.org/details, followed by a 
+specific part about the item (e.g., https://archive.org/ 
+details/d.-dogheria-internet-archive.-guida-non-uffi- 
+ciale-alla-piu-innovativa-biblioteca). For convenience 
+— but feel free to approach this with maximum free- 
+dom — it can be useful to copy and paste the content 
+of the previous Page Title field, i.e., the title of your 
+item, so that the corresponding URL can immediately 
+identify the content. 
+
+
+Description is a substantially free field and can con- 
+tain very lengthy descriptions; you can format the text 
+and insert links for further information. Each term en- 
+tered in this field is indexed and therefore searchable 
+by the search mask. 
+
+Unless you want to create specific metadata, you can 
+insert, for example, signatures of printed works, any 
+ownership notes (e.g., ownership signatures or bo- 
+okplates of previous owners), etc., here. If you have 
+descriptions from your databases, of course, the sim- 
+plest thing is to copy and paste them. 
+
+
+12 
+
+
+Subject Tags are very useful metadata for searching: 
+tags are used to create semantic relationships among 
+various items uploaded to Internet Archive, both in 
+general — to facilitate the work of researchers intere- 
+sted in a specific topic — and within the collection, to 
+group related documents linked by the same theme 
+or occasion. Consider translating at least some of the 
+tags into English, given the international audience of 
+the platform. During insertion, simply separate tags 
+with a comma; you can then modify them (delete, 
+correct, add, etc.) at any time using the Edit function, 
+but it’s a bit more complicated; therefore, we recom- 
+mend spending some time on this, perhaps creating 
+simple models in Word if you need to insert multiple 
+related items, then proceed with copy and paste and 
+modify as needed. Around ten not overly generic tags 
+are ideal (fig. 3). 
+
+
+Creator is the author of the document: the platform 
+allows you to input only one author during insertion, 
+but if there are multiple authors, others can be added 
+via the More options. Add additional metadata fun- 
+ction: you'll specify the field you want to add (Crea- 
+tor) on the left and the value (the name and surname 
+of the second author, according to the format you’ve 
+chosen) on the right. Alternatively, you can add other 
+authors later via the Edit function. Keep in mind that 
+any secondary authors (e.g., cover graphic designer, 
+
+
+13 
+
+
+Topics American novel, fiction, F. Scott 
+Fitzgerald, Jay Gatsby, West 
+Egg, East Egg, Daisy Buchanan, 
+Tom Buchanan, Jordan Baker, 
+Nick Carraway, American dream, 
+Class permanence 
+
+
+Fig. 3 - Tags (Topics) associated with an edition of The Great 
+Gatsby by F. Scott Fitzgerald. 
+
+
+translator, etc.) can be mentioned in the Description 
+field and can still be searched on IA, as they are always 
+indexed. 
+
+
+Date is the date of the item, expressed in numbers 
+according to the YYYY/MM/DD (year/month/day) 
+format. It’s straightforward for precise dates, espe- 
+cially for editions (books, magazines, newspapers), 
+but what if the date is open or uncertain? Since the 
+insertion dialog only allows you to indicate a precise 
+numerical value, our advice is to leave the field empty, 
+as it’s not mandatory, and to intervene later (we'll see 
+how), via the Edit function. 
+
+
+Collection is the collection in which to place the item: 
+if you have already created one after reaching a mi- 
+nimum of 50 items (we’ll see shortly how to do this), 
+simply enter the first letters of the collection’s name, 
+
+
+14 
+
+
+and after a few seconds, the platform will suggest the 
+Collection, to be confirmed with a click; if you haven’t 
+created one yet (or don’t want to create one), IA will 
+automatically save the item in a general collection, 
+depending on the format of the uploaded file (e.g., 
+Community Audio for audio tracks, Community Video 
+for videos, etc.). A word of caution: if for any reason 
+you prefer to prevent the download of the uploaded 
+item while still making it fully viewable and sear- 
+chable, you’ll need to indicate the value stream_only 
+in the Collection field. Moreover, the reliability of IA 
+has partially rendered the choice to download items 
+obsolete, as they are always and conveniently avai- 
+lable online, moreover on a completely mobile-frien- 
+dly platform. 
+
+
+Test Item if selected, allows you to upload an item for 
+only 30 days, after which it will be automatically dele- 
+ted. Unless it may be useful for a particular occasion, 
+we recommend leaving the field as it is at the time of 
+upload, i.e., pre-filled by default to no. 
+
+
+Language is the language of the item, obviously not 
+always present, as in the case of images. If the item 
+has multiple languages, indicate the primary one du- 
+ring insertion, or one of the primary ones: you can 
+then add the other languages using the Edit function. 
+In addition to being able to search for documents in 
+
+
+15 
+
+
+a particular language, correctly entering the language 
+field enhances the OCR with which the printed docu- 
+ment is processed, also enabling the Read this book 
+aloud function (symbol of a pair of headphones: you 
+can find it in the document’s function bar), which al- 
+lows you to listen to the text being read, although the 
+quality is not that of an audiobook. 
+
+
+License is the type of usage license to which you bind 
+the document. Specify the most appropriate one (see 
+the types of Creative Commons licenses at https:// 
+creativecommons.org/share-your-work/cclicenses); 
+the field, not being mandatory, can be left blank, as it 
+appears by default (Leave license blank). 
+
+
+More Options is a repeatable field that allows you to 
+add additional metadata: for example, you can add a 
+second Collection here (such as stream_only), or a se- 
+cond Creator, specifying the field on the left (key) and 
+the value on the right, or add additional metadata, as 
+you please. 
+
+
+Once this simple form is filled out, a click on Upload 
+and create your item will start the upload process, 
+the duration of which will depend on the file type 
+and size. Once the item is uploaded, you will initially 
+see the message There is no preview available for this 
+item. Don’t worry: if you scroll down, you will first see 
+
+
+16 
+
+
+the card you filled out with all the metadata and 
+another notice on a blue background indicating that 
+the item is still being processed: your item, befo- 
+re being visible, undergoes a very complex series of 
+transformations and conversions into other formats, 
+which subsequently allows you to take advantage of 
+all the platform’s features, such as automatic OCR for 
+all texts. Before being correctly displayed, and able 
+to modify its metadata if necessary, some more time 
+will pass, even over an hour, but the final result will 
+reward your patience! 
+
+
+If what has been described seems complicated to 
+you — but | assure you it isn’t: it just requires a bit of 
+practice — there is a video tutorial on Internet Archive 
+by Alexis Rossi, Uploading Overview (https://archive. 
+org/details/help-upload-overview), which explains 
+the essentials in a few, very simple steps in just 5 mi- 
+nutes. 
+
+
+Books, magazines & co. 
+
+
+As a digital library, it’s natural that the most prevalent 
+and consulted item type on Internet Archive is related 
+to printed texts: books, magazines, and more. Textual 
+content is best enjoyed on IA when uploaded in PDF 
+format. While most professional scanners allow you 
+to digitize a work directly into PDF format, if, for any 
+
+
+17 
+
+
+reason — including the need for post-production of 
+images — you cannot or do not want to save your digi- 
+tized text directly in PDF, you can do so later without 
+any issues. The important thing is that during the digi- 
+tization process with a scanner (or camera), you pro- 
+duce reproductions of individual pages in the correct 
+order, from the cover to the back cover, and that the 
+sequence of pages corresponds to a relative sequen- 
+ce in the filenames. After any post-production phase 
+(straightening, image clipping, etc.), you need to con- 
+vert the individual reordered images into a PDF file. 
+There are many tools for doing this, including free and 
+online ones. If you have Photoshop, after opening the 
+program, select File - Automate — PDF Presentation; 
+then select all the JPG images from the Browse but- 
+ton, click Open, then Save, and finally OK: the PDF file 
+will be created in a few moments, ready to be uploa- 
+ded to lA. 
+
+
+Creating a Collection 
+
+
+Having learned how to correctly upload items to the 
+platform, you are ready to bring your Collection to life, 
+or rather, your digital library. To do this, you’ll need to 
+have uploaded at least 50 items to IA. Your user page 
+essentially serves to manage the entries and changes 
+to your digital library, even though there are quite a 
+few users who, for various reasons, limit themselves 
+
+
+18 
+
+
+to creating only one user page despite having surpas- 
+sed the 50-item mark: the contents are still visible and 
+searchable, although dispersed among various com- 
+munity collections. 
+
+
+The procedure for creating a Collection is strai- 
+ghtforward. Once you have reached the minimum 
+threshold of 50 items, you’ll need to send an email to 
+IA (info@archive.org) specifying: 
+
+
+- The email address of the IA account that uploaded 
+the items to be part of your digital library (Collection). 
+
+
+- The list of all the URLs of your items, or — which is 
+much simpler — a tag (or combination of tags) present 
+in all your items, and only in your items. For exam- 
+ple, a tag that uniquely identifies your Collection (first, 
+check the metadata search form to ensure it hasn’t 
+already been used by others). 
+
+
+- The name you want to give to your Collection and 
+a brief presentation of it. The presentation, which 
+you can write in any language, can be modified and 
+supplemented at any time, even with the addition of 
+images. 
+
+
+- An Identifier, a name identifying your digital library, 
+which will become part of the URL of your collection. 
+
+
+19 
+
+
+Neither spaces (replaceable with hyphens if it con- 
+sists of multiple words) nor special characters (e.g., 
+Gotham-City-Library) are allowed. 
+
+
+- At least one Subject Tag identifying the Collection 
+(e.g., the name of your Collection). 
+
+
+- The email address or addresses of the IA accounts 
+authorized to operate within the Collection. You can 
+naturally add or remove page administrators at any 
+time, remembering that there are no levels of autho- 
+rity. 
+
+
+- A logo of your digital library (optional but recom- 
+mended). 
+
+
+- The order in which you want your items to appear 
+by default in your digital library, such as by date or by 
+author (optional but recommended). 
+
+This order can be changed by you at any time, both in 
+default mode and temporarily, using the sort by fun- 
+ction, which allows you to change the presentation 
+order according to multiple parameters (document 
+date, document insertion date, document review 
+date, alphabetical order by author, alphabetical order 
+by title, views). 
+
+
+After receiving the email, the IA staff will create your 
+
+
+20 
+
+
+digital library in a few days, subsequently sending you 
+a confirmation email. 
+
+
+Over time, as your digital library becomes popula- 
+ted with content, you may decide to create sub-col- 
+lections, grouping parts of your collection by type. For 
+example, if you have created the digital library of a 
+municipal library, one sub-Collection could be dedica- 
+ted to local history. The criteria and methods for cre- 
+ating a sub-Collection are the same as those seen for 
+creating the Collection. 
+
+
+To give a couple of examples: the Getty Research Insti- 
+tute’s digital library (https://archive.org/details/get- 
+ty) has dedicated a sub-collection to the collection of 
+Photographic Incunabula, the very first photographic 
+books (1840-1870), and a second sub-collection to al- 
+chemy books; the Lazzerini Library in Prato, Italy, has 
+instead dedicated two sub-collections to local periodi- 
+cals (“L’Avvenire di Prato” and “La Fiamma”) and two 
+sub-collections to archival-library funds of individuals 
+(Aldo Petri archive and Tullio Ceri archive). 
+
+
+Both the Collection (i.e., your digital library) and the 
+sub-Collections (i.e., any sub-collections) offer great 
+potential, from the possibility of an overall presenta- 
+tion of your digital collections to the ability to search 
+(by metadata or textual) within them. Additionally, by 
+
+
+21 
+
+
+selecting About just below the collection presentation 
+text, you can monitor the number of views by users 
+from the opening date of your digital library, but also 
+year by year or month by month. The views of the last 
+30 days are also geolocated, allowing you to discover 
+the (often international) origin of your audience. 
+
+
+Post-production: Adding and editing metadata (and 
+files) via the Edit command 
+
+
+We have emphasized the importance of metada- 
+ta several times, both for archiving purposes and to 
+expand the search possibilities for your item by other 
+users. IA allows you to integrate, delete, modify, or 
+add metadata to your item at any time. The operation 
+is very simple: once you have opened your item, cli- 
+ck on Edit (symbol: a pen) from the left menu, found 
+just below the item title. You’ll then have two options: 
+click on | want to change the information (metadata) 
+about my item (symbol: a painter’s palette); we’ll co- 
+ver the other option (I want to change the files in my 
+item) later. This will open the Metadata editor of your 
+item, where you can freely add metadata, or replace 
+or delete existing ones. Take some time to explore the 
+complex metadata screen: each item is always accom- 
+panied by a brief explanation of its main characteri- 
+stics. At the bottom of the list, you can add additional 
+fields (and their values) by clicking on Add another 
+
+
+22 
+
+
+field. With this function, you can, for example, add a 
+second language, a second author, or a second Col- 
+lection to your item, if you haven’t already done so 
+during insertion. From the Metadata editor, you can 
+also “force” the date field since, during insertion, it 
+can only be filled with a numerical value: in all cases 
+of open or doubtful dates, it will be possible to en- 
+ter a date according to an absolutely free formula (ca. 
+1915, 1912-1915, ante 1915, 1820s, 15th century, 
+192?, etc.). The value entered will also be searchable, 
+so remember to always use your own guidelines to 
+ensure internal descriptive coherence on the page. 
+
+
+The Metadata editor is particularly valuable for the 
+periodic checks we recommend you perform among 
+the tags used for items in your Collection, through 
+the faceted navigation menu found on the left (fig. 4). 
+Checking them in their entirety, you may find spelling 
+errors or notice similar tags that you can standardize 
+in one way or another. In this case, by opening the 
+Metadata editor, you can directly intervene on the 
+tags, correcting, replacing, or deleting them. 
+
+
+From the Metadata editor, you can also change the di- 
+splay mode of your texts, which, for obvious reasons, 
+is by default in double-page mode (Two-page view). 
+Suppose, however, that the PDF you uploaded is a col- 
+lection of press clippings or images that also include 
+
+
+23 
+
+
+textual content that you want to make searchable 
+with full-text search. For purely aesthetic reasons, i.e., 
+the graphic presentation of your document, you can 
+decide in these cases on a default display of your item 
+in single-page mode (One-page view) or thumbnail 
+mode (Thumbnail view). To make this change, from 
+the Metadata editor, via the More options function we 
+have already encountered, add the bookreader-de- 
+faults field and the mode/1up value (for single-page 
+mode), or mode/thumb (for thumbnail mode). 
+
+
+IA keeps track of every modification, no matter how 
+minimal, of your item, from the moment of its uplo- 
+ad. This function is of interest, also considering that 
+each Collection can have multiple administrators, all 
+of equal level and therefore all authorized to insert, 
+delete, modify items, and their metadata. To recon- 
+struct the history of these changes when necessary, 
+just open the item and, in the URL, replace the term 
+details with history. 
+
+
+Now let’s look at the second option in the Edit menu, 
+| want to change the files in my item (symbol: a but- 
+terfly). This function comes in handy on several occa- 
+sions: for example, to add a cover image to an audio 
+document, or again to add (or remove) one or more 
+images to an existing gallery, or even to replace the 
+PDF of an edition uploaded for which you have notic- 
+
+
+24 
+
+
+ed some errors in the page sequence. 
+
+
+To add a file, select | want to change the files in my 
+item and then Add a file; select or drag the file in que- 
+stion, and finally click on Add files to existing item To 
+delete a file (e.g., an image from a gallery), after cli- 
+cking on | want to change the files in my item from 
+the file tree contained in the item (Tree Root), select 
+the file you want to delete, then right-click, click on 
+Delete and confirm the deletion. Finally, to replace a 
+file (e.g., a wrong PDF with a correct one), from | want 
+to change the files in my item delete the wrong file 
+with the procedure we just saw and replace it with 
+the correct one, using the Add a file function seen ear- 
+lier, with the caution that the correct file has the exact 
+same name as the deleted one, otherwise part of the 
+metadata will be lost. 
+
+
+25 
+
+
+Topics & Subjects 
+
+
+(_} Indians of North America 725 
+
+
+(_} Dakota Indians 345 
+(_} Smithsonian Institution 329 
+(_}) Postage stamps 322 
+(_} Art 252 
+{_} Stamp collecting 238 
+More > 
+
+
+Fig. 4 - The Faceted Navigation Menu of the Smithsonian Libraries 
+and Archives — Digital Library 
+
+
+An Item, Multiple Files 
+
+
+An item can be associated with multiple files. As men- 
+tioned earlier, [A does not impose limits on the num- 
+ber of files, but it’s suggested not to exceed 1000 files 
+per item to avoid potential upload issues, given the 
+lengthy upload times. IA supports hundreds of file 
+formats across various media types, so encountering 
+problems due to file type is extremely rare. The ability 
+to associate multiple files with an item is particularly 
+useful in various contexts. Let’s illustrate the four ca- 
+ses that are particularly common: 
+
+
+26 
+
+
+Image Gallery: |\A hosts over 5 million images, ran- 
+ging from personal photo galleries (similar to Flickr) 
+to reproductions of artworks from major internatio- 
+nal museums like the Metropolitan Museum of Art, 
+to space images from NASA. Images can be uploaded 
+and described individually or grouped together as an 
+item in the form of a gallery. To create a gallery, you'll 
+first need to prepare your images, naming them in a 
+numerical sequence corresponding to their intended 
+order. Consider whether to include a list of gallery 
+images with their respective captions in the Descrip- 
+tion field during upload, and later add hyperlinks to 
+individual images via the Edit function. For managing 
+and organizing image items, draw inspiration from IA’s 
+best practices. Through the Edit function, you can add 
+or delete images from your gallery at any time. 
+
+
+Audio: Even if an item consists of a single audio file, 
+it’s aesthetically pleasing to include a second file du- 
+ring upload, namely a cover image. This image could 
+be a photograph of the original media (e.g., a record, 
+cassette tape) or an image related to the content of 
+the audio track (e.g., a portrait of the author or the 
+occasion of the recording). It’s more common for 
+items to be associated with multiple audio files, such 
+as individual tracks from a digitized 78 RPM record 
+or individual segments from a conference. For uplo- 
+ading, simply select the group of files previously orde 
+
+
+27 
+
+
+red with a sequential number and, if necessary, a brief 
+caption (e.g., the track title, optionally preceded by 
+the author), to be used as the file name. Once the files 
+are uploaded, a playlist with all tracks and their dura- 
+tions will be automatically displayed. IA handles large 
+quantities of audio files from any device efficiently. 
+Test how mobile-friendly IA is by searching for items 
+like Gunsmoke single episodes directly from your 
+smartphone on the platform (or find it on Google): 
+you can quickly select one of the over 480 episodes of 
+this western radio show set in the 1870s, which aired 
+on CBS from 1952 to 1961. 
+
+
+Video: Similar to audio files, multiple video files can be 
+linked to a single item, following the same process as 
+for audio files. Having multiple video files collected in 
+a single item offers numerous advantages, such as do- 
+cumenting individual presentations at a conference, 
+serial videos, or assembling a series of videos related 
+by theme or occasion, depending on your objectives. 
+
+
+Publications: |n most cases, text items are associated 
+with single files. However, an exception is possible 
+for periodicals, which offer essentially three different 
+upload options: 
+
+
+- Upload each individual issue of the periodical as se- 
+parate items. For example, if you digitized a year’s 
+
+
+28 
+
+
+worth of a monthly magazine, you would have a total 
+of 12 items, each corresponding to a single issue, digi- 
+tized into a single PDF file. 
+
+
+- Upload all individual issues of the periodical as a sin- 
+gle item, linking all 12 PDF files to the item. In this 
+case, the upload process is similar to that seen pre- 
+viously for items with multiple files: after uploading, 
+an index of the uploaded issues, each individually se- 
+lectable and viewable, will automatically appear in the 
+item. The sequence and content of this index will be 
+determined by the names of the individual PDF files. 
+
+
+- Upload an entire year of the periodical as a single 
+item, using a single PDF file (as if it were a book). This 
+is usually a practical and quick choice, useful for, for 
+example, bound volumes of a periodical. 
+
+
+Searching on Internet Archive 
+
+
+Searching on IA is straightforward and intuitive. We'll 
+provide some tips to enhance your experience. You 
+can freely explore the platform, selecting the genre 
+that interests you the most (Web, Texts, Videos, Au- 
+dio, TV, Software, Images, Concerts, Collections), and 
+then delve deeper into the collections and sub-col- 
+lections that are presented to you. This is the easiest 
+way to sample the variety of content available on IA. 
+
+
+29 
+
+
+For actual searches, simply click on the search bar (Se- 
+arch), and various options for simple search will ap- 
+pear. By default, the search is set to search metadata 
+(Search metadata) — author, title, year, etc. — but for 
+specific searches on multimedia items, especially use- 
+ful for those dealing with contemporary subjects, con- 
+sider other options such as Search TV news captions 
+or Search radio transcripts. Full-text search (Search 
+text contents) is extremely useful, allowing you to se- 
+arch for a single term or combinations of terms within 
+one or more texts — whether across all texts available 
+on IA (using the general search bar), within a specific 
+Collection (from the search mask within that particu- 
+lar collection), or within a single text item, using the 
+search mask on that specific item’s page (symbol: a 
+magnifying glass). 
+
+
+To refine your free-text search, considering the vast 
+digital heritage available on IA, you can use classic bo- 
+olean operators, similar to those used on Google, also 
+supported by IA. For example, if you’re looking for an 
+item with both the metadata terms Marinetti and Fa- 
+scism you would enter Marinetti AND Fascism in the 
+search mask. If you’re searching for items that contain 
+the term Marinetti but not Fascism the search string 
+would be Marinetti AND NOT Fascism. Alternatively, 
+if you want to find items containing either the term 
+Marinetti or Futurism the search query would be Ma 
+
+
+30 
+
+
+rinetti OR Futurism. 
+
+
+In addition to AND, AND NOT, and OR, to search for an 
+exact combination of terms, whether two words or an 
+entire phrase, the exact search terms must be enclo- 
+sed in quotation marks, for both metadata and full- 
+text search. For example, to search for the opening 
+line of Dante’s Inferno, you would conduct a search 
+in Search text contents mode by entering “Nel mezzo 
+del cammin di nostra vita” in the query. Without using 
+quotation marks, you would get more results, but wi- 
+thout the precision you might desire for your search. 
+For example, if you enter “the black cat sleeps” only 
+those results with that exact sequence of words wi- 
+thin quotation marks will appear, such as the black cat 
+sleeps on the table; without quotation marks, you’ll 
+find other occurrences where the words are the same 
+but in a different order, such as the black cat sleeps on 
+the black sofa. 
+
+The ability for textual search allows you to explore a 
+book (or potentially all books on IA, i.e., tens of mil- 
+lions of texts!) in few seconds. Test it out yourself, for 
+example, by searching for the name of the protago- 
+nist, Dorothy, in the famous work The Wonderful Wi- 
+zard of Oz by Frank Baum, using the Search icon. 
+
+
+To further enhance your search, you can use paren- 
+theses, similar to a mathematical operation. For in- 
+
+
+31 
+
+
+stance, Futurism AND (Marinetti OR Russolo OR Car- 
+ra) is the search key for items containing the term Fu- 
+turism and, indifferently, Marinetti Russolo or Carra. 
+
+
+Given the vast amount of multimedia documentation 
+on IA, you can search for a term (or combination of 
+terms) with boolean operators we’ve just discussed, 
+combined with a specific media type (mediatype). 
+Suppose you want to find an item containing the term 
+Arthur Rimbaud that isn’t a text item, as one might 
+expect; in that case, the search query would be “Ar- 
+thur Rimbaud” AND NOT mediatype:texts. Or, if you 
+want to search for items related to the futurist musi- 
+cian Luigi Russolo that are only audio files, you would 
+write “Luigi Russolo” AND mediatype:audio. In both 
+cases, we’ve used the author’s name in quotation 
+marks to search for the exact name. 
+
+
+Regarding search, to learn more about IA searches 
+using boolean operators associated with metadata, 
+we recommend watching a video (Building Complex 
+Search Queries) by Alexis Rossi, one of IA’s pillars: 
+(https://archive.org/details/building-complex-sear- 
+ch-queries). 
+
+
+An extraordinary tool of Internet Archive is the 
+
+
+Wayback Machine (https://web.archive.org), essen- 
+tially a digital archive of the web that allows users to 
+
+
+32 
+
+
+browse through millions of websites, including those 
+that have long since closed. The Wayback Machine 
+was introduced in 2001 by Brewster Kahle and Bruce 
+Gilliat, after more than 10 billion web pages were sa- 
+ved over five years, starting in 1996. Currently, there 
+are over 866 billion web pages saved over time and 
+accessible on the platform, totaling over 70 petabytes 
+of data. 
+
+
+The potential of this tool is enormous, thanks in part 
+to the option for users to autonomously save any 
+website or web page, including social media posts, 
+ensuring the ability to “eternally” preserve them 
+with a permalink, a stable link over time. You can 
+do this directly from IA by going to the media menu 
+and selecting Web, then pasting the URL of the page 
+you want to save in Save page now. To give just one 
+example of the utility of this tool, with the onset of 
+the Russia-Ukraine conflict, IA and its Wayback Ma- 
+chine initiated a campaign to archive Ukrainian web- 
+sites (governmental, informational, and cultural sites) 
+through the SUCHO project (Saving Ukrainian Cultural 
+Heritage Online), given the concrete risk of server and 
+data center destruction, and thus the disappearance 
+of online content. 
+
+
+33 
+
+
+Work in Progress! 
+
+
+The aim of these few pages has been to introduce 
+you to an active use of IA, entrusting your curiosity 
+to explore the many other potentials of this extraor- 
+dinary platform. In closing, we can only reiterate that 
+IA is constantly evolving, with small and significant 
+improvements, modifications, and bug fixes occur- 
+ring daily. To visually understand this, simply use the 
+Wayback Machine: try it out yourself, and you’ll qui- 
+ckly realize the constant innovations, both graphical 
+and content-related, introduced over the years by IA. 
+
+
+Among the most interesting developments that IA is 
+working on is the adoption of the IIIF (International 
+Image Interoperability Framework) standard for its 
+viewer, a must for the most innovative digital libraries. 
+IIIF is based on applications that allow image descrip- 
+tion, structuring of digital repositories, and search 
+functionality, enabling advanced and interactive sear- 
+ch capabilities for users, such as the ability to use and 
+compare images from the web. 
+
+With IlIF, it’s possible, for example, to virtually recon- 
+struct dismembered manuscripts preserved in multi- 
+ple institutions. If you want to learn more about IIIF 
+developments in relation to Internet Archive, you can 
+find more information on the platform’s blog, Making 
+IIIF Official at the Internet Archive 
+
+
+34 
+
+
+(https://blog.archive.org/2023/09/18/making-iiif-of- 
+ficial-at-the-internet-archive). As we’ve mentioned, 
+everything is rapidly evolving on IA, so expect surpri- 
+ses even regarding this standard. 
+
+
+For those fortunate enough to know a computer pro- 
+grammer, IA provides a Python library that allows for 
+customization and enhancement of the platform’s 
+capabilities: almost all of IA’s functionalities can be 
+used and scripted from the command line or throu- 
+gh Python scripts (https://archive.org/services/docs/ 
+api/internetarchive); furthermore, IA provides a set 
+of APIs to interact with their services (https://archive. 
+org/services/docs/api). 
+
+
+In conclusion, Internet Archive is a universal archive of 
+knowledge in progress for almost 30 years, to which 
+everyone can contribute, whether financially through 
+occasional donations (because servers, technical per- 
+sonnel, and conservation projects naturally incur co- 
+sts), or primarily by enriching it with content. Internet 
+Archive, along with a few other initiatives like Wikipe- 
+dia, has shown that another internet is possible, and 
+to make this clearer to everyone, it has proposed a 
+journey into a dark digital future where all knowled- 
+ge is paid for, copyright is extended by another 200 
+years, content restrictions vary according to the per- 
+sonal data provided, and limitations are based on the 
+
+
+35 
+
+
+political area of reference. This journey, despite 
+its premise, is quite entertaining and is called the 
+Wayforward Machine, https://wayforward.archive. 
+org, the alter-ego of the Wayback Machine: we invite 
+you to explore it by inserting a link of your choice, di- 
+scovering how bleak the future of access to knowled- 
+ge could be, and what can be done to prevent it. 
+
+
+36 
+
+
+APPENDIX 
+
+
+Internet Archive and software emulators 
+
+
+By Emiliano Russo — Museo Interattivo di Archeologia 
+Informatica (MIAI) / Museo dell’Informatica Funzio- 
+nante (MusIF) — https://miai.musif.eu 
+
+
+In 2014, the Internet Archive launched The Internet 
+Arcade project, a huge collection of video games 
+produced in the golden age of arcades, between the 
+late 1970s and the mid-1990s. The titles were made 
+available by IA in streaming version, that is, playable 
+directly on the web pages related to each published 
+object. The initiative, welcomed by the enthusiasm of 
+old and new gamers, was only the first of a series of 
+thematic collections dedicated to the rediscovery of 
+games and more generally historical software: it was 
+followed by other “Software libraries” with thousands 
+of programs created for hardware/software platforms 
+now extinct. 
+
+
+From Pac-Man to the first versions of Word, these 
+works of human ingenuity present peculiar problems 
+from an archival point of view: they are “dynamic” 
+objects - that is, they require user interaction to be 
+truly enjoyed and understood - and were designed for 
+a combination of hardware devices and software tools 
+that have not been in production for a long time. A 
+copy of the original executable of Doom, the seminal 
+
+
+38 
+
+
+video game from Id Software, cannot “run” like any 
+other program on your computer, because your com- 
+puter works in a way too different from that of a PC 
+from 1993. 
+
+
+To overcome this inconvenience, the established 
+practice in computer science is to resort to the use of 
+an emulator, a particular program that “pretends” to 
+be a hardware and/or software system different from 
+the one on which it is executed, creating a virtual en- 
+vironment in which the programs written for the emu- 
+lated platform can be executed unchanged. 
+
+With an emulator, for example, it is possible to run the 
+original version of Super Mario Bros in a window of 
+our desktop: the emulator will take care of “trick” the 
+video game by presenting it with all the resources it 
+expects to find within the system for which it was de- 
+signed, in this case the NES, one of the very first game 
+consoles produced by Nintendo. The input periphe- 
+rals (original controllers/joysticks) will be combined 
+by the emulator with those actually available on the 
+PC (latest generation keyboard/controllers). 
+
+
+IA has integrated emulation services into its web por- 
+tal, which are therefore immediately available to the 
+end user: by consulting the page of an item that uses 
+these services, an interactive box will be found in the 
+preview area, activating which will allow you to run 
+
+
+39 
+
+
+the software and interact with it. 
+
+
+For example, at the URL https://archive.org/details/ 
+ra-dio it is possible to consult/use the original version 
+of Ra-Dio by Lorenzo Miglioli, the first example of a 
+hypertext book published in Italy in 1993, in its paper 
+part (the scans of the book pages) and in its interacti- 
+ve part (a program distributed on floppy disk). 
+
+
+How does the activation of Al emulation services 
+work? 
+
+
+In the following lines we will try to provide a small in- 
+troductory guide to publish a “software object” from 
+the past. 
+
+
+Let’s say you have an old electronic publication in your 
+hands - a fanzine for example - that in the era before 
+the spread of the Internet was typically distributed on 
+floppy disks. The first step in this computer archaeo- 
+logy operation consists, obviously, in transferring the 
+contents of the diskette to a modern PC. 
+
+
+This operation can be complicated by factors such as 
+the format (physical and “logical”) of the medium and 
+its state of conservation. The era of the diskette was 
+marked by a proliferation of incompatible formats; 
+furthermore, the poor reliability of this type of sup- 
+
+
+40 
+
+
+port has always been well known, and the passage of 
+time has only made the situation worse. 
+
+
+However, these problems are beyond the scope of 
+this guide, and would deserve a long and in-depth te- 
+chnical discussion. So, here we will assume that we 
+are in the most fortunate situation: that we are in pos- 
+session of a 3.5-inch diskette, intact, functioning and 
+initialized to the PC / MS-DOS format, the most wide- 
+spread standard at the time of the personal compu- 
+ter boom, and still supported by the main operating 
+systems in circulation. 
+
+
+To copy data from this particular medium you can use 
+a USB floppy drive, a device that is no longer wide- 
+spread but is still in production, easily available for a 
+few euros. Most operating systems automatically re- 
+cognize the drive and allow you to use it like any other 
+storage device. 
+
+
+The first thing to do before inserting the disk into the 
+drive is to set it to read only to avoid accidental alte- 
+ration of the content. 3.5” floppy disks have a mode, 
+similar to the one found on modern devices such as 
+SD cards, and which can be activated with a physical 
+mechanism located in a corner of the medium: by mo- 
+ving the appropriate slider to the “open hole” posi- 
+tion, the disk is in read-only mode. 
+
+
+41 
+
+
+When you insert the disk into the drive, the operating 
+system should activate the same process that comes 
+into play when you insert, for example, a USB stick. If 
+this does not happen or you are prompted to format 
+the disk, something is wrong: it is possible that the 
+disk is damaged or that it is not actually in PC / MS- 
+DOS format. Conversely, if the operation was succes- 
+sful, we will be able to open a file manager window 
+and explore the contents of the floppy. At this point, 
+we can copy the data to the PC in a new folder created 
+specifically for this purpose. 
+
+
+Taking a look at the contents, it should be easy to 
+identify among the documents in the folder a main 
+executable file (the extension should be .EXE, or .BAT, 
+or .COM): take note of its name because it will be use- 
+ful later. 
+
+
+Before adding content to the IA portal, it is a good 
+idea to check that the electronic publication is “sel- 
+f-consistent”, that is, that it includes both the data 
+and some software (there were dozens of them), de- 
+signed to manage the hyperlink between the various 
+“pages” of the magazine and to provide the user with 
+a point-and-click interface for use, and that therefore 
+the executables contained in the diskette do not re- 
+quire installation and do not presuppose the presence 
+of other programs. At this stage you can also confirm 
+
+
+42 
+
+
+that the executable identified from its name actually 
+corresponds to the one that starts the fanzine mana- 
+gement interface. 
+
+
+To do this, you can use a PC/MS-DOS emulator direct- 
+ly on your PC. The program we recommend using is 
+called dosbox-x, a free tool that can be found for free 
+and is based on the dosbox program, used on IA. To 
+familiarize yourself with this tool, we refer you to the 
+project documentation, very complete and well writ- 
+ten, and to the numerous “survival” guides for the 
+MS-DOS environment available online. 
+
+
+Once you have made sure that everything is working 
+correctly, you can proceed to upload the data. Uplo- 
+ading this data to IA follows the same procedure as 
+any other archive, but to have the preview supported 
+by the emulation services, you need to follow some 
+precautions and specify three more parameters in the 
+metadata editor. 
+
+
+First of all, it is necessary to “package” the contents 
+of the diskette, including all the documents present 
+in the archive/folder in a single ZIP file. This will be 
+the main content to upload to archive.org, together 
+with any other documents such as scans of the cover 
+graphics or other. 
+
+As usual in the publication procedure, immediately 
+
+
+43 
+
+
+after uploading the files, you will have to enter the 
+metadata, as described above. The metadata that in- 
+terest us to activate the emulated previews are at the 
+bottom of the form. In the More options / Add addi- 
+tional metadata... section we will have to add three 
+parameters: Emulator, Emulator_ext and Emulator_ 
+start. 
+
+
+By specifying this information in the field/value for- 
+mat, we will specify respectively the name of the 
+emulator that we want to activate, the format of the 
+file that contains data and programs to be “fed” to 
+the emulator and the name of the program to be exe- 
+cuted immediately after starting the emulator. In the 
+case of the example we are dealing with, the three 
+field/value pairs will be (fig. 5): 
+
+
+Emulator dosbox < the emulation service to be activated 
+Emulator_ext ZIP < the format in which we have “packaged” the data 
+Emulator_start ADE4.EXE < the name of the main executable to be started 
+
+
+At the end of the publication procedure, and after ha- 
+ving waited a little while as in the cases seen previou- 
+sly, we should be able to use the programs in emula- 
+ted mode on the archive web page. 
+
+
+In my experience, it may happen that — probably due 
+to some small bug in the portal, which could be solved 
+by the time you read this guide — the three additional 
+
+
+44 
+
+
+parameters mentioned above are not received by the 
+system. To solve this potential problem, it will be suf- 
+ficient to open the metadata editor after publication 
+and add the field/value pairs again. 
+
+
+Click on any field below to edit it 
+
+
+Page Title* adenoidi 11 ¥ 
+
+
+nm 
+
+
+Page URL* _https://archive.org/details/ 
+
+
+adenoidi-n11 
+
+
+Description * 
+
+Subject Tags * 
+
+Creator 
+
+Date 
+
+Collection* —- - - Pick a collection - - - 
+
+Test Item No * 
+Language 
+
+License 
+
+
+More Options Add additional metadata 
+
+
+emulator : | dosbox | (remove) 
+|emulator_ext ’ | zIP (remove) 
+|emulator_start | ADE4.EXE (remove) 
+
+
+Fig. 5 - Example of metadata to enter to use software emulators 
+
+
+45 
+
+
+If something goes wrong in the operation, after a 
+while your item will automatically end up in a very 
+particular collection, Non-Working Software Contri- 
+butions, a sort of limbo where software uploaded to 
+IA but not working are temporarily deposited. If the 
+person who uploaded them does not find a solution 
+to the problem, after a few these non-working items 
+are deleted. 
+
+
+46 
+
+
+The author thanks Giovanni Damiola (Internet Archive, San Fran- 
+cisco), Chiara Storti (Biblioteca Nazionale Centrale di Firenze, Flo- 
+rence) and Emiliano Russo (Museo Interattivo di Archeologia In- 
+formatica - MIAI) / Museo dell’Informatica Funzionante - MusIF) 
+for their invaluable assistance. 
+
+
+Published under a Creative Commons Attribution-NonCom- 
+mercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). 
+
+
+Internet Archive (www.archive.org) is a non-profit, free and 
+open digital library, founded in 1996 with the aim of provi- 
+ding universal access to knowledge. On the platform, you 
+can freely access millions of books, magazines, films, audio, 
+software, and even web pages, including those of sites that 
+no longer exist. Anyone, from major institutions to indivi- 
+dual users, can create their own digital library on Internet 
+Archive, sharing their digitized collections with a growing in- 
+ternational audience. This guide provides a simple but detai- 
+led explanation of how to create your own collection on the 
+world’s most forward-thinking digital library and manage it 
+effectively through careful use of metadata. In the appen- 
+dix, an easy guide to using software emulators on Internet 
+Archive. 
+
+
+English edition with a guide to using software emula- 
+tors in the appendix. 
+
+
+almeno 
+
+
+Bunt 
+ile 
+
+
+‘STR apc & 
+
+
+ad 
+
+
+MILLELIREPERSEMPRE 
+
+
