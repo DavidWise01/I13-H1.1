@@ -170,7 +170,7 @@ jobs:
           grep -q "s5.src = 'stages/stage14-4-corpus-spatial.js'" docs/index.html
           grep -q "s4.src = 'stages/stage14-corpus-navigator.js'" docs/index.html
           test "$(grep -o 'src=\"stages/' docs/index.html | wc -l)" -eq 7
-          grep -q "does not own traversal" docs/stages/stage14-5-corpus-local-mesh.js
+          grep -q "Traversal and edge authority remain" docs/stages/stage14-5-corpus-local-mesh.js
           grep -q "preview only" docs/stages/stage14-5-corpus-local-mesh.js
           grep -q "EDGE_DOMAIN = 0x01" docs/stages/stage14-5-corpus-local-mesh.js
           grep -q "EDGE_WORLD = 0x02" docs/stages/stage14-5-corpus-local-mesh.js
