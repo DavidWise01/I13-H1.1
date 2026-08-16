@@ -1,0 +1,72 @@
+name: Stage 13.1 Glass Boundary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/exploded-view.js'
+      - 'docs/STAGE13.1-GLASS-BOUNDARY.md'
+      - 'docs/stages/stage13-h10-freeze.js'
+      - '.github/workflows/stage13-1-glass-boundary.yml'
+  pull_request:
+    paths:
+      - 'docs/exploded-view.js'
+      - 'docs/STAGE13.1-GLASS-BOUNDARY.md'
+      - 'docs/stages/stage13-h10-freeze.js'
+      - '.github/workflows/stage13-1-glass-boundary.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  glass-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check docs/exploded-view.js
+          node --check docs/stages/stage13-h10-freeze.js
+
+      - name: Check Stage 13.1 component contract
+        run: |
+          grep -q "version: '0.3.1'" docs/exploded-view.js
+          grep -q "sectionFooterHeight: 56" docs/exploded-view.js
+          grep -q "data-layout-version': '13.1'" docs/exploded-view.js
+          grep -q 'ev-glass-shell' docs/exploded-view.js
+          grep -q 'ev-glass-section' docs/exploded-view.js
+          grep -q 'ev-section-footer' docs/exploded-view.js
+          grep -q 'cycleSectionPage' docs/exploded-view.js
+          grep -q 'cycleMachinePage' docs/exploded-view.js
+          grep -q "layout: '13.1-glass-boundary'" docs/exploded-view.js
+
+      - name: Execute exploded-view self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/exploded-view.js', 'utf8');
+          const sandbox = {
+            window: { dispatchEvent() {} },
+            document: { getElementById() { return null; } },
+            console,
+            Object, Math, JSON, Error, Number, Array, Map, Set, String,
+            CustomEvent: function CustomEvent(type, init) { this.type = type; this.detail = init?.detail; }
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          assert.strictEqual(sandbox.window.I13Exploded.version, '0.3.1');
+          const result = sandbox.window.I13Exploded.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          const checks = Object.fromEntries(result.checks.map(c => [c.name, c.pass]));
+          assert.strictEqual(checks['eight rows page into two fixed-height pages'], true);
+          assert.strictEqual(checks['footer rail is reserved'], true);
+          NODE
+
+      - name: Prove Stage 13 boundary lands in reserved rail
+        run: |
+          grep -q 'const gy = y + h - 56;' docs/stages/stage13-h10-freeze.js
+          grep -q 'fixed 56 px footer rail' docs/STAGE13.1-GLASS-BOUNDARY.md
+          grep -q 'H1.0 stays frozen' docs/STAGE13.1-GLASS-BOUNDARY.md
