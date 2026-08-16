@@ -1,0 +1,15 @@
+Pulse v0.1: 7/7 PASS
+PASS  threshold crossing
+      130 > 128 → 260
+PASS  exact boundary
+      128 is not > 128 → none
+PASS  below boundary
+      110 → none
+PASS  triple-period delimiter
+      ... splits 2 statements
+PASS  double-period reserved
+      .. rejected/reserved
+PASS  hard delimiter required
+      missing ... rejected
+PASS  deterministic execution
+      identical result/trace

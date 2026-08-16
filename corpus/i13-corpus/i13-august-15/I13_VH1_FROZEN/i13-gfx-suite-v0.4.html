@@ -1,0 +1,1142 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>I-13.GFX Suite v0.4.1</title>
+<style>
+:root{--bg:#050d14;--p:#091722;--p2:#0d1e2a;--line:#1b3445;--line2:#28546d;--ink:#edf6fa;--mut:#7f9bab;--cyan:#63d9ff;--green:#5de0aa;--amber:#efc56d;--red:#ff858d;--shadow:0 22px 65px rgba(0,0,0,.34)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 14% -12%,rgba(36,145,201,.14),transparent 34rem),radial-gradient(circle at 92% 3%,rgba(51,205,166,.08),transparent 28rem),var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+button,textarea{font:inherit}.app{display:grid;grid-template-columns:228px minmax(0,1fr);min-height:100vh}aside{border-right:1px solid rgba(84,130,153,.19);padding:16px 12px;background:rgba(4,12,19,.72);position:sticky;top:0;height:100vh;display:flex;flex-direction:column}.brand{display:flex;gap:10px;align-items:center;padding:4px 7px 17px}.logo{width:38px;height:38px;border:1px solid #315b72;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#143347,#071821);color:var(--cyan);font:750 12px ui-monospace}.brand h1{font-size:13px;margin:0}.brand p{font-size:9px;color:var(--mut);margin:3px 0 0}.navLabel{font-size:8px;color:#5f7d8f;text-transform:uppercase;letter-spacing:.15em;margin:9px 8px 6px}.nav{display:flex;flex-direction:column;gap:3px}.nav button{background:transparent;border:1px solid transparent;color:#8da7b5;border-radius:9px;padding:9px 10px;text-align:left;font-size:10px;cursor:pointer}.nav button.active{background:#0d2330;border-color:#234a60;color:#e8f5fa}.nav button:hover{background:#0b1c27}.foot{margin-top:auto;border-top:1px solid rgba(57,94,114,.22);padding:12px 8px;font-size:9px;color:var(--mut)}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--amber);margin-right:6px}.dot.ok{background:var(--green)}
+main{min-width:0}header{height:62px;border-bottom:1px solid rgba(82,125,147,.18);display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(5,13,20,.88);backdrop-filter:blur(14px);position:sticky;top:0;z-index:5}.crumb{font-size:11px;font-weight:680}.sub{font-size:8.5px;color:var(--mut);margin-top:3px}.actions{display:flex;gap:8px;align-items:center}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 8px;font-size:8.5px;color:var(--mut)}.btn{border:1px solid #2b617d;border-radius:9px;background:linear-gradient(180deg,#164762,#103448);color:#e6f7ff;padding:8px 11px;font-size:9.5px;font-weight:680;cursor:pointer}
+.view{display:none;padding:15px 16px 22px}.view.active{display:block}.grid{display:grid;grid-template-columns:minmax(400px,.9fr) minmax(520px,1.1fr);gap:12px}.card{border:1px solid var(--line);border-radius:14px;background:linear-gradient(155deg,rgba(13,29,41,.96),rgba(6,17,25,.97));overflow:hidden;box-shadow:var(--shadow)}.head{padding:11px 13px;border-bottom:1px solid rgba(72,112,134,.2);display:flex;align-items:center;justify-content:space-between;gap:10px}.title{font-size:10.5px;font-weight:680}.desc{font-size:8.5px;color:var(--mut);margin-top:3px}.badge{font-size:8px;padding:4px 7px;border:1px solid var(--line);border-radius:999px;color:var(--mut)}.editorWrap{display:grid;grid-template-columns:42px 1fr;height:470px;background:#041018}.gutter{padding:11px 7px 11px 0;text-align:right;color:#3c6175;border-right:1px solid #163140;font:10px/1.55 ui-monospace;user-select:none;overflow:hidden}textarea{border:0;outline:0;resize:none;background:transparent;color:#cfe5ef;padding:11px 13px;font:10px/1.55 ui-monospace,Consolas,monospace;white-space:pre;overflow:auto}
+.viewportWrap{position:relative;height:560px;background:#02070b;overflow:hidden}canvas{width:100%;height:100%;display:block}.hud{position:absolute;inset:12px 12px auto 12px;display:flex;justify-content:space-between;pointer-events:none}.hudGroup{display:flex;gap:7px}.hudChip{background:rgba(5,14,21,.7);border:1px solid rgba(83,133,159,.3);border-radius:8px;padding:6px 8px;font-size:8px;color:#9bb4c1;backdrop-filter:blur(8px)}.hudChip strong{color:#e7f5fb}
+.engineMark{position:absolute;right:12px;bottom:11px;font:8px ui-monospace;color:#5c7d8d;background:rgba(4,11,17,.6);padding:5px 7px;border-radius:6px}
+.mouseHelp{position:absolute;left:12px;bottom:11px;display:flex;gap:5px;flex-wrap:wrap;max-width:52%;pointer-events:none}
+.mouseHelp span{font:7.5px ui-monospace;color:#7897a7;background:rgba(4,11,17,.68);border:1px solid rgba(70,112,134,.28);padding:4px 6px;border-radius:6px;backdrop-filter:blur(7px)}
+.subagentPanel{position:absolute;right:12px;top:52px;width:220px;border:1px solid rgba(83,151,181,.38);border-radius:11px;background:rgba(5,16,23,.82);backdrop-filter:blur(12px);box-shadow:0 16px 40px rgba(0,0,0,.3);overflow:hidden;z-index:4}
+.subagentHead{display:flex;align-items:center;justify-content:space-between;padding:8px 9px;border-bottom:1px solid rgba(75,118,139,.23)}
+.subagentName{font:650 9px ui-monospace;color:#dff6ff}.subagentState{font:7.5px ui-monospace;color:var(--green);border:1px solid #285f49;background:#092018;padding:3px 5px;border-radius:999px}
+.subagentBody{padding:8px 9px}.subagentRow{display:grid;grid-template-columns:68px 1fr;gap:7px;padding:4px 0;font:7.8px ui-monospace;border-top:1px solid rgba(52,83,101,.14)}.subagentRow:first-child{border-top:0}.subagentRow span:first-child{color:#638295}.subagentRow b{color:#cce2ec;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.subagentActions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}.subagentActions button{border:1px solid #244b60;background:#0b2130;color:#bcd6e2;border-radius:7px;padding:6px 5px;font:7.7px ui-monospace;cursor:pointer}.subagentActions button:hover{border-color:#3a7998;background:#0e293a}
+.selectionBadge{position:absolute;left:12px;top:52px;background:rgba(5,16,23,.78);border:1px solid rgba(84,139,163,.32);padding:6px 8px;border-radius:8px;font:8px ui-monospace;color:#9db8c6;pointer-events:none}
+.selectionBadge strong{color:#eff9fc}
+
+.pipeline{padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.stage{padding:8px;border:1px solid var(--line);border-radius:9px;background:#071722;min-height:62px}.sk{font-size:7px;color:#5f7f91;text-transform:uppercase;letter-spacing:.1em}.sv{font-size:10.5px;font-weight:690;margin-top:6px}.sd{font-size:7.5px;color:var(--mut);margin-top:3px}
+.sceneGrid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px}.sceneList{padding:10px}.entity{border:1px solid var(--line);border-radius:10px;background:#071722;padding:10px;margin-bottom:7px}.entityTop{display:flex;justify-content:space-between}.entityName{font-size:10px;font-weight:680}.entityType{font-size:7.5px;color:var(--cyan)}.entityMeta{font:8px/1.5 ui-monospace;color:var(--mut);margin-top:7px}
+.console{padding:11px;height:300px;overflow:auto;background:#051018}pre{margin:0;white-space:pre-wrap;word-break:break-word;color:#b8ccd7;font:9px/1.5 ui-monospace,Consolas,monospace}.cmdTable{width:100%;border-collapse:collapse;font-size:8.5px}.cmdTable th{color:#628294;text-align:left;padding:7px;border-bottom:1px solid var(--line)}.cmdTable td{padding:7px;border-bottom:1px solid rgba(56,90,109,.18)}.metricGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px}.metric{border:1px solid var(--line);border-radius:10px;background:#071722;padding:10px}.mk{font-size:7.5px;color:var(--mut);text-transform:uppercase}.mv{font-size:20px;font-weight:720;margin-top:4px}
+.ringWrap{display:grid;place-items:center;height:430px}.rings{position:relative;width:390px;height:390px}.ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid #244a5d;border-radius:50%}.r1{width:370px;height:370px}.r2{width:300px;height:300px}.r3{width:230px;height:230px}.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:125px;height:125px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#19506b,#091d28 70%);border:1px solid #347b9b;display:grid;place-items:center;text-align:center}.core strong{color:var(--cyan);font-size:20px}.orb{position:absolute;font-size:8px;color:var(--green);border:1px solid #28644c;border-radius:999px;padding:5px 7px;background:#081b17}.o1{left:20px;top:80px}.o2{right:14px;top:105px}.o3{left:7px;bottom:105px}.o4{right:28px;bottom:55px}.o5{left:145px;top:15px}.o6{left:145px;bottom:15px}.testGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;padding:10px}.testCard{border:1px solid var(--line);border-radius:10px;background:#071722;padding:10px}.pass{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}
+@media(max-width:1100px){.app{grid-template-columns:1fr}aside{display:none}.grid,.sceneGrid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="app"><aside>
+<div class="brand"><div class="logo">13</div><div><h1>I-13.GFX Suite</h1><p>GPU Runtime · v0.4.1</p></div></div>
+<div class="navLabel">Suite</div><div class="nav">
+<button class="active" data-v="workbench">01 · Workbench + Viewport</button>
+<button data-v="viewport">02 · Full Viewport</button>
+<button data-v="scene">03 · Scene / Commands</button>
+<button data-v="vm">04 · VM / Frames</button>
+<button data-v="cortex">05 · Cortex</button>
+<button data-v="tests">06 · Test Lab</button>
+</div>
+<div class="foot"><div><span id="dot" class="dot"></span><span id="runtimeState">starting runtime</span></div><div style="margin-top:6px"><span id="wasmSize">—</span> · zero WASM imports</div></div>
+</aside>
+<main><header><div><div id="crumb" class="crumb">Workbench + Viewport</div><div id="sub" class="sub">I-13 → WASM → GFX buffer → GPU</div></div><div class="actions"><span id="engineBadge" class="chip">GPU probing</span><span id="fpsBadge" class="chip">0 fps</span><button id="runBtn" class="btn">Compile / Run</button></div></header>
+
+<section id="workbench" class="view active"><div class="grid">
+<div class="card"><div class="head"><div><div class="title">I-13 Scene Program</div><div class="desc">The source below emits the scene every animation frame from inside the WASM VM.</div></div><span id="compileBadge" class="badge">sample</span></div><div class="editorWrap"><div id="gutter" class="gutter"></div><textarea id="editor" spellcheck="false"></textarea></div><div class="pipeline">
+<div class="stage"><div class="sk">Read</div><div id="pRead" class="sv">—</div><div id="dRead" class="sd">source</div></div>
+<div class="stage"><div class="sk">Lower</div><div id="pLower" class="sv">—</div><div id="dLower" class="sd">IVM</div></div>
+<div class="stage"><div class="sk">Validate</div><div id="pVal" class="sv">—</div><div id="dVal" class="sd">regions</div></div>
+<div class="stage"><div class="sk">GFX</div><div id="pGfx" class="sv">—</div><div id="dGfx" class="sd">commands</div></div>
+<div class="stage"><div class="sk">GPU</div><div id="pGpu" class="sv">—</div><div id="dGpu" class="sd">renderer</div></div>
+</div></div>
+<div class="card"><div class="head"><div><div class="title">Live GPU Viewport</div><div class="desc">WebGPU primary · WebGL2 fallback · standard mouse scene manipulation.</div></div><span id="sceneBadge" class="badge">0 entities</span></div><div class="viewportWrap"><canvas id="canvas"></canvas><div class="hud"><div class="hudGroup"><div class="hudChip">entities <strong id="hudEntities">0</strong></div><div class="hudChip">commands <strong id="hudCommands">0</strong></div><div class="hudChip">VM <strong id="hudSteps">0</strong> steps</div></div><div class="hudChip">time <strong id="hudTime">0.00</strong></div></div><div id="selectionBadge" class="selectionBadge">selected <strong>none</strong></div><div id="subagentPanel" class="subagentPanel"><div class="subagentHead"><span class="subagentName">c[subagent()]</span><span id="saState" class="subagentState">OBSERVE</span></div><div class="subagentBody"><div class="subagentRow"><span>selected</span><b id="saSelected">none</b></div><div class="subagentRow"><span>gesture</span><b id="saGesture">idle</b></div><div class="subagentRow"><span>camera</span><b id="saCamera">program</b></div><div class="subagentRow"><span>override</span><b id="saOverride">0 edits</b></div><div class="subagentRow"><span>last</span><b id="saLast">watching scene</b></div><div class="subagentActions"><button id="saFocus">focus</button><button id="saSnap">snap .25</button><button id="saReset">reset object</button><button id="saCameraReset">reset camera</button></div></div></div><div class="mouseHelp"><span>LMB select / drag</span><span>RMB orbit</span><span>MMB / Shift+LMB pan</span><span>wheel zoom</span><span>double-click focus</span></div><div id="engineMark" class="engineMark">GPU pending</div></div></div>
+</div></section>
+
+<section id="viewport" class="view"><div class="card"><div class="head"><div><div class="title">Viewport</div><div class="desc">Full-size live render surface · the same mouse controls and shared edit state.</div></div><span id="fullEngine" class="badge">—</span></div><div class="viewportWrap" style="height:calc(100vh - 120px)"><canvas id="canvas2"></canvas><div class="mouseHelp"><span>LMB select / drag</span><span>RMB orbit</span><span>MMB / Shift+LMB pan</span><span>wheel zoom</span></div><div class="engineMark">I13.GFX / shared scene</div></div></div></section>
+
+<section id="scene" class="view"><div class="sceneGrid"><div class="card"><div class="head"><div><div class="title">Scene Graph</div><div class="desc">Objects reconstructed from native GFX commands.</div></div><span id="sceneCount" class="badge">0</span></div><div id="sceneList" class="sceneList"></div></div><div class="card"><div class="head"><div><div class="title">Native GFX Command Buffer</div><div class="desc">32-byte records written by WASM and read directly from linear memory.</div></div><span id="cmdCount" class="badge">0 cmds</span></div><div style="max-height:640px;overflow:auto"><table class="cmdTable"><thead><tr><th>#</th><th>kind</th><th>id</th><th>a</th><th>b</th><th>c</th><th>d</th></tr></thead><tbody id="cmdBody"></tbody></table></div></div></div></section>
+
+<section id="vm" class="view"><div class="card"><div class="head"><div><div class="title">Native Runtime Pulse</div><div class="desc">WASM validator, VM, call frames, and GFX calls.</div></div><span id="vmBadge" class="badge">—</span></div><div class="metricGrid"><div class="metric"><div class="mk">Instructions</div><div id="mOps" class="mv">0</div></div><div class="metric"><div class="mk">Regions</div><div id="mRegions" class="mv">0</div></div><div class="metric"><div class="mk">Calls</div><div id="mCalls" class="mv">0</div></div><div class="metric"><div class="mk">Frame depth</div><div id="mDepth" class="mv">0</div></div><div class="metric"><div class="mk">Steps</div><div id="mSteps" class="mv">0</div></div><div class="metric"><div class="mk">Peak stack</div><div id="mPeak" class="mv">0</div></div><div class="metric"><div class="mk">GFX cmds</div><div id="mCmds" class="mv">0</div></div><div class="metric"><div class="mk">WASM bytes</div><div id="mBytes" class="mv">10188</div></div></div><div class="console"><pre id="vmConsole">—</pre></div></div></section>
+
+<section id="cortex" class="view"><div class="grid"><div class="card"><div class="head"><div><div class="title">Cortex Field</div><div class="desc">Native execution remains behind the same deterministic gate.</div></div><span id="maskBadge" class="badge">0x00</span></div><div class="ringWrap"><div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"><div><strong id="cxVerdict">IDLE</strong><div style="font-size:8px;color:#7898a8">CORTEX</div></div></div><span class="orb o1">VETO</span><span class="orb o2">DEPTH</span><span class="orb o3">CAPABILITY</span><span class="orb o4">ROUNDTRIP</span><span class="orb o5">ADDRESS</span><span class="orb o6">IDEMPOTENCE</span></div></div></div><div class="card"><div class="head"><div><div class="title">Graphics Capability Boundary</div><div class="desc">The GFX builtins live inside WASM. The renderer receives commands, not authority over I-13 state.</div></div></div><div class="console" style="height:430px"><pre id="cxInfo">—</pre></div></div></div></section>
+
+<section id="tests" class="view"><div class="card"><div class="head"><div><div class="title">Test Lab</div><div class="desc">Native VM regression plus GFX command-plane checks.</div></div><button id="testBtn" class="btn">Run Browser Checks</button></div><div id="testGrid" class="testGrid"></div></div></section>
+</main></div>
+<script>
+const IReader = (() => {
+  const VERSION = "i-reader-v0.2";
+  const PROTOCOL = "i13-ingress/0.2";
+  const KEYWORDS = new Set(["def","I","if","else"]);
+  const TWO = new Set(["<-","->","<=",">=","==","!="]);
+  const ONE = new Set(["+","-","*","/","<",">","(",")","{","}",",","."]);
+
+  class ReadError extends Error {
+    constructor(message, line, col, offset) {
+      super(message);
+      this.name = "ReadError";
+      this.line = line;
+      this.col = col;
+      this.offset = offset;
+    }
+  }
+
+  class ParseError extends Error {
+    constructor(message, token) {
+      super(message + (token ? ` at ${token.line}:${token.col}` : ""));
+      this.name = "ParseError";
+      this.token = token || null;
+    }
+  }
+
+  function utf8OffsetMap(source) {
+    const map = new Array(source.length + 1);
+    let bytes = 0;
+    map[0] = 0;
+    for (let i=0;i<source.length;i++) {
+      const cp = source.codePointAt(i);
+      let n;
+      if (cp <= 0x7f) n=1;
+      else if (cp <= 0x7ff) n=2;
+      else if (cp <= 0xffff) n=3;
+      else n=4;
+      bytes += n;
+      map[i+1] = bytes;
+      if (cp > 0xffff) {
+        i++;
+        map[i+1] = bytes;
+      }
+    }
+    return map;
+  }
+
+  function lex(source) {
+    const tokens = [];
+    const byteMap = utf8OffsetMap(source);
+    let i = 0, line = 1, col = 1;
+    const n = source.length;
+
+    const adv = () => {
+      const c = source[i++];
+      if (c === "\n") { line++; col = 1; } else col++;
+      return c;
+    };
+
+    const add = (kind, lexeme, start, end, sl, sc) => {
+      const idx = tokens.length;
+      tokens.push({
+        index:idx, kind, lexeme,
+        start, end,
+        byte_start:byteMap[start],
+        byte_end:byteMap[end],
+        line:sl, col:sc,
+        end_line:sl,
+        end_col:sc + lexeme.length
+      });
+    };
+
+    while (i < n) {
+      const c = source[i];
+
+      if (c === " " || c === "\t" || c === "\r" || c === "\n") {
+        adv(); continue;
+      }
+
+      if (c === "/" && source[i+1] === "/") {
+        while (i < n && source[i] !== "\n") adv();
+        continue;
+      }
+
+      const start = i, sl = line, sc = col;
+      const two = source.slice(i, i+2);
+
+      if (TWO.has(two)) {
+        adv(); adv();
+        add(two === "<-" ? "BIND" : two === "->" ? "RETURN" : "OP",
+            two, start, i, sl, sc);
+        continue;
+      }
+
+      if (/[A-Za-z_]/.test(c)) {
+        let s = "";
+        while (i < n && /[A-Za-z0-9_]/.test(source[i])) s += adv();
+        add(KEYWORDS.has(s) ? "KW" : "IDENT", s, start, i, sl, sc);
+        continue;
+      }
+
+      if (/[0-9]/.test(c) || (c === "." && /[0-9]/.test(source[i+1] || ""))) {
+        let s = "", dots = 0;
+        while (i < n) {
+          const q = source[i];
+          if (/[0-9]/.test(q)) { s += adv(); continue; }
+          if (q === "." && dots === 0) { dots++; s += adv(); continue; }
+          break;
+        }
+        if (s === "." || Number.isNaN(Number(s)))
+          throw new ReadError("invalid numeric constant", sl, sc, start);
+        add("NUMBER", s, start, i, sl, sc);
+        continue;
+      }
+
+      if (ONE.has(c)) {
+        adv(); add("PUNCT", c, start, i, sl, sc); continue;
+      }
+
+      throw new ReadError(`illegal character ${JSON.stringify(c)}`, sl, sc, start);
+    }
+
+    tokens.push({
+      index:tokens.length, kind:"EOF", lexeme:"",
+      start:n,end:n,byte_start:byteMap[n],byte_end:byteMap[n],
+      line,col,end_line:line,end_col:col
+    });
+    return tokens;
+  }
+
+  class Parser {
+    constructor(tokens, source) {
+      this.t=tokens; this.source=source; this.i=0; this.nextNodeId=0;
+    }
+    cur(){ return this.t[this.i]; }
+    at(x){ return this.cur().lexeme===x; }
+    eof(){ return this.cur().kind==="EOF"; }
+    take(){ return this.t[this.i++]; }
+    expectLex(x){
+      if(!this.at(x)) throw new ParseError(`expected ${JSON.stringify(x)}, got ${JSON.stringify(this.cur().lexeme)}`,this.cur());
+      return this.take();
+    }
+    expectKind(k){
+      if(this.cur().kind!==k) throw new ParseError(`expected ${k}, got ${this.cur().kind}`,this.cur());
+      return this.take();
+    }
+
+    loc(startToken, endTokenExclusive, forceProgram=false) {
+      const real = this.t.filter(t=>t.kind!=="EOF");
+      if (forceProgram) {
+        const first = real[0] || this.t[0];
+        const eof = this.t[this.t.length-1];
+        return {
+          token_start: real.length ? 0 : null,
+          token_end: real.length ? real.length : null,
+          char_start:0, char_end:this.source.length,
+          byte_start:0, byte_end:eof.byte_end,
+          line_start:1, col_start:1,
+          line_end:eof.line, col_end:eof.col,
+          source:this.source
+        };
+      }
+
+      if (startToken == null || endTokenExclusive == null || endTokenExclusive <= startToken) {
+        const t=this.t[startToken ?? this.i] || this.t[this.t.length-1];
+        return {
+          token_start:startToken ?? null, token_end:endTokenExclusive ?? null,
+          char_start:t.start, char_end:t.start,
+          byte_start:t.byte_start, byte_end:t.byte_start,
+          line_start:t.line,col_start:t.col,line_end:t.line,col_end:t.col,
+          source:""
+        };
+      }
+
+      const a=this.t[startToken], b=this.t[endTokenExclusive-1];
+      return {
+        token_start:startToken,
+        token_end:endTokenExclusive,
+        char_start:a.start,
+        char_end:b.end,
+        byte_start:a.byte_start,
+        byte_end:b.byte_end,
+        line_start:a.line,
+        col_start:a.col,
+        line_end:b.end_line,
+        col_end:b.end_col,
+        source:this.source.slice(a.start,b.end)
+      };
+    }
+
+    node(type,start,end,fields={}) {
+      return Object.assign({
+        type,
+        node_id:this.nextNodeId++,
+        loc:this.loc(start,end)
+      }, fields);
+    }
+
+    parseProgram(stopOnBrace=false, programStart=0) {
+      const body=[];
+      const start=this.i;
+      while(!this.eof() && !(stopOnBrace && this.at("}"))) body.push(this.parseStmt());
+      if(stopOnBrace) return {type:"ProgramFragment",body,start,end:this.i};
+      return Object.assign({
+        type:"Program",
+        node_id:this.nextNodeId++,
+        loc:this.loc(programStart,this.i,true)
+      },{body});
+    }
+
+    parseStmt(){
+      if(this.at("def")) return this.parseDef();
+      if(this.at("I")) return this.parseDecl();
+      if(this.at("if")) return this.parseIf();
+      if(this.at("->")) return this.parseReturn();
+
+      if(this.cur().kind==="IDENT"){
+        const save=this.i;
+        const target=this.parseTarget();
+        if(this.at("<-")){
+          const start=target.loc.token_start;
+          this.take();
+          const value=this.parseExpr();
+          return this.node("Assign",start,this.i,{target,value,osmotic:target.attr==="p"});
+        }
+        this.i=save;
+      }
+
+      const start=this.i;
+      const value=this.parseExpr();
+      return this.node("Expr",start,this.i,{value});
+    }
+
+    parseBlock(){
+      const start=this.i;
+      this.expectLex("{");
+      const p=this.parseProgram(true,this.i);
+      if(!this.at("}")) throw new ParseError("unclosed block",this.cur());
+      this.take();
+      return this.node("Block",start,this.i,{body:p.body});
+    }
+
+    parseDef(){
+      const start=this.i;
+      this.expectLex("def");
+      const name=this.expectKind("IDENT").lexeme;
+      this.expectLex("(");
+      const params=[];
+      if(!this.at(")")){
+        while(true){
+          this.expectLex("I");
+          params.push(this.expectKind("IDENT").lexeme);
+          if(this.at(",")){this.take();continue;}
+          break;
+        }
+      }
+      this.expectLex(")");
+      const body=this.parseBlock();
+      return this.node("FunctionDef",start,this.i,{name,params,body});
+    }
+
+    parseDecl(){
+      const start=this.i;
+      this.expectLex("I");
+      const name=this.expectKind("IDENT").lexeme;
+      this.expectLex("<-");
+      const value=this.parseExpr();
+      return this.node("Declare",start,this.i,{name,value});
+    }
+
+    parseIf(){
+      const start=this.i;
+      this.expectLex("if");
+      const test=this.parseExpr();
+      const then=this.parseBlock();
+      let otherwise=null;
+      if(this.at("else")){this.take(); otherwise=this.parseBlock();}
+      return this.node("If",start,this.i,{test,then,otherwise});
+    }
+
+    parseReturn(){
+      const start=this.i;
+      this.expectLex("->");
+      const value=this.parseExpr();
+      return this.node("Return",start,this.i,{value});
+    }
+
+    parseTarget(){
+      const start=this.i;
+      const name=this.expectKind("IDENT").lexeme;
+      let attr=null;
+      if(this.at(".")){this.take();attr=this.expectKind("IDENT").lexeme;}
+      return this.node("Target",start,this.i,{name,attr});
+    }
+
+    parseExpr(){ return this.parseCompare(); }
+
+    parseCompare(){
+      let left=this.parseAdd();
+      while(["<",">","<=",">=","==","!="].includes(this.cur().lexeme)){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseAdd();
+        left=this.node("Compare",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseAdd(){
+      let left=this.parseMul();
+      while(this.at("+")||this.at("-")){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseMul();
+        left=this.node("BinOp",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseMul(){
+      let left=this.parseUnary();
+      while(this.at("*")||this.at("/")){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseUnary();
+        left=this.node("BinOp",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseUnary(){
+      if(this.at("-")){
+        const start=this.i;
+        const op=this.take().lexeme;
+        const value=this.parseUnary();
+        return this.node("Unary",start,this.i,{op,value});
+      }
+      return this.parsePrimary();
+    }
+
+    parsePrimary(){
+      let node;
+      if(this.cur().kind==="NUMBER"){
+        const start=this.i, t=this.take();
+        node=this.node("Constant",start,this.i,{value:Number(t.lexeme),raw:t.lexeme});
+      } else if(this.cur().kind==="IDENT"){
+        const start=this.i, t=this.take();
+        node=this.node("Name",start,this.i,{id:t.lexeme});
+      } else if(this.at("(")){
+        this.take();
+        node=this.parseExpr();
+        this.expectLex(")");
+      } else {
+        throw new ParseError(`expected expression, got ${JSON.stringify(this.cur().lexeme)}`,this.cur());
+      }
+
+      while(true){
+        if(this.at("(")){
+          const start=node.loc.token_start;
+          this.take();
+          const args=[];
+          if(!this.at(")")){
+            while(true){
+              args.push(this.parseExpr());
+              if(this.at(",")){this.take();continue;}
+              break;
+            }
+          }
+          this.expectLex(")");
+          node=this.node("Call",start,this.i,{callee:node,args});
+          continue;
+        }
+        if(this.at(".")){
+          const start=node.loc.token_start;
+          this.take();
+          const attr=this.expectKind("IDENT").lexeme;
+          node=this.node("Attribute",start,this.i,{object:node,attr});
+          continue;
+        }
+        break;
+      }
+      return node;
+    }
+  }
+
+  function parse(tokens,source){
+    const p=new Parser(tokens,source);
+    const ast=p.parseProgram(false,0);
+    if(!p.eof()) throw new ParseError("trailing tokens",p.cur());
+    return ast;
+  }
+
+  function walk(node,f,depth=0){
+    if(!node||typeof node!=="object") return;
+    if(node.type) f(node,depth);
+    for(const [k,v] of Object.entries(node)){
+      if(k==="type"||k==="loc") continue;
+      if(Array.isArray(v)) v.forEach(x=>walk(x,f,depth+1));
+      else if(v&&typeof v==="object") walk(v,f,depth+1);
+    }
+  }
+
+  function measure(source,tokens,ast){
+    const useful=tokens.filter(t=>t.kind!=="EOF");
+    const ids=useful.filter(t=>t.kind==="IDENT").map(t=>t.lexeme);
+    const uniq=[...new Set(ids)];
+    let astNodes=0,maxAstDepth=0,declares=0,funcs=0,calls=0,compares=0,binops=0,returns=0,assigns=0;
+    walk(ast,(n,d)=>{
+      astNodes++; if(d>maxAstDepth)maxAstDepth=d;
+      if(n.type==="Declare")declares++;
+      if(n.type==="FunctionDef")funcs++;
+      if(n.type==="Call")calls++;
+      if(n.type==="Compare")compares++;
+      if(n.type==="BinOp")binops++;
+      if(n.type==="Return")returns++;
+      if(n.type==="Assign")assigns++;
+    });
+    return {
+      lexical:{
+        tokens:useful.length,identifiers:ids.length,distinct_identifiers:uniq.length,
+        numeric_constants:useful.filter(t=>t.kind==="NUMBER").length
+      },
+      structural:{
+        ast_nodes:astNodes,max_ast_depth:maxAstDepth,functions:funcs,calls,compares,binops,
+        returns,assignments:assigns,declarations:declares
+      },
+      transport:{
+        chars:source.length,
+        bytes:new TextEncoder().encode(source).length,
+        lines:source===""?0:source.split(/\n/).length,
+        comments:(source.match(/\/\/[^\n]*/g)||[]).length
+      }
+    };
+  }
+
+  function spanIntegrity(source,tokens){
+    let last=0;
+    for(const t of tokens){
+      if(t.kind==="EOF") continue;
+      if(t.start<last||t.end<t.start) return false;
+      if(source.slice(t.start,t.end)!==t.lexeme) return false;
+      const bytes=new TextEncoder().encode(source.slice(0,t.start)).length;
+      const bytesEnd=new TextEncoder().encode(source.slice(0,t.end)).length;
+      if(bytes!==t.byte_start||bytesEnd!==t.byte_end) return false;
+      last=t.end;
+    }
+    return true;
+  }
+
+  function astSpanIntegrity(ast,source,tokens){
+    const failures=[];
+    let count=0;
+    walk(ast,n=>{
+      count++;
+      const L=n.loc;
+      if(!L){failures.push({node_id:n.node_id,type:n.type,error:"missing loc"});return;}
+      if(L.char_start<0||L.char_end<L.char_start||L.char_end>source.length){
+        failures.push({node_id:n.node_id,type:n.type,error:"char bounds"});return;
+      }
+      if(source.slice(L.char_start,L.char_end)!==L.source){
+        failures.push({node_id:n.node_id,type:n.type,error:"source slice mismatch"});return;
+      }
+      const bs=new TextEncoder().encode(source.slice(0,L.char_start)).length;
+      const be=new TextEncoder().encode(source.slice(0,L.char_end)).length;
+      if(bs!==L.byte_start||be!==L.byte_end){
+        failures.push({node_id:n.node_id,type:n.type,error:"byte bounds mismatch"});return;
+      }
+      if(n.type!=="Program"){
+        if(L.token_start==null||L.token_end==null||L.token_end<=L.token_start){
+          failures.push({node_id:n.node_id,type:n.type,error:"token range"});return;
+        }
+        const a=tokens[L.token_start],b=tokens[L.token_end-1];
+        if(!a||!b||a.kind==="EOF"){
+          failures.push({node_id:n.node_id,type:n.type,error:"token endpoint"});return;
+        }
+        if(a.start!==L.char_start||b.end!==L.char_end){
+          failures.push({node_id:n.node_id,type:n.type,error:"token/char mismatch"});return;
+        }
+      }
+    });
+    return {ok:failures.length===0,count,failures};
+  }
+
+  function tokenSignature(tokens){
+    return tokens.filter(t=>t.kind!=="EOF")
+      .map(t=>`${t.kind}:${t.lexeme}@${t.start}:${t.end}:${t.byte_start}:${t.byte_end}`).join("|");
+  }
+
+  async function sha256(source){
+    const data=new TextEncoder().encode(source);
+    if(typeof crypto!=="undefined"&&crypto.subtle){
+      const digest=await crypto.subtle.digest("SHA-256",data);
+      return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+    if(typeof require!=="undefined"){
+      return require("crypto").createHash("sha256").update(Buffer.from(data)).digest("hex");
+    }
+    throw new Error("SHA-256 unavailable");
+  }
+
+  async function read(source,label="untitled.i13"){
+    const exact=String(source);
+    const tokens=lex(exact);
+    const ast=parse(tokens,exact);
+    const hash=await sha256(exact);
+    const rel=lex(exact);
+    const tokenOK=spanIntegrity(exact,tokens);
+    const astOK=astSpanIntegrity(ast,exact,tokens);
+
+    const manifest={
+      protocol:PROTOCOL,
+      reader:VERSION,
+      label,
+      source_sha256:hash,
+      source_chars:exact.length,
+      source_bytes:new TextEncoder().encode(exact).length,
+      exact_source_preserved:true,
+      token_span_integrity:tokenOK,
+      ast_span_integrity:astOK.ok,
+      ast_nodes_with_spans:astOK.count,
+      deterministic_relex:tokenSignature(tokens)===tokenSignature(rel),
+      measurements:measure(exact,tokens,ast),
+      not_covered:[
+        "target-language translation",
+        "call-arity validation",
+        "types",
+        "termination",
+        "arithmetic semantics"
+      ]
+    };
+
+    return {
+      manifest,
+      source:exact,
+      tokens:tokens.filter(t=>t.kind!=="EOF"),
+      ast,
+      ast_span_failures:astOK.failures
+    };
+  }
+
+  async function selfTest(coreSource,briefSource){
+    const tests=[];
+    async function test(name,fn){
+      try{const detail=await fn();tests.push({name,pass:true,detail:detail??"PASS"});}
+      catch(e){tests.push({name,pass:false,detail:`${e.name}: ${e.message}`});}
+    }
+
+    await test("CORE reads with complete AST spans",async()=>{
+      const h=await read(coreSource,"core.i13");
+      if(!h.manifest.ast_span_integrity) throw new Error(JSON.stringify(h.ast_span_failures.slice(0,3)));
+      return `${h.manifest.ast_nodes_with_spans} AST nodes with spans`;
+    });
+    await test("brief reads with complete AST spans",async()=>{
+      const h=await read(briefSource,"brief.i13");
+      if(!h.manifest.ast_span_integrity) throw new Error("brief span failure");
+      return `${h.manifest.ast_nodes_with_spans} AST nodes with spans`;
+    });
+    await test("exact source preserved",async()=>{
+      const h=await read(coreSource);
+      if(h.source!==coreSource) throw new Error("source mutated");
+      return "unchanged";
+    });
+    await test("token char + UTF-8 byte spans are exact",async()=>{
+      const h=await read(coreSource);
+      if(!h.manifest.token_span_integrity) throw new Error("token span failure");
+      return `${h.tokens.length} tokens`;
+    });
+    await test("AST node source slices are exact",async()=>{
+      const h=await read(coreSource);
+      const x=astSpanIntegrity(h.ast,h.source,h.tokens);
+      if(!x.ok) throw new Error(JSON.stringify(x.failures[0]));
+      return `${x.count}/${x.count}`;
+    });
+    await test("deterministic re-lex",async()=>{
+      const a=await read(coreSource),b=await read(coreSource);
+      if(tokenSignature(a.tokens)!==tokenSignature(b.tokens)) throw new Error("token signatures differ");
+      return "stable";
+    });
+    await test("malformed block rejected",async()=>{
+      let ok=false;try{await read("def f(I x) { I y <- x");}catch(e){ok=e instanceof ParseError;}
+      if(!ok)throw new Error("not rejected");return "rejected";
+    });
+    await test("illegal character rejected",async()=>{
+      let ok=false;try{await read("I x <- 1 @ 2");}catch(e){ok=e instanceof ReadError;}
+      if(!ok)throw new Error("not rejected");return "rejected";
+    });
+    await test("SHA-256 stable",async()=>{
+      const a=await sha256(coreSource),b=await sha256(coreSource);
+      if(a!==b)throw new Error("hash mismatch");return a.slice(0,16)+"…";
+    });
+
+    return {reader:VERSION,protocol:PROTOCOL,pass:tests.every(t=>t.pass),passed:tests.filter(t=>t.pass).length,total:tests.length,tests};
+  }
+
+  return {
+    VERSION,PROTOCOL,ReadError,ParseError,
+    lex,parse,read,selfTest,spanIntegrity,astSpanIntegrity,tokenSignature,walk
+  };
+})();
+
+const I13WasmVM4 = (() => {
+  const VERSION="i13-wasm-vm-bridge-v0.4";
+  const OP={Const:0,Ask:1,Attr:2,Ret:3,Answer:4,Drop:5,Bin:6,Cmp:7,If:8,Call:9,Block:10,Else:11,End:12,Func:13,Halt:14};
+  const BIN={"+":0,"-":1,"*":2,"/":3}, CMP={"<":0,">":1,"<=":2,">=":3,"==":4,"!=":5};
+  const VERR={0:"NONE",1:"UNDERFLOW",2:"ELSE_WITHOUT_IF",3:"END_WITHOUT_OPEN",4:"BLOCK_HEIGHT",5:"IF_HEIGHT",6:"UNCLOSED_CONTROL",7:"FINAL_HEIGHT",8:"CONTROL_OVERFLOW",9:"BAD_OPCODE"};
+  const VMERR={1:"OK","-1":"VALIDATION_FAILED","-2":"STACK_UNDERFLOW","-3":"STACK_OVERFLOW","-4":"UNBOUND_NAME","-5":"ASSIGN_UNDECLARED","-6":"DIV_ZERO","-7":"BAD_BIN","-8":"BAD_CMP","-9":"BAD_JUMP","-10":"UNSUPPORTED_OPCODE","-11":"STEP_LIMIT","-12":"BAD_SLOT","-13":"TYPE_ERROR","-14":"BAD_FUNC","-15":"ARITY","-16":"CALL_DEPTH","-17":"LOCAL_OVERFLOW","-18":"RET_MAIN"};
+  const TRACE={1:"ENTER",2:"CALL",3:"RET",4:"HALT"};
+  const BUILTINS={gfx_clear:-1,gfx_camera:-2,gfx_cube:-3,gfx_sphere:-4,gfx_color:-5,gfx_rotate:-6,gfx_time:-7};
+  const GFX={1:"clear",2:"camera",3:"cube",4:"sphere",5:"color",6:"rotate"};
+
+  function collectDecls(body,out=new Set()){
+    for(const s of body||[]){
+      if(s.type==="Declare")out.add(s.name);
+      else if(s.type==="If"){collectDecls(s.then?.body,out);collectDecls(s.otherwise?.body,out)}
+    }
+    return out;
+  }
+
+  function compile(ast){
+    if(!ast||ast.type!=="Program")throw new Error("Program required");
+    const code=[], globals=new Map(), globalNames=[], functions=[], fnByName=new Map();
+    const gslot=n=>{if(!globals.has(n)){globals.set(n,globalNames.length);globalNames.push(n)}return globals.get(n)};
+    Object.keys(BUILTINS).forEach(gslot);
+    collectDecls(ast.body).forEach(gslot);
+    const fnNodes=ast.body.filter(x=>x.type==="FunctionDef");
+    fnNodes.forEach((f,i)=>{fnByName.set(f.name,i);gslot(f.name)});
+
+    const emit=(op,a=0,b=0,imm=0,meta={})=>{const row={op:OP[op],opName:op,a,b,imm,...meta};code.push(row);return code.length-1};
+    const resolve=(name,ctx)=>{
+      if(ctx.locals&&ctx.locals.has(name))return {slot:ctx.locals.get(name),scope:0};
+      if(globals.has(name))return {slot:globals.get(name),scope:1};
+      return {slot:gslot(name),scope:1};
+    };
+    const target=(name,ctx)=>{
+      if(ctx.locals&&ctx.locals.has(name))return {slot:ctx.locals.get(name),scope:0};
+      if(globals.has(name))return {slot:globals.get(name),scope:1};
+      throw new Error("assignment target is undeclared: "+name);
+    };
+    const flags=(scope,assign)=>(scope<<1)|(assign?1:0);
+
+    const compileRegion=(body,ctx)=>{
+      const expr=n=>{
+        switch(n.type){
+          case "Constant":emit("Const",0,0,Number(n.value),{source:n.loc?.source});break;
+          case "Name":{const r=resolve(n.id,ctx);emit("Ask",r.slot,r.scope,0,{name:n.id,source:n.loc?.source});break}
+          case "Attribute":expr(n.object);emit("Attr",0,0,0,{attr:n.attr,source:n.loc?.source});break;
+          case "Unary":
+            if(n.op!=="-")throw new Error("unsupported unary "+n.op);
+            emit("Const",0,0,0);expr(n.value);emit("Bin",BIN["-"]);break;
+          case "BinOp":
+            if(BIN[n.op]===undefined)throw new Error("unsupported BinOp "+n.op);
+            expr(n.left);expr(n.right);emit("Bin",BIN[n.op],0,0,{kind:n.op});break;
+          case "Compare":
+            if(CMP[n.op]===undefined)throw new Error("unsupported Compare "+n.op);
+            expr(n.left);expr(n.right);emit("Cmp",CMP[n.op],0,0,{kind:n.op});break;
+          case "Call":
+            expr(n.callee);n.args.forEach(expr);emit("Call",n.args.length,0,0,{source:n.loc?.source});break;
+          default:throw new Error("unsupported expression "+n.type);
+        }
+      };
+      const block=b=>{emit("Block");for(const s of b?.body||[])stmt(s);emit("End")};
+      const stmt=n=>{
+        switch(n.type){
+          case "FunctionDef":
+            if(ctx.kind!=="main")throw new Error("nested FunctionDef/closure is not covered in v0.3");
+            emit("Func",gslot(n.name),fnByName.get(n.name),0,{name:n.name,source:n.loc?.source});break;
+          case "Declare":{
+            const r=ctx.kind==="main"?{slot:gslot(n.name),scope:1}:{slot:ctx.locals.get(n.name),scope:0};
+            expr(n.value);emit("Answer",r.slot,flags(r.scope,0),0,{name:n.name,mode:"declare"});break;
+          }
+          case "Assign":{
+            if(n.target.attr&&n.target.attr!=="p")throw new Error("unsupported assignment attribute ."+n.target.attr);
+            const r=target(n.target.name,ctx);
+            if(n.target.attr==="p"){
+              emit("Ask",r.slot,r.scope,0,{name:n.target.name});expr(n.value);emit("Bin",BIN["+"]);
+              emit("Answer",r.slot,flags(r.scope,1),0,{name:n.target.name,osmotic:true});
+            }else{
+              expr(n.value);emit("Answer",r.slot,flags(r.scope,1),0,{name:n.target.name});
+            }
+            break;
+          }
+          case "Expr":expr(n.value);emit("Drop");break;
+          case "Return":expr(n.value);emit("Ret",0,0,0,{source:n.loc?.source});break;
+          case "If":{
+            expr(n.test);const ip=emit("If",-1);block(n.then);const ep=emit("Else",-1);
+            const elseStart=code.length;if(n.otherwise)block(n.otherwise);else block({body:[]});
+            const end=emit("End");code[ip].a=elseStart;code[ep].a=end+1;break;
+          }
+          default:throw new Error("unsupported statement "+n.type);
+        }
+      };
+      emit("Block",0,0,0,{role:"region",region:ctx.name});
+      if(ctx.kind==="main") for(const [name,fid] of Object.entries(BUILTINS)) emit("Func",gslot(name),fid,0,{name,native:true});
+      for(const s of body)stmt(s);
+      emit("End",0,0,0,{role:"region",region:ctx.name});
+      emit("Halt",0,0,0,{region:ctx.name});
+    };
+
+    const mainStart=code.length;
+    compileRegion(ast.body,{kind:"main",name:"main",locals:null});
+    const mainCount=code.length-mainStart;
+
+    fnNodes.forEach((f,fid)=>{
+      const locals=new Map(),localNames=[];
+      const add=n=>{if(!locals.has(n)){locals.set(n,localNames.length);localNames.push(n)}};
+      f.params.forEach(add);collectDecls(f.body?.body).forEach(add);
+      const start=code.length;
+      compileRegion(f.body?.body||[],{kind:"function",name:f.name,locals});
+      functions.push({id:fid,name:f.name,start,count:code.length-start,param_count:f.params.length,local_count:localNames.length,localNames});
+    });
+
+    return {version:VERSION,code,globals:Object.fromEntries(globals),globalNames,functions,main:{start:mainStart,count:mainCount}};
+  }
+
+  function instBytes(code){
+    const buf=new ArrayBuffer(code.length*24),dv=new DataView(buf);
+    code.forEach((x,i)=>{const p=i*24;dv.setInt32(p,x.op,true);dv.setInt32(p+4,x.a|0,true);dv.setInt32(p+8,x.b|0,true);dv.setInt32(p+12,0,true);dv.setFloat64(p+16,Number(x.imm||0),true)});
+    return new Uint8Array(buf);
+  }
+  function funcBytes(funcs){
+    const buf=new ArrayBuffer(funcs.length*16),dv=new DataView(buf);
+    funcs.forEach((f,i)=>{const p=i*16;dv.setInt32(p,f.start,true);dv.setInt32(p+4,f.count,true);dv.setInt32(p+8,f.param_count,true);dv.setInt32(p+12,f.local_count,true)});
+    return new Uint8Array(buf);
+  }
+  function install(W,c){
+    const ib=instBytes(c.code),fb=funcBytes(c.functions);
+    let p=16384;
+    const instPtr=p;p+=ib.length;p=(p+7)&~7;
+    const funcsPtr=p;p+=fb.length;p=(p+7)&~7;
+    const gvPtr=p;p+=c.globalNames.length*8;p=(p+7)&~7;
+    const gtPtr=p;p+=c.globalNames.length;p=(p+7)&~7;
+    const gsPtr=p;p+=c.globalNames.length;p=(p+7)&~7;
+    if(W.memory.buffer.byteLength<p)W.memory.grow(Math.ceil((p-W.memory.buffer.byteLength)/65536));
+    new Uint8Array(W.memory.buffer,instPtr,ib.length).set(ib);
+    new Uint8Array(W.memory.buffer,funcsPtr,fb.length).set(fb);
+    new Float64Array(W.memory.buffer,gvPtr,c.globalNames.length).fill(0);
+    new Uint8Array(W.memory.buffer,gtPtr,c.globalNames.length).fill(0);
+    new Uint8Array(W.memory.buffer,gsPtr,c.globalNames.length).fill(0);
+    return {instPtr,funcsPtr,gvPtr,gtPtr,gsPtr,instBytes:ib,funcBytes:fb};
+  }
+  function validate(W,c){
+    const L=install(W,c);
+    const ok=W.i13_validate_program(L.instPtr,c.main.start,c.main.count,L.funcsPtr,c.functions.length)===1;
+    return {ok,peak:W.i13_val_peak(),error_pc:W.i13_val_error_pc(),error_code:W.i13_val_error_code(),error:VERR[W.i13_val_error_code()]||"UNKNOWN",error_region:W.i13_val_error_region(),regions:W.i13_val_regions(),layout:L};
+  }
+  function readGfx(W){
+    const count=W.i13_gfx_count(),ptr=W.i13_gfx_ptr(),stride=W.i13_gfx_stride(),dv=new DataView(W.memory.buffer),commands=[];
+    for(let i=0;i<count;i++){
+      const p=ptr+i*stride,op=dv.getInt32(p,true),id=dv.getInt32(p+4,true),vals=[];
+      for(let k=0;k<6;k++)vals.push(dv.getFloat32(p+8+k*4,true));
+      commands.push({op,kind:GFX[op]||"unknown",id,a:vals[0],b:vals[1],c:vals[2],d:vals[3],e:vals[4],f:vals[5]});
+    }
+    return commands;
+  }
+  function execute(W,c,stepLimit=1000000,callLimit=48,timeSec=0){
+    const L=install(W,c);W.i13_set_host_time(Number(timeSec)||0);
+    const rc=W.i13_vm_exec_program(L.instPtr,c.main.start,c.main.count,L.funcsPtr,c.functions.length,L.gvPtr,L.gtPtr,L.gsPtr,c.globalNames.length,stepLimit,callLimit);
+    const vals=new Float64Array(W.memory.buffer,L.gvPtr,c.globalNames.length),tags=new Uint8Array(W.memory.buffer,L.gtPtr,c.globalNames.length),states=new Uint8Array(W.memory.buffer,L.gsPtr,c.globalNames.length),globals={};
+    c.globalNames.forEach((n,i)=>{if(states[i])globals[n]=tags[i]===2?`<func:${c.functions[Math.trunc(vals[i])]?.name||n}>`:vals[i]});
+    const trace=[];for(let i=0;i<W.i13_trace_count();i++){const fid=W.i13_trace_func(i);trace.push({event:TRACE[W.i13_trace_event(i)]||W.i13_trace_event(i),depth:W.i13_trace_depth(i),func_id:fid,func:fid>=0?c.functions[fid]?.name:"main",pc:W.i13_trace_pc(i)})}
+    return {ok:rc===1,rc,error:VMERR[String(rc)]||"UNKNOWN",error_pc:W.i13_vm_error_pc(),steps:W.i13_vm_steps(),peak:W.i13_vm_peak(),final_height:W.i13_vm_final_height(),max_call_depth:W.i13_vm_max_call_depth(),calls:W.i13_vm_calls(),last_func:W.i13_vm_last_func(),globals,trace,gfx:readGfx(W),layout:L};
+  }
+  function callEdges(c){
+    const regionForPc=pc=>c.functions.find(f=>pc>=f.start&&pc<f.start+f.count)?.name||"main";
+    const edges=[];
+    for(let pc=0;pc<c.code.length;pc++){
+      const x=c.code[pc];if(x.opName!=="Call")continue;
+      let callee="dynamic";
+      for(let q=pc-1;q>=Math.max(0,pc-x.a-4);q--){
+        const y=c.code[q];
+        if(y.opName==="Ask"&&y.b===1){
+          const name=c.globalNames[y.a];
+          if(c.functions.some(f=>f.name===name)){callee=name;break}
+        }
+      }
+      edges.push({from:regionForPc(pc),to:callee,pc,argc:x.a});
+    }
+    return edges;
+  }
+  return {VERSION,OP,BIN,CMP,VERR,VMERR,TRACE,BUILTINS,GFX,compile,validate,execute,readGfx,callEdges};
+})();
+
+
+const I13Graphics = (() => {
+  // Minimal matrix math, column-major.
+  const M={
+    ident(){return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])},
+    mul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)o[c*4+r]=a[0*4+r]*b[c*4+0]+a[1*4+r]*b[c*4+1]+a[2*4+r]*b[c*4+2]+a[3*4+r]*b[c*4+3];return o},
+    translate(x,y,z){const o=M.ident();o[12]=x;o[13]=y;o[14]=z;return o},
+    scale(x,y,z){const o=M.ident();o[0]=x;o[5]=y;o[10]=z;return o},
+    rx(a){const c=Math.cos(a),s=Math.sin(a),o=M.ident();o[5]=c;o[6]=s;o[9]=-s;o[10]=c;return o},
+    ry(a){const c=Math.cos(a),s=Math.sin(a),o=M.ident();o[0]=c;o[2]=-s;o[8]=s;o[10]=c;return o},
+    rz(a){const c=Math.cos(a),s=Math.sin(a),o=M.ident();o[0]=c;o[1]=s;o[4]=-s;o[5]=c;return o},
+    perspNO(fovy,aspect,near,far){const f=1/Math.tan(fovy/2),nf=1/(near-far),o=new Float32Array(16);o[0]=f/aspect;o[5]=f;o[10]=(far+near)*nf;o[11]=-1;o[14]=2*far*near*nf;return o},
+    perspZO(fovy,aspect,near,far){const f=1/Math.tan(fovy/2),o=new Float32Array(16);o[0]=f/aspect;o[5]=f;o[11]=-1;o[10]=far/(near-far);o[14]=(far*near)/(near-far);return o},
+    lookAt(eye,target,up=[0,1,0]){
+      let zx=eye[0]-target[0],zy=eye[1]-target[1],zz=eye[2]-target[2],zl=Math.hypot(zx,zy,zz)||1;zx/=zl;zy/=zl;zz/=zl;
+      let xx=up[1]*zz-up[2]*zy,xy=up[2]*zx-up[0]*zz,xz=up[0]*zy-up[1]*zx,xl=Math.hypot(xx,xy,xz)||1;xx/=xl;xy/=xl;xz/=xl;
+      const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
+      const o=M.ident();o[0]=xx;o[1]=yx;o[2]=zx;o[4]=xy;o[5]=yy;o[6]=zy;o[8]=xz;o[9]=yz;o[10]=zz;
+      o[12]=-(xx*eye[0]+xy*eye[1]+xz*eye[2]);o[13]=-(yx*eye[0]+yy*eye[1]+yz*eye[2]);o[14]=-(zx*eye[0]+zy*eye[1]+zz*eye[2]);return o;
+    },
+    model(o){let m=M.translate(...o.pos);m=M.mul(m,M.ry(o.rot[1]));m=M.mul(m,M.rx(o.rot[0]));m=M.mul(m,M.rz(o.rot[2]));m=M.mul(m,M.scale(o.scale,o.scale,o.scale));return m}
+  };
+  function cube(){
+    const p=[
+      // +Z
+      -1,-1,1,0,0,1, 1,-1,1,0,0,1, 1,1,1,0,0,1, -1,1,1,0,0,1,
+      // -Z
+      1,-1,-1,0,0,-1, -1,-1,-1,0,0,-1, -1,1,-1,0,0,-1, 1,1,-1,0,0,-1,
+      // +X
+      1,-1,1,1,0,0, 1,-1,-1,1,0,0, 1,1,-1,1,0,0, 1,1,1,1,0,0,
+      // -X
+      -1,-1,-1,-1,0,0, -1,-1,1,-1,0,0, -1,1,1,-1,0,0, -1,1,-1,-1,0,0,
+      // +Y
+      -1,1,1,0,1,0, 1,1,1,0,1,0, 1,1,-1,0,1,0, -1,1,-1,0,1,0,
+      // -Y
+      -1,-1,-1,0,-1,0, 1,-1,-1,0,-1,0, 1,-1,1,0,-1,0, -1,-1,1,0,-1,0
+    ];
+    const idx=[];for(let f=0;f<6;f++){const b=f*4;idx.push(b,b+1,b+2,b,b+2,b+3)}
+    return {vertices:new Float32Array(p),indices:new Uint16Array(idx)};
+  }
+  function sphere(seg=24,rings=16){
+    const v=[],idx=[];
+    for(let y=0;y<=rings;y++){const vv=y/rings,phi=vv*Math.PI;for(let x=0;x<=seg;x++){const u=x/seg,th=u*Math.PI*2,s=Math.sin(phi),px=Math.cos(th)*s,py=Math.cos(phi),pz=Math.sin(th)*s;v.push(px,py,pz,px,py,pz)}}
+    for(let y=0;y<rings;y++)for(let x=0;x<seg;x++){const a=y*(seg+1)+x,b=a+seg+1;idx.push(a,b,a+1,b,b+1,a+1)}
+    return {vertices:new Float32Array(v),indices:new Uint16Array(idx)};
+  }
+  class Scene{
+    constructor(){
+      this.clear=[.02,.04,.06,1];
+      this.camera={eye:[0,3,8],target:[0,0,0]};
+      this.programCamera={eye:[0,3,8],target:[0,0,0]};
+      this.cameraOverride=null;
+      this.objects=new Map();
+      this.overrides=new Map();
+      this.selectedId=null;
+    }
+    apply(cmds){
+      this.objects.clear();
+      for(const q of cmds){
+        if(q.kind==="clear")this.clear=[q.a,q.b,q.c,1];
+        else if(q.kind==="camera")this.programCamera={eye:[q.a,q.b,q.c],target:[q.d,q.e,q.f]};
+        else if(q.kind==="cube"||q.kind==="sphere")this.objects.set(q.id,{id:q.id,type:q.kind,pos:[q.a,q.b,q.c],scale:q.d,rot:[0,0,0],color:q.kind==="cube"?[.15,.65,1,1]:[.35,1,.55,1]});
+        else if(q.kind==="color"&&this.objects.has(q.id))this.objects.get(q.id).color=[q.a,q.b,q.c,1];
+        else if(q.kind==="rotate"&&this.objects.has(q.id))this.objects.get(q.id).rot=[q.a,q.b,q.c];
+      }
+      for(const [id,patch] of this.overrides){
+        const o=this.objects.get(id); if(!o)continue;
+        if(patch.pos)o.pos=[...patch.pos];
+        if(patch.rot)o.rot=[...patch.rot];
+        if(patch.scale!=null)o.scale=patch.scale;
+      }
+      this.camera=this.cameraOverride ? {eye:[...this.cameraOverride.eye],target:[...this.cameraOverride.target]} : {eye:[...this.programCamera.eye],target:[...this.programCamera.target]};
+      if(this.selectedId!=null && !this.objects.has(this.selectedId))this.selectedId=null;
+    }
+    setPosition(id,pos){const p=this.overrides.get(id)||{};p.pos=[...pos];this.overrides.set(id,p)}
+    clearOverride(id){this.overrides.delete(id)}
+    clearAllOverrides(){this.overrides.clear()}
+  }
+  class WebGLRenderer{
+    async init(canvas){
+      this.canvas=canvas;const gl=canvas.getContext("webgl2",{antialias:true,alpha:false});if(!gl)throw new Error("WebGL2 unavailable");this.gl=gl;
+      const vs=`#version 300 es
+      precision highp float;layout(location=0)in vec3 aPos;layout(location=1)in vec3 aNor;
+      uniform mat4 uMVP;uniform mat4 uModel;out vec3 vN;out vec3 vP;
+      void main(){vec4 wp=uModel*vec4(aPos,1.0);vP=wp.xyz;vN=mat3(uModel)*aNor;gl_Position=uMVP*vec4(aPos,1.0);}`;
+      const fs=`#version 300 es
+      precision highp float;in vec3 vN;in vec3 vP;uniform vec4 uColor;out vec4 outColor;
+      void main(){vec3 n=normalize(vN);vec3 l=normalize(vec3(.45,.85,.35));float d=max(dot(n,l),0.0);float rim=pow(1.0-max(dot(n,normalize(vec3(0.0,0.3,1.0))),0.0),2.0);vec3 c=uColor.rgb*(.20+.78*d)+rim*.08;outColor=vec4(c,uColor.a);}`;
+      const sh=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s};
+      const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));this.pr=pr;
+      this.uMVP=gl.getUniformLocation(pr,"uMVP");this.uModel=gl.getUniformLocation(pr,"uModel");this.uColor=gl.getUniformLocation(pr,"uColor");
+      this.meshes={cube:this.mk(cube()),sphere:this.mk(sphere())};gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);this.kind="WebGL2";return this;
+    }
+    mk(m){const gl=this.gl,vao=gl.createVertexArray();gl.bindVertexArray(vao);const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,m.vertices,gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,24,12);const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,m.indices,gl.STATIC_DRAW);gl.bindVertexArray(null);return{vao,count:m.indices.length}}
+    resize(){const c=this.canvas,dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.floor(c.clientWidth*dpr)),h=Math.max(1,Math.floor(c.clientHeight*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h}this.gl.viewport(0,0,w,h)}
+    drawMesh(mesh,model,vp,color){const gl=this.gl,m=this.meshes[mesh],mvp=M.mul(vp,model);gl.uniformMatrix4fv(this.uMVP,false,mvp);gl.uniformMatrix4fv(this.uModel,false,model);gl.uniform4fv(this.uColor,color);gl.bindVertexArray(m.vao);gl.drawElements(gl.TRIANGLES,m.count,gl.UNSIGNED_SHORT,0)}
+    render(scene){this.resize();const gl=this.gl,c=scene.clear;gl.clearColor(c[0],c[1],c[2],1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.pr);const aspect=this.canvas.width/this.canvas.height,v=M.lookAt(scene.camera.eye,scene.camera.target),p=M.perspNO(Math.PI/4,aspect,.1,100),vp=M.mul(p,v);
+      // Floor is renderer-owned visual context, not I-13 scene state.
+      const floor={pos:[0,-1.15,0],rot:[0,0,0],scale:1};let fm=M.translate(0,-1.18,0);fm=M.mul(fm,M.scale(5.5,.025,5.5));this.drawMesh("cube",fm,vp,[.07,.11,.14,1]);
+      for(const o of scene.objects.values())this.drawMesh(o.type,M.model(o),vp,o.color);
+      if(scene.selectedId!=null&&scene.objects.has(scene.selectedId)){
+        const o=scene.objects.get(scene.selectedId),p=o.pos,s=Math.max(.55,o.scale*.9),t=.035;
+        let sel=M.translate(...p);sel=M.mul(sel,M.scale(o.scale*1.035,o.scale*1.035,o.scale*1.035));this.drawMesh(o.type,sel,vp,[1,.78,.18,1]);
+        let x=M.translate(p[0]+s*.55,p[1],p[2]);x=M.mul(x,M.scale(s,t,t));this.drawMesh("cube",x,vp,[1,.18,.18,1]);
+        let y=M.translate(p[0],p[1]+s*.55,p[2]);y=M.mul(y,M.scale(t,s,t));this.drawMesh("cube",y,vp,[.2,1,.3,1]);
+        let z=M.translate(p[0],p[1],p[2]+s*.55);z=M.mul(z,M.scale(t,t,s));this.drawMesh("cube",z,vp,[.2,.5,1,1]);
+      }
+    }
+  }
+  class WebGPURenderer{
+    async init(canvas){
+      if(!navigator.gpu)throw new Error("WebGPU unavailable");this.canvas=canvas;this.adapter=await navigator.gpu.requestAdapter();if(!this.adapter)throw new Error("No WebGPU adapter");this.device=await this.adapter.requestDevice();this.ctx=canvas.getContext("webgpu");this.format=navigator.gpu.getPreferredCanvasFormat();this.ctx.configure({device:this.device,format:this.format,alphaMode:"opaque"});
+      const code=`struct U{mvp:mat4x4<f32>,model:mat4x4<f32>,color:vec4<f32>};@group(0)@binding(0)var<uniform>u:U;
+      struct VI{@location(0)p:vec3<f32>,@location(1)n:vec3<f32>};struct VO{@builtin(position)p:vec4<f32>,@location(0)n:vec3<f32>};
+      @vertex fn vs(i:VI)->VO{var o:VO;o.p=u.mvp*vec4<f32>(i.p,1.0);o.n=normalize((u.model*vec4<f32>(i.n,0.0)).xyz);return o;}
+      @fragment fn fs(i:VO)->@location(0)vec4<f32>{let l=normalize(vec3<f32>(.45,.85,.35));let d=max(dot(normalize(i.n),l),0.0);return vec4<f32>(u.color.rgb*(.20+.78*d),u.color.a);}`;
+      const mod=this.device.createShaderModule({code});this.pipeline=this.device.createRenderPipeline({layout:"auto",vertex:{module:mod,entryPoint:"vs",buffers:[{arrayStride:24,attributes:[{shaderLocation:0,offset:0,format:"float32x3"},{shaderLocation:1,offset:12,format:"float32x3"}]}]},fragment:{module:mod,entryPoint:"fs",targets:[{format:this.format}]},primitive:{topology:"triangle-list",cullMode:"back"},depthStencil:{format:"depth24plus",depthWriteEnabled:true,depthCompare:"less"}});
+      this.meshes={cube:this.mk(cube()),sphere:this.mk(sphere())};this.uniforms=new Map();this.depth=null;this.kind="WebGPU";return this;
+    }
+    mk(m){const d=this.device,v=d.createBuffer({size:m.vertices.byteLength,usage:GPUBufferUsage.VERTEX|GPUBufferUsage.COPY_DST});d.queue.writeBuffer(v,0,m.vertices);const i=d.createBuffer({size:m.indices.byteLength,usage:GPUBufferUsage.INDEX|GPUBufferUsage.COPY_DST});d.queue.writeBuffer(i,0,m.indices);return{v,i,count:m.indices.length}}
+    resize(){const c=this.canvas,dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.floor(c.clientWidth*dpr)),h=Math.max(1,Math.floor(c.clientHeight*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h;this.depth?.destroy();this.depth=this.device.createTexture({size:[w,h],format:"depth24plus",usage:GPUTextureUsage.RENDER_ATTACHMENT})}if(!this.depth)this.depth=this.device.createTexture({size:[w,h],format:"depth24plus",usage:GPUTextureUsage.RENDER_ATTACHMENT})}
+    ub(id){if(!this.uniforms.has(id)){const b=this.device.createBuffer({size:144,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST}),g=this.device.createBindGroup({layout:this.pipeline.getBindGroupLayout(0),entries:[{binding:0,resource:{buffer:b}}]});this.uniforms.set(id,{b,g})}return this.uniforms.get(id)}
+    draw(pass,key,mesh,model,vp,color){const u=this.ub(key),data=new Float32Array(36),mvp=M.mul(vp,model);data.set(mvp,0);data.set(model,16);data.set(color,32);this.device.queue.writeBuffer(u.b,0,data);const me=this.meshes[mesh];pass.setVertexBuffer(0,me.v);pass.setIndexBuffer(me.i,"uint16");pass.setBindGroup(0,u.g);pass.drawIndexed(me.count)}
+    render(scene){this.resize();const tex=this.ctx.getCurrentTexture().createView(),enc=this.device.createCommandEncoder(),pass=enc.beginRenderPass({colorAttachments:[{view:tex,clearValue:{r:scene.clear[0],g:scene.clear[1],b:scene.clear[2],a:1},loadOp:"clear",storeOp:"store"}],depthStencilAttachment:{view:this.depth.createView(),depthClearValue:1,depthLoadOp:"clear",depthStoreOp:"store"}});pass.setPipeline(this.pipeline);const aspect=this.canvas.width/this.canvas.height,v=M.lookAt(scene.camera.eye,scene.camera.target),p=M.perspZO(Math.PI/4,aspect,.1,100),vp=M.mul(p,v);let fm=M.translate(0,-1.18,0);fm=M.mul(fm,M.scale(5.5,.025,5.5));this.draw(pass,"floor","cube",fm,vp,[.07,.11,.14,1]);for(const o of scene.objects.values())this.draw(pass,"o"+o.id,o.type,M.model(o),vp,o.color);
+      if(scene.selectedId!=null&&scene.objects.has(scene.selectedId)){
+        const o=scene.objects.get(scene.selectedId),p=o.pos,s=Math.max(.55,o.scale*.9),t=.035;
+        let sel=M.translate(...p);sel=M.mul(sel,M.scale(o.scale*1.035,o.scale*1.035,o.scale*1.035));this.draw(pass,"sel"+o.id,o.type,sel,vp,[1,.78,.18,1]);
+        let x=M.translate(p[0]+s*.55,p[1],p[2]);x=M.mul(x,M.scale(s,t,t));this.draw(pass,"gx"+o.id,"cube",x,vp,[1,.18,.18,1]);
+        let y=M.translate(p[0],p[1]+s*.55,p[2]);y=M.mul(y,M.scale(t,s,t));this.draw(pass,"gy"+o.id,"cube",y,vp,[.2,1,.3,1]);
+        let z=M.translate(p[0],p[1],p[2]+s*.55);z=M.mul(z,M.scale(t,t,s));this.draw(pass,"gz"+o.id,"cube",z,vp,[.2,.5,1,1]);
+      }
+      pass.end();this.device.queue.submit([enc.finish()])}
+  }
+  async function create(canvas){try{return await new WebGPURenderer().init(canvas)}catch(e){console.warn("WebGPU fallback:",e);return await new WebGLRenderer().init(canvas)}}
+  return {M,Scene,create};
+})();
+
+
+class ViewportInteraction {
+  constructor(scene,subagent){
+    this.scene=scene; this.subagent=subagent; this.canvases=[];
+    this.mode="idle"; this.pointerId=null; this.last=[0,0];
+    this.dragStartPos=null; this.orbit=null; this.selectedId=null;
+  }
+  attach(canvas){
+    this.canvases.push(canvas);
+    canvas.style.touchAction="none";
+    canvas.addEventListener("contextmenu",e=>e.preventDefault());
+    canvas.addEventListener("pointerdown",e=>this.down(e,canvas));
+    canvas.addEventListener("pointermove",e=>this.move(e,canvas));
+    canvas.addEventListener("pointerup",e=>this.up(e,canvas));
+    canvas.addEventListener("pointercancel",e=>this.up(e,canvas));
+    canvas.addEventListener("wheel",e=>this.wheel(e,canvas),{passive:false});
+    canvas.addEventListener("dblclick",e=>{const id=this.pick(e,canvas);if(id!=null){this.select(id);this.focusSelection()}});
+  }
+  basis(){
+    const eye=this.scene.camera.eye,t=this.scene.camera.target;
+    let fx=t[0]-eye[0],fy=t[1]-eye[1],fz=t[2]-eye[2],fl=Math.hypot(fx,fy,fz)||1;fx/=fl;fy/=fl;fz/=fl;
+    let rx=-fz,rz=fx,rl=Math.hypot(rx,rz)||1;rx/=rl;rz/=rl;
+    let gx=fx,gz=fz,gl=Math.hypot(gx,gz)||1;gx/=gl;gz/=gl;
+    return {right:[rx,0,rz],ground:[gx,0,gz],dist:Math.hypot(t[0]-eye[0],t[1]-eye[1],t[2]-eye[2])};
+  }
+  project(pos,canvas){
+    const rect=canvas.getBoundingClientRect(),aspect=Math.max(.01,rect.width/Math.max(1,rect.height));
+    const v=I13Graphics.M.lookAt(this.scene.camera.eye,this.scene.camera.target),p=I13Graphics.M.perspNO(Math.PI/4,aspect,.1,100),vp=I13Graphics.M.mul(p,v);
+    const x=pos[0],y=pos[1],z=pos[2],cx=vp[0]*x+vp[4]*y+vp[8]*z+vp[12],cy=vp[1]*x+vp[5]*y+vp[9]*z+vp[13],cw=vp[3]*x+vp[7]*y+vp[11]*z+vp[15];
+    if(cw<=.01)return null;const nx=cx/cw,ny=cy/cw;return {x:(nx*.5+.5)*rect.width,y:(1-(ny*.5+.5))*rect.height,w:cw};
+  }
+  pick(e,canvas){
+    const rect=canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;let best=null,bestD=1e9;
+    for(const o of this.scene.objects.values()){
+      const s=this.project(o.pos,canvas);if(!s)continue;
+      const radius=Math.max(18,110*o.scale/Math.max(1.2,s.w)),d=Math.hypot(mx-s.x,my-s.y);
+      if(d<radius&&d<bestD){best=o.id;bestD=d}
+    }
+    return best;
+  }
+  ensureOrbit(){
+    if(this.orbit)return;
+    const eye=this.scene.camera.eye,t=this.scene.camera.target,dx=eye[0]-t[0],dy=eye[1]-t[1],dz=eye[2]-t[2],dist=Math.hypot(dx,dy,dz)||1;
+    this.orbit={target:[...t],dist,yaw:Math.atan2(dx,dz),pitch:Math.asin(Math.max(-.99,Math.min(.99,dy/dist)))};
+  }
+  applyOrbit(){
+    this.ensureOrbit();const o=this.orbit,cp=Math.cos(o.pitch);
+    const eye=[o.target[0]+Math.sin(o.yaw)*cp*o.dist,o.target[1]+Math.sin(o.pitch)*o.dist,o.target[2]+Math.cos(o.yaw)*cp*o.dist];
+    this.scene.cameraOverride={eye,target:[...o.target]};
+  }
+  select(id){
+    this.scene.selectedId=id;this.selectedId=id;this.subagent.note("select",id==null?"none":"entity "+id);this.subagent.refresh();
+  }
+  down(e,canvas){
+    if(e.button===2){this.mode="orbit";this.ensureOrbit()}
+    else if(e.button===1 || (e.button===0&&e.shiftKey)){this.mode="pan";this.ensureOrbit()}
+    else if(e.button===0){
+      const id=this.pick(e,canvas);this.select(id);
+      if(id!=null){this.mode="move";this.dragStartPos=[...this.scene.objects.get(id).pos]}
+      else this.mode="idle";
+    }
+    this.pointerId=e.pointerId;this.last=[e.clientX,e.clientY];canvas.setPointerCapture?.(e.pointerId);this.subagent.gesture=this.mode;this.subagent.refresh();
+  }
+  move(e,canvas){
+    if(this.pointerId!==e.pointerId)return;const dx=e.clientX-this.last[0],dy=e.clientY-this.last[1];this.last=[e.clientX,e.clientY];
+    if(this.mode==="move"&&this.scene.selectedId!=null){
+      const o=this.scene.objects.get(this.scene.selectedId);if(!o)return;
+      const b=this.basis(),k=Math.max(.0015,b.dist*.00165),p=o.pos;
+      const np=[p[0]+b.right[0]*dx*k-b.ground[0]*dy*k,p[1],p[2]+b.right[2]*dx*k-b.ground[2]*dy*k];
+      this.scene.setPosition(o.id,np);this.subagent.mutations++;this.subagent.note("move",`entity ${o.id} → ${np[0].toFixed(2)}, ${np[2].toFixed(2)}`);
+    }else if(this.mode==="orbit"){
+      this.ensureOrbit();this.orbit.yaw-=dx*.008;this.orbit.pitch=Math.max(-1.35,Math.min(1.35,this.orbit.pitch-dy*.006));this.applyOrbit();this.subagent.note("orbit","camera override");
+    }else if(this.mode==="pan"){
+      this.ensureOrbit();const b=this.basis(),k=Math.max(.0015,b.dist*.0018);
+      this.orbit.target[0]-=b.right[0]*dx*k;this.orbit.target[2]-=b.right[2]*dx*k;this.orbit.target[1]+=dy*k;this.applyOrbit();this.subagent.note("pan","camera target");
+    }
+    this.subagent.refresh();
+  }
+  up(e,canvas){
+    if(this.pointerId!==e.pointerId)return;canvas.releasePointerCapture?.(e.pointerId);this.pointerId=null;this.mode="idle";this.subagent.gesture="idle";this.subagent.refresh();
+  }
+  wheel(e){
+    e.preventDefault();this.ensureOrbit();this.orbit.dist=Math.max(1.5,Math.min(40,this.orbit.dist*Math.exp(e.deltaY*.001)));this.applyOrbit();this.subagent.note("zoom",this.orbit.dist.toFixed(2));this.subagent.refresh();
+  }
+  focusSelection(){
+    const id=this.scene.selectedId,o=this.scene.objects.get(id);if(!o)return;
+    this.ensureOrbit();this.orbit.target=[...o.pos];this.applyOrbit();this.subagent.note("focus","entity "+id);this.subagent.refresh();
+  }
+  snapSelection(step=.25){
+    const id=this.scene.selectedId,o=this.scene.objects.get(id);if(!o)return;
+    const p=o.pos.map((v,i)=>i===1?v:Math.round(v/step)*step);this.scene.setPosition(id,p);this.subagent.mutations++;this.subagent.note("snap",`entity ${id} @ ${step}`);this.subagent.refresh();
+  }
+  resetSelection(){
+    const id=this.scene.selectedId;if(id==null)return;this.scene.clearOverride(id);this.subagent.note("reset","entity "+id);this.subagent.refresh();
+  }
+  resetCamera(){
+    this.orbit=null;this.scene.cameraOverride=null;this.subagent.note("camera","program camera");this.subagent.refresh();
+  }
+}
+class CSubagent {
+  constructor(scene){
+    this.scene=scene;this.interaction=null;this.gesture="idle";this.mutations=0;this.last="watching scene";
+  }
+  connect(interaction){this.interaction=interaction}
+  note(action,detail){this.last=`${action}: ${detail}`}
+  refresh(){
+    const id=this.scene.selectedId,o=id==null?null:this.scene.objects.get(id);
+    const sel=document.querySelector("#selectionBadge strong"); if(sel)sel.textContent=o?`entity ${id} / ${o.type}`:"none";
+    if(document.getElementById("saSelected"))$("saSelected").textContent=o?`entity ${id} · ${o.type}`:"none";
+    if(document.getElementById("saGesture"))$("saGesture").textContent=this.gesture;
+    if(document.getElementById("saCamera"))$("saCamera").textContent=this.scene.cameraOverride?"mouse override":"program";
+    if(document.getElementById("saOverride"))$("saOverride").textContent=`${this.scene.overrides.size} object · ${this.mutations} edits`;
+    if(document.getElementById("saLast"))$("saLast").textContent=this.last;
+    if(document.getElementById("saState"))$("saState").textContent=this.gesture==="idle"?"OBSERVE":"ACTIVE";
+  }
+}
+
+const WASM_B64="AGFzbQEAAAABSApgAXwAYAAAYAABf2ACf38Bf2ADf39/AX9gBn9/f39/fwF/YAF/AX9gBX9/f39/AX9gBH9/f38Bf2ALf39/f39/f39/f38BfwMlJAABAgICAwMDAwMDBAUGAgcIAgICAgIJAgICAgICAgICBgYGBgQFAXABAQEFBQEBEIAEBggBfwFBgIAECweXBSQGbWVtb3J5AgARaTEzX3NldF9ob3N0X3RpbWUAAA1pMTNfZ2Z4X3Jlc2V0AAENaTEzX2dmeF9jb3VudAACC2kxM19nZnhfcHRyAAMOaTEzX2dmeF9zdHJpZGUABAppMTNfaGFzaDMyAAUPaTEzX2VmZmVjdF9uZWVkAAYOaTEzX2VmZmVjdF9uZXQABw9jb3J0ZXhfZGVwdGhfb2sACBRjb3J0ZXhfY2FwYWJpbGl0eV9vawAJFWNvcnRleF9pZGVtcG90ZW5jZV9vawAKEGNvcnRleF9hZGRyZXNzMzIACw5jb3J0ZXhfdmVyZGljdAAMFWNvcnRleF9hbGxfcnVsZXNfcGFzcwANFGNvcnRleF9ydWxlX2FsbF9tYXNrAA4UaTEzX3ZhbGlkYXRlX3Byb2dyYW0ADwxpMTNfdmFsX3BlYWsAERBpMTNfdmFsX2Vycm9yX3BjABISaTEzX3ZhbF9lcnJvcl9jb2RlABMUaTEzX3ZhbF9lcnJvcl9yZWdpb24AFA9pMTNfdmFsX3JlZ2lvbnMAFRNpMTNfdm1fZXhlY19wcm9ncmFtABYMaTEzX3ZtX3N0ZXBzABcLaTEzX3ZtX3BlYWsAGA9pMTNfdm1fZXJyb3JfcGMAGRFpMTNfdm1fZXJyb3JfY29kZQAaE2kxM192bV9maW5hbF9oZWlnaHQAGxVpMTNfdm1fbWF4X2NhbGxfZGVwdGgAHAxpMTNfdm1fY2FsbHMAHRBpMTNfdm1fbGFzdF9mdW5jAB4PaTEzX3RyYWNlX2NvdW50AB8PaTEzX3RyYWNlX2V2ZW50ACAPaTEzX3RyYWNlX2RlcHRoACEOaTEzX3RyYWNlX2Z1bmMAIgxpMTNfdHJhY2VfcGMAIwr6QSQNAEEAIAA5A5CAhIAACw0AQQBBADYCmICEgAALCwBBACgCmICEgAALCABBoICEgAALBABBIAvMAQEEfwJAIAENAEHFu/KIeA8LIAFBA3EhAgJAAkAg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AAsCQCAJQQFIDQAgBQ0AQQBBBjYCpICIgAAgAiABaiEHDAELIAtFDQEgCkUNASAFDQFBAEEHNgKkgIiAACACIAFqQX9qIQcLQQAgAzYChICEgABBACAHNgKAgISAAEEBIQULAkAgBkEAKAKggIiAAEwNAEEAIAY2AqCAiIAACyAEQYAoaiSAgICAACAFRQsLAEEAKAKggIiAAAsLAEEAKAKAgISAAAsLAEEAKAKkgIiAAAsLAEEAKAKEgISAAAsLAEEAKAKogIiAAAuTLwQJfwF8BH8BfCOAgICAAEGAEmsiCySAgICAAEF/IQxBACENQQBBfzYCiICEgABBAEF/NgKMgISAAEEAQX82AoCAhIAAQQBBfzYChICEgABBACAEQQFqNgKogIiAAEEAQQA2ArCAiIAAQQBBADYCrICIgABBAEEANgK0gIiAAEEAQQA2AriAiIAAQQBBADYCvICIgABBAEEANgLAgIiAAEEAQQA2AsSAiIAAQQBBADYCmICEgABBAEEANgKggIiAAEEAQQA2AqSAiIAAAkACQAJAAkACQAJAAkACQAJAIAAgASACQQAQkICAgABFDQAgCkE/IApBP0kbIQ4gAyEKAkADQCAEIA1GDQEgCkEEaiEPIAooAgAhECAKQRBqIQogACAQIA8oAgAgDUEBaiINEJCAgIAADQALIA1Bf2ogBEkNAQtBgH4hCgNAIApB0ISIgABqQQA2AgAgCkHQgoiAAGpCADcDACAKQdCGiIAAakEANgIAIApB0IiIgABqQX82AgAgCkHUhIiAAGpBADYCACAKQdSGiIAAakEANgIAIApB1IiIgABqQX82AgAgCkEIaiIKDQALQQAgATYC0IKIgABBAEF/NgLQhoiAAEEAIAIgAWoiCjYC0ISIgAACQEEAKALEgIiAACINQf8HSg0AQQAgDUEBajYCxICIgAAgDUECdCINQdCokoAAakEANgIAIA1B0IiSgABqQQE2AgAgDUHQyJKAAGpBfzYCACANQdDokoAAaiABNgIACyAKQcCEPWohESALQYACakFwaiESQQAhCgNAQQBBACgCrICIgAAiDUEBajYCrICIgAACQCANIAlIDQBBAEF1NgK0gIiAAEEAIApBAnRB0IKIgABqKAIANgKIgISAAAwICwJAIApBAnQiD0HQgoiAAGoiDCgCACIQIA9B0ISI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CwBBACgCvICIgAALCwBBACgCwICIgAALCwBBACgCjICEgAALCwBBACgCxICIgAALMwEBf0EAIQECQCAAQQBIDQBBACgCxICIgAAgAEwNACAAQQJ0QdCIkoAAaigCACEBCyABCzMBAX9BfyEBAkAgAEEASA0AQQAoAsSAiIAAIABMDQAgAEECdEHQqJKAAGooAgAhAQsgAQszAQF/QX8hAQJAIABBAEgNAEEAKALEgIiAACAATA0AIABBAnRB0MiSgABqKAIAIQELIAELMwEBf0F/IQECQCAAQQBIDQBBACgCxICIgAAgAEwNACAAQQJ0QdDokoAAaigCACEBCyABCwsYAQBBgIAECxD/////////////////////ALsFBG5hbWUAFxZpMTNfY29ydGV4X3ZtX3YwNC53YXNtAfwEJAARaTEzX3NldF9ob3N0X3RpbWUBDWkxM19nZnhfcmVzZXQCDWkxM19nZnhfY291bnQDC2kxM19nZnhfcHRyBA5pMTNfZ2Z4X3N0cmlkZQUKaTEzX2hhc2gzMgYPaTEzX2VmZmVjdF9uZWVkBw5pMTNfZWZmZWN0X25ldAgPY29ydGV4X2RlcHRoX29rCRRjb3J0ZXhfY2FwYWJpbGl0eV9vawoVY29ydGV4X2lkZW1wb3RlbmNlX29rCxBjb3J0ZXhfYWRkcmVzczMyDA5jb3J0ZXhfdmVyZGljdA0VY29ydGV4X2FsbF9ydWxlc19wYXNzDhRjb3J0ZXhfcnVsZV9hbGxfbWFzaw8UaTEzX3ZhbGlkYXRlX3Byb2dyYW0QD3ZhbGlkYXRlX3JlZ2lvbhEMaTEzX3ZhbF9wZWFrEhBpMTNfdmFsX2Vycm9yX3BjExJpMTNfdmFsX2Vycm9yX2NvZGUUFGkxM192YWxfZXJyb3JfcmVnaW9uFQ9pMTNfdmFsX3JlZ2lvbnMWE2kxM192bV9leGVjX3Byb2dyYW0XDGkxM192bV9zdGVwcxgLaTEzX3ZtX3BlYWsZD2kxM192bV9lcnJvcl9wYxoRaTEzX3ZtX2Vycm9yX2NvZGUbE2kxM192bV9maW5hbF9oZWlnaHQcFWkxM192bV9tYXhfY2FsbF9kZXB0aB0MaTEzX3ZtX2NhbGxzHhBpMTNfdm1fbGFzdF9mdW5jHw9pMTNfdHJhY2VfY291bnQgD2kxM190cmFjZV9ldmVudCEPaTEzX3RyYWNlX2RlcHRoIg5pMTNfdHJhY2VfZnVuYyMMaTEzX3RyYWNlX3BjBxIBAA9fX3N0YWNrX3BvaW50ZXIJCAEABS5kYXRhAH8JcHJvZHVjZXJzAQxwcm9jZXNzZWQtYnkBBWNsYW5nXzE3LjAuMCAoaHR0cHM6Ly9naXRodWIuY29tL3N3aWZ0bGFuZy9sbHZtLXByb2plY3QuZ2l0IDEwOTk5YjZkMDM0ZmUzMThmM2Q1NmM4M2JkZGI2NTcyNTkzYThiYjApAEkPdGFyZ2V0X2ZlYXR1cmVzBCsKbXVsdGl2YWx1ZSsPbXV0YWJsZS1nbG9iYWxzKw9yZWZlcmVuY2UtdHlwZXMrCHNpZ24tZXh0", SAMPLE="// I-13.GFX v0.4 \u2014 the running program owns the scene\n\nI t <- gfx_time()\n\ngfx_clear(0.018, 0.035, 0.055)\ngfx_camera(0, 3.1, 8.2, 0, 0, 0)\n\ngfx_cube(1, -1.35, 0, 0, 1.5)\ngfx_color(1, 0.08, 0.62, 1.0)\ngfx_rotate(1, t * 0.35, t * 0.8, 0)\n\ngfx_sphere(2, 1.35, 0, 0, 0.9)\ngfx_color(2, 0.26, 1.0, 0.52)\ngfx_rotate(2, t * 0.15, t * 0.55, t * 0.1)\n", WASM_BYTES=10188;
+const $=id=>document.getElementById(id);let W=null,compiled=null,validation=null,lastRun=null,scene=new I13Graphics.Scene(),renderer=null,renderer2=null,subagent=new CSubagent(scene),interaction=new ViewportInteraction(scene,subagent),dirty=true,frames=0,lastFps=performance.now(),fps=0,identity=0;subagent.connect(interaction);
+function lines(){$("gutter").textContent=Array.from({length:$("editor").value.split("\n").length},(_,i)=>i+1).join("\n")}
+function nav(v){document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===v));document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.v===v));const n={workbench:["Workbench + Viewport","I-13 → WASM → GFX buffer → GPU"],viewport:["Full Viewport","shared live GPU scene"],scene:["Scene / Commands","native command buffer and reconstructed world"],vm:["VM / Frames","WASM runtime telemetry"],cortex:["Cortex","deterministic execution and graphics boundary"],tests:["Test Lab","native/browser regression checks"]};$("crumb").textContent=n[v][0];$("sub").textContent=n[v][1]}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>nav(b.dataset.v));
+function stable(v){if(v===null||typeof v!=="object")return JSON.stringify(v);if(Array.isArray(v))return "["+v.map(stable).join(",")+"]";const ks=Object.keys(v).sort();return "{"+ks.map(k=>JSON.stringify(k)+":"+stable(v[k])).join(",")+"}"}
+function semantic(v){if(Array.isArray(v))return v.map(semantic);if(v&&typeof v==="object"){const o={};for(const [k,x] of Object.entries(v))if(!["node_id","loc","raw"].includes(k))o[k]=semantic(x);return o}return v}
+function depth(v,d=0){if(Array.isArray(v))return Math.max(d,...v.map(x=>depth(x,d+1)));if(v&&typeof v==="object")return Math.max(d,...Object.entries(v).filter(([k])=>k!=="loc").map(([,x])=>depth(x,d+1)));return d}
+function hash32(s){const b=new TextEncoder().encode(s),p=4096;new Uint8Array(W.memory.buffer,p,b.length).set(b);return W.i13_hash32(p,b.length)>>>0}
+function hex(n){return"0x"+(n>>>0).toString(16).padStart(8,"0")}
+async function compileProgram(){
+ const h=await IReader.read($("editor").value,"gfx-suite.i13");compiled=I13WasmVM4.compile(h.ast);validation=I13WasmVM4.validate(W,compiled);if(!validation.ok)throw new Error(validation.error+" @ pc "+validation.error_pc);const sem=stable(semantic(h.ast)),fp=hash32(sem),dep=depth(h.ast),addr=W.cortex_address32(fp,0,hash32("i13-gfx-v0.4"))>>>0,mask=W.cortex_verdict(1,W.cortex_depth_ok(dep,64),1,1,1,W.cortex_idempotence_ok(identity,fp))>>>0;identity=fp;$("maskBadge").textContent=hex(mask);$("cxVerdict").textContent=W.cortex_all_rules_pass(mask)?"PASS":"VETO";$("cxInfo").textContent=JSON.stringify({rule_mask:hex(mask),semantic_fingerprint32:hex(fp),execution_address32:hex(addr),ast_depth:dep,native_gfx_builtins:Object.keys(I13WasmVM4.BUILTINS),wasm_imports:0,renderer_boundary:"WASM emits commands; GPU host renders them"},null,2);
+ $("pRead").textContent="PASS";$("dRead").textContent=h.tokens.length+" tokens";$("pLower").textContent=compiled.code.length+" ops";$("dLower").textContent=compiled.functions.length+" funcs + native gfx";$("pVal").textContent="VALID";$("dVal").textContent=validation.regions+" regions";$("mOps").textContent=compiled.code.length;$("mRegions").textContent=validation.regions;$("compileBadge").textContent="compiled";dirty=false;return h;
+}
+function renderSceneInfo(r){
+ $("sceneBadge").textContent=scene.objects.size+" entities";$("sceneCount").textContent=scene.objects.size;$("cmdCount").textContent=r.gfx.length+" cmds";$("hudEntities").textContent=scene.objects.size;$("hudCommands").textContent=r.gfx.length;$("hudSteps").textContent=r.steps;$("mCalls").textContent=r.calls;$("mDepth").textContent=r.max_call_depth;$("mSteps").textContent=r.steps;$("mPeak").textContent=r.peak;$("mCmds").textContent=r.gfx.length;$("vmBadge").textContent=r.ok?"EXECUTED":"ERROR";$("pGfx").textContent=r.gfx.length+" cmds";$("dGfx").textContent="WASM memory";
+ $("sceneList").innerHTML=[...scene.objects.values()].map(o=>`<div class="entity" data-entity="${o.id}" style="${scene.selectedId===o.id?"border-color:#4c94b5":""}"><div class="entityTop"><div class="entityName">entity ${o.id}</div><div class="entityType">${o.type}</div></div><div class="entityMeta">pos ${o.pos.map(x=>x.toFixed(2)).join(", ")}<br>rot ${o.rot.map(x=>x.toFixed(2)).join(", ")}<br>scale ${o.scale.toFixed(2)}<br>color ${o.color.slice(0,3).map(x=>x.toFixed(2)).join(", ")}</div></div>`).join("");document.querySelectorAll("[data-entity]").forEach(el=>el.onclick=()=>interaction.select(Number(el.dataset.entity)));
+ $("cmdBody").innerHTML=r.gfx.map((q,i)=>`<tr><td>${i}</td><td class="pass">${q.kind}</td><td>${q.id}</td><td>${q.a.toFixed(2)}</td><td>${q.b.toFixed(2)}</td><td>${q.c.toFixed(2)}</td><td>${q.d.toFixed(2)}</td></tr>`).join("");
+ $("vmConsole").textContent=JSON.stringify({vm:{ok:r.ok,error:r.error,steps:r.steps,peak:r.peak,calls:r.calls,max_call_depth:r.max_call_depth},globals:r.globals,gfx_commands:r.gfx},null,2);
+}
+async function frame(now){
+ try{
+   if(dirty||!compiled)await compileProgram();
+   const t=now/1000,r=I13WasmVM4.execute(W,compiled,200000,48,t);lastRun=r;if(!r.ok)throw new Error(r.error+" @ pc "+r.error_pc);scene.apply(r.gfx);subagent.refresh();renderer.render(scene);renderer2?.render(scene);renderSceneInfo(r);$("hudTime").textContent=t.toFixed(2);$("pGpu").textContent=renderer.kind;$("dGpu").textContent="live frame";frames++;if(now-lastFps>600){fps=Math.round(frames*1000/(now-lastFps));frames=0;lastFps=now;$("fpsBadge").textContent=fps+" fps"}
+ }catch(e){$("vmConsole").textContent=e.stack||e.message;$("pGpu").textContent="ERROR";$("pGpu").className="sv bad"}
+ requestAnimationFrame(frame);
+}
+async function browserTests(){
+ const rows=[];const t=(n,p,d)=>rows.push({name:n,pass:!!p,detail:d});
+ try{const h=await IReader.read(`I t <- gfx_time()\ngfx_cube(1,0,0,0,1)\ngfx_rotate(1,0,t,0)\n`),c=I13WasmVM4.compile(h.ast),v=I13WasmVM4.validate(W,c),r=I13WasmVM4.execute(W,c,10000,48,3.0);t("reader → GFX lowerer",v.ok,c.code.length+" ops");t("gfx_time",Math.abs(r.globals.t-3)<1e-9,"t="+r.globals.t);t("native GFX buffer",r.gfx.length===2,r.gfx.length+" commands");t("rotation carries host time",Math.abs(r.gfx[1].b-3)<1e-5,JSON.stringify(r.gfx[1]));t("GPU renderer initialized",!!renderer,renderer?.kind||"none");t("zero WASM imports",WebAssembly.Module.imports(new WebAssembly.Module(Uint8Array.from(atob(WASM_B64),c=>c.charCodeAt(0)))).length===0,"0 imports")}catch(e){t("browser suite",false,e.message)}
+ $("testGrid").innerHTML=rows.map(x=>`<div class="testCard"><div style="display:flex;justify-content:space-between"><b style="font-size:9.5px">${x.name}</b><span class="${x.pass?"pass":"bad"}">${x.pass?"PASS":"FAIL"}</span></div><div style="font-size:8px;color:var(--mut);margin-top:7px">${x.detail}</div></div>`).join("");return rows.every(x=>x.pass)
+}
+$("testBtn").onclick=browserTests;$("runBtn").onclick=()=>{dirty=true;$("compileBadge").textContent="recompiling"};$("editor").addEventListener("input",()=>{dirty=true;lines()});$("editor").addEventListener("scroll",()=>{$("gutter").scrollTop=$("editor").scrollTop});
+(async()=>{
+ const bytes=Uint8Array.from(atob(WASM_B64),c=>c.charCodeAt(0)),inst=(await WebAssembly.instantiate(bytes,{})).instance;W=inst.exports;$("dot").className="dot ok";$("runtimeState").textContent="WASM + GFX online";$("wasmSize").textContent=(bytes.length/1024).toFixed(1)+" KB";$("mBytes").textContent=bytes.length;
+ $("editor").value=SAMPLE;lines();renderer=await I13Graphics.create($("canvas"));$("engineBadge").textContent=renderer.kind;$("engineMark").textContent=renderer.kind+" · actual GPU API";$("fullEngine").textContent=renderer.kind;
+ // Both canvases share one scene, selection layer, camera override, and c[subagent()] observer.
+ try{renderer2=await I13Graphics.create($("canvas2"))}catch(e){renderer2=null}
+ interaction.attach($("canvas"));interaction.attach($("canvas2"));
+ $("saFocus").onclick=()=>interaction.focusSelection();$("saSnap").onclick=()=>interaction.snapSelection(.25);$("saReset").onclick=()=>interaction.resetSelection();$("saCameraReset").onclick=()=>interaction.resetCamera();
+ subagent.refresh();
+ document.documentElement.dataset.renderer=renderer.kind.toLowerCase();await browserTests();requestAnimationFrame(frame);
+})();
+</script></body></html>

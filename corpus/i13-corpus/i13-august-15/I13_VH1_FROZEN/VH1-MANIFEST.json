@@ -1,0 +1,61 @@
+{
+  "freeze": "VH1",
+  "status": "FROZEN",
+  "syntax_check": "PASS",
+  "lab_http": "PASS",
+  "files": {
+    "MOUSE-SUBAGENT-v0.4.1-TEST-REPORT.txt": {
+      "bytes": 922,
+      "sha256": "5feaab00e50c031d38058dbc4bc3f135214c063399328a1dbed4c060d4d366b1"
+    },
+    "PULSE-v0.1-SPEC.md": {
+      "bytes": 1579,
+      "sha256": "ae5a8715feb5944e6b57a6298f19cc8b570f4b317064fcba9fdaa118e26f7518"
+    },
+    "VH1-DEMO-OUTPUT.txt": {
+      "bytes": 97,
+      "sha256": "d182d1e78f5864a376b00af9d4a49d7fa6daba009aa37e418c10f12a87f7171b"
+    },
+    "VH1-FROZEN.md": {
+      "bytes": 3366,
+      "sha256": "cd0734af6f1d4041eb75258dbf39d0691b8bdf756af4b47cba7509b14acc548d"
+    },
+    "VH1-TEST-REPORT.json": {
+      "bytes": 1148,
+      "sha256": "9e1ce514bb620eef29292736f0576d233ff733d694c9d7fadf1a09ca6eac92fa"
+    },
+    "i13-gfx-suite-v0.4.1.html": {
+      "bytes": 90002,
+      "sha256": "cd26eef03b57b86c056dfef9ca44afb108066fa56204b919550ae7778e0c8abf"
+    },
+    "i13-gfx-suite-v0.4.1.pyz": {
+      "bytes": 92364,
+      "sha256": "c657011a104cace5a5ffcef6c4f2d2a88f9b35e3903725fcab59ae976e6abd3a"
+    },
+    "i13-gfx-suite-v0.4.html": {
+      "bytes": 90002,
+      "sha256": "cd26eef03b57b86c056dfef9ca44afb108066fa56204b919550ae7778e0c8abf"
+    },
+    "selftest-vh1.py": {
+      "bytes": 2196,
+      "sha256": "75d8ed4dcfa28b4f86b09100c4245545970f70e158b8149891b06b325d9ce1b4"
+    },
+    "vh1-lab.html": {
+      "bytes": 5523,
+      "sha256": "ba4f4abfa21d0a6f10dd04d93a428c46086bf569d48f40d58940a86387561148"
+    },
+    "vh1-lab.pyz": {
+      "bytes": 6708,
+      "sha256": "3d05378b0177e500ee33aa8ac76820861ebc082e82bd68fbf7e93a722f808795"
+    },
+    "vh1.py": {
+      "bytes": 9132,
+      "sha256": "345a59c81e1553fa94844dda1734a7712e46f23d23cc09710a3100d1a3b6ff0a"
+    }
+  },
+  "tests": {
+    "passed": 10,
+    "total": 10,
+    "pass": true
+  }
+}

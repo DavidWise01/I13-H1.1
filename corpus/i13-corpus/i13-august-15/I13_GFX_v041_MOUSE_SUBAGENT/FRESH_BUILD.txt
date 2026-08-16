@@ -1,0 +1,4 @@
+I-13.GFX v0.4 FRESH BUILD
+Created in a brand-new folder to avoid stale/grayed artifact references.
+Primary UI: i13-gfx-suite-v0.4.html
+Launcher: i13-gfx-suite-v0.4.pyz

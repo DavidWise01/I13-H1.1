@@ -1,0 +1,28 @@
+I-13.GFX SUITE v0.4 — FULL PACKAGE
+
+Runtime / UI
+  i13-gfx-suite-v0.4.html
+  i13_cortex_vm_v04.wasm
+  i13_cortex_vm_v04.c
+  i13-wasm-vm-bridge-v0.4.js
+  i-reader-engine-v0.2.js
+  README-GFX-V0.4.txt
+  GFX-V0.4-TEST-REPORT.txt
+  selftest-gfx-v04-node.js
+  selftest-v03-regression-node.js
+
+Pulse v0.1
+  pulse_axiom.py                 original supplied axiom
+  PULSE-v0.1-SPEC.md             language specification
+  pulse_v01.py                   reference parser/interpreter
+  example.pulse                  example source
+  selftest-pulse-v0.1.py         regression tests
+  PULSE-V0.1-TEST-REPORT.txt
+  PULSE-EXAMPLE-OUTPUT.txt
+
+Launcher
+  i13-gfx-suite-v0.4.pyz         included at ZIP root
+
+Delimiter decision
+  ... = hard Pulse statement/transition delimiter
+  ..  = reserved in Pulse v0.1

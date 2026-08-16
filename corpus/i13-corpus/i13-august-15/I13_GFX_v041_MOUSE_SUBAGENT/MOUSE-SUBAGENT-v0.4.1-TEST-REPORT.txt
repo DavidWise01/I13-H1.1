@@ -1,0 +1,31 @@
+I-13.GFX v0.4.1 — MOUSE + c[subagent()] TEST REPORT
+
+dashboard JavaScript syntax .......... PASS
+single-file launcher serving ......... PASS
+mouse/subagent feature checks ........ PASS
+native GFX command-plane regression .. PASS
+v0.3 Func/Call/Ret regression ........ PASS
+
+INTERACTION
+PASS  left-click selection
+PASS  left-drag ground-plane movement
+PASS  right-drag orbit
+PASS  middle / Shift+left pan
+PASS  wheel zoom
+PASS  double-click focus
+PASS  persistent per-entity override layer
+PASS  selected-object XYZ gizmo
+
+c[subagent()]
+PASS  viewport-embedded observer/controller
+PASS  selection observation
+PASS  gesture observation
+PASS  camera override observation
+PASS  focus action
+PASS  snap .25 action
+PASS  reset-object action
+PASS  reset-camera action
+
+NOTE
+c[subagent()] in v0.4.1 is a deterministic local scene subagent/controller.
+It does not pretend to be a separate AI model or make autonomous scene edits.
