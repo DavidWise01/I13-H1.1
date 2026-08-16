@@ -1,0 +1,135 @@
+name: Stage 14.6 Queen local intent gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'build.rs'
+      - 'Cargo.toml'
+      - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
+      - 'src/lib.rs'
+      - 'corpus/h1.1-corpus.jsonl'
+      - 'corpus/maps/WORLD-IV-SONIA.json'
+      - 'scripts/corpus_browser_stage14_3.py'
+      - 'docs/index.html'
+      - 'docs/stages/stage14-corpus-navigator.js'
+      - 'docs/stages/stage14-4-corpus-spatial.js'
+      - 'docs/stages/stage14-5-corpus-local-mesh.js'
+      - 'docs/stages/stage14-6-corpus-intent.js'
+      - 'spec/STAGE14.6-CORPUS-INTENT.md'
+      - '.github/workflows/stage14-6-intent.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  intent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+
+      - name: Test Stage 14.2 walker regression
+        run: cargo test corpus_walker::tests -- --nocapture
+
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Check Stage 14.6 JavaScript syntax
+        run: node --check docs/stages/stage14-6-corpus-intent.js
+
+      - name: Execute Stage 14.6 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage14-6-corpus-intent.js', 'utf8');
+          const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; } },
+            console, Map, Set, Object, Math, JSON, Error, Uint8Array, BigInt, WebAssembly,
+            atob: value => Buffer.from(value, 'base64').toString('binary'),
+            setTimeout() { return 0; }, clearTimeout() {}, setInterval() { return 0; }, clearInterval() {}
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const stage = sandbox.window.I13CorpusIntentStage;
+          assert(stage, 'Stage 14.6 export missing');
+          assert.strictEqual(stage.version, '14.6.0');
+          const result = stage.intentSelfTest(manifest);
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          assert.strictEqual(result.checks.length, 10);
+          console.log(`STAGE 14.6 JS PASS · checks=${result.checks.length} · roots=${manifest.counts.nodes}`);
+          NODE
+
+      - name: Execute Wasm intent witness contract
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+          const bytes = fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+          const SUCCESS = 1n << 63n;
+          const MASK32 = 0xffff_ffffn;
+          function fnv1a32(text) {
+            let h = 0x811c9dc5 >>> 0;
+            for (const byte of Buffer.from(text, 'utf8')) { h ^= byte; h = Math.imul(h, 0x01000193) >>> 0; }
+            return h >>> 0;
+          }
+          function decodeNeighbor(value) {
+            const v = BigInt(value);
+            if ((v & SUCCESS) === 0n) return null;
+            return { address: Number(v & MASK32) >>> 0, flags: Number((v >> 32n) & 0xffn), weight: Number((v >> 40n) & 0xffn) };
+          }
+          (async () => {
+            const { instance } = await WebAssembly.instantiate(bytes, {});
+            const e = instance.exports;
+            const byAddress = new Map(manifest.nodes.map(node => [node.address >>> 0, node]));
+            const start = fnv1a32('sonia-001');
+            const goal = fnv1a32('fractal-007');
+            const walk = BigInt(e.i13_corpus_walk_next(start, goal, 0, 54));
+            assert.notStrictEqual(walk & SUCCESS, 0n, 'Wasm route missing');
+            const expected = Number(walk & MASK32) >>> 0;
+            const count = Number(e.i13_corpus_neighbor_count(start, 0));
+            const local = [];
+            for (let slot = 0; slot < count; slot++) {
+              const edge = decodeNeighbor(e.i13_corpus_neighbor(start, slot, 0));
+              assert(edge, 'neighbor decode failed');
+              assert(byAddress.has(edge.address), 'neighbor absent from manifest');
+              local.push(edge.address);
+            }
+            assert(local.includes(expected), 'route next-hop not in local neighborhood');
+            const wrong = local.find(address => address !== expected);
+            assert(wrong !== undefined, 'fixture needs at least two local choices');
+            const admissible = selected => local.includes(selected) && selected === expected;
+            assert.strictEqual(admissible(expected), true, 'expected next-hop should pass intent witness');
+            assert.strictEqual(admissible(wrong), false, 'wrong local edge should be VETO');
+            assert.strictEqual(Number(e.i13_corpus_neighbor_count(start, 1)), 0, 'contextual Sonia must expose zero evidence-mode neighbors');
+            const evidenceWalk = BigInt(e.i13_corpus_walk_next(start, goal, 1, 54));
+            assert.strictEqual(evidenceWalk & SUCCESS, 0n, 'contextual Sonia should have no evidence-only route');
+            console.log(`INTENT WASM PASS · Sonia degree=${count} · expected=${byAddress.get(expected).id} · wrong-local=VETO · evidence=VETO`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Check Stage 14.6 loader and authority isolation
+        run: |
+          grep -q "s7.src = 'stages/stage14-6-corpus-intent.js'" docs/index.html
+          grep -q "s6.src = 'stages/stage14-5-corpus-local-mesh.js'" docs/index.html
+          test "$(grep -o 'src=\"stages/' docs/index.html | wc -l)" -eq 7
+          grep -q "preview != request != pending != commit" spec/STAGE14.6-CORPUS-INTENT.md
+          grep -q "does not move or commit the Queen" docs/stages/stage14-6-corpus-intent.js
+          grep -q "navigator()?.step?.()" docs/stages/stage14-6-corpus-intent.js
+          ! grep -q "verifyExit" docs/stages/stage14-6-corpus-intent.js
+          ! grep -q "runtime.current =" docs/stages/stage14-6-corpus-intent.js
