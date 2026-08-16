@@ -43,6 +43,8 @@ jobs:
         run: node --check docs/stages/ivm-reader.js
       - name: Check Stage 4 JavaScript syntax
         run: node --check docs/stages/stage4-toolchain.js
+      - name: Check Stage 7 JavaScript syntax
+        run: node --check docs/stages/stage7-jit-shell.js
       - name: Check Stage 6 JavaScript syntax
         run: node --check docs/stages/stage6-ology-live.js
       - name: Check Pages wiring
@@ -50,6 +52,7 @@ jobs:
           grep -q 'src="exploded-view.js"' docs/index.html
           grep -q 'src="stages/ivm-reader.js"' docs/index.html
           grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
+          grep -q 'src="stages/stage7-jit-shell.js"' docs/index.html
           grep -q 'src="stages/stage6-ology-live.js"' docs/index.html
       - name: Check Stage 5 bounded layout contract
         run: |
@@ -61,6 +64,44 @@ jobs:
           grep -q 'expandMachine' docs/exploded-view.js
           grep -q 'collapseMachine' docs/exploded-view.js
           grep -q 'toggleMachine' docs/exploded-view.js
+      - name: Check Stage 7 JIT mount contract
+        run: |
+          grep -q "const MODULE_ID = 'jit'" docs/stages/stage7-jit-shell.js
+          grep -q "title: 'JIT SHELL v0.2 · EXPLODED'" docs/stages/stage7-jit-shell.js
+          grep -q 'expanded: false' docs/stages/stage7-jit-shell.js
+          grep -q 'machineExpanded: false' docs/stages/stage7-jit-shell.js
+          grep -q "label: 'RESET'" docs/stages/stage7-jit-shell.js
+          grep -q "label: 'STEP'" docs/stages/stage7-jit-shell.js
+          grep -q "label: 'RUN'" docs/stages/stage7-jit-shell.js
+          grep -q "label: 'CACHE'" docs/stages/stage7-jit-shell.js
+          grep -q "label: 'CAP ON'" docs/stages/stage7-jit-shell.js
+          grep -q '7/7 PASS recorded' docs/stages/stage7-jit-shell.js
+      - name: Execute Stage 7 JIT reference self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage7-jit-shell.js', 'utf8');
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {} },
+            console,
+            Map,
+            Object,
+            Math
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const result = sandbox.window.I13JitShell.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          const checks = Object.fromEntries(result.checks.map(c => [c.name, c.pass]));
+          assert.strictEqual(checks['cold demo returns 6'], true);
+          assert.strictEqual(checks['cold demo is cache miss'], true);
+          assert.strictEqual(checks['warm demo is cache hit'], true);
+          assert.strictEqual(checks['address deterministic'], true);
+          assert.strictEqual(checks['capability denial vetoes'], true);
+          NODE
       - name: Check Stage 6 live observer contract
         run: |
           grep -q "version: '0.1.0'" docs/stages/stage6-ology-live.js
@@ -115,13 +156,12 @@ jobs:
           NODE
       - name: Keep deeper stages unmounted
         run: |
-          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 3
-          ! grep -Fq "I13Exploded.mount('jit'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('gfx'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage4-toolchain.js
-          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage4-toolchain.js
+          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 4
+          ! grep -Fq "I13Exploded.mount('gfx'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage7-jit-shell.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage7-jit-shell.js
