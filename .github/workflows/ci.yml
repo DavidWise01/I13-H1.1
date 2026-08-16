@@ -39,7 +39,32 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check exploded-view JavaScript syntax
         run: node --check docs/exploded-view.js
+      - name: Check Stage 3 JavaScript syntax
+        run: node --check docs/stages/ivm-reader.js
       - name: Check Pages wiring
-        run: grep -q 'src="exploded-view.js"' docs/index.html
-      - name: Keep Stage 2 dormant
-        run: '! grep -q "I13Exploded.mount" docs/index.html'
+        run: |
+          grep -q 'src="exploded-view.js"' docs/index.html
+          grep -q 'src="stages/ivm-reader.js"' docs/index.html
+      - name: Check canonical IVM opcode set
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/ivm-reader.js', 'utf8');
+          const match = source.match(/const OPCODES = Object\.freeze\(\[(.*?)\]\);/s);
+          assert(match, 'OPCODES declaration missing');
+          const ops = [...match[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+          assert.deepStrictEqual(ops, ['Const','Ask','Attr','Ret','Answer','Drop','Bin','Cmp','If','Call','Block','Else','End','Func','Halt']);
+          assert.strictEqual(ops.length, 15);
+          assert.strictEqual(ops.includes('br'), false);
+          NODE
+      - name: Check Stage 3 mount contract
+        run: |
+          grep -q "const MODULE_ID = 'reader'" docs/stages/ivm-reader.js
+          grep -q 'expanded: false' docs/stages/ivm-reader.js
+          grep -q "label: 'RESET'" docs/stages/ivm-reader.js
+          grep -q "label: 'STEP'" docs/stages/ivm-reader.js
+          grep -q "label: 'RUN'" docs/stages/ivm-reader.js
+          grep -q "label: 'AUTO'" docs/stages/ivm-reader.js
+      - name: Keep later stages unmounted
+        run: test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 1
