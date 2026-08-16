@@ -47,6 +47,15 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 > **E2 sits under E** as the algorithmic backbone: the DSA theory the Python-fluency
 > tier (A) applies. Karumanchi (2017) is a published textbook — VERIFIED, not contested.
 
+## E3. PL FOUNDATIONS (topic) — Programming Languages (-ology: programming languages / C++)
+| Skill | Layer | Status | Tool |
+|---|---|---|---|
+| `fundamentals-cpp` | pl-foundations | VERIFIED | `cpp_explorer.html` |
+
+> **E3 = PRUNING discipline:** C++ is a distinct *language* node, NOT a clone of the
+> Python-fluency tier (A). One clean language node added; no redundant "beginner tier"
+> duplication. Pairs with E2 (implement DSA in C++) and A (C++ vs Python idioms).
+
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |
 |---|---|---|---|---|
@@ -66,6 +75,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **Software Design Patterns** → D (learning-patterns)
 - **History of Computing** → E (byte, retro-games, embedded-8051)
 - **Computer Science (algorithms)** → E2 (data-structures-algorithms)
+- **Programming Languages (C++)** → E3 (fundamentals-cpp)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
 - **Conspiracy Studies / Contested Narrative** → F-contested (eyes-wide-open)
 - **Media Literacy / Propaganda Inoculation** → cross-cutting (C + F pair)
@@ -76,6 +86,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 3. `computing-history` — byte-magazine, retro-game-books, embedded-8051
 4. `cultural-myth` — rape-of-the-mind, eyes-wide-open
 5. `cs-foundations` — data-structures-algorithms
+6. `pl-foundations` — fundamentals-cpp
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.
