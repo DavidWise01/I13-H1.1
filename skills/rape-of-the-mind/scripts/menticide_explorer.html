@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rape of the Mind — Meerloo Chapter Explorer</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px;max-width:1000px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px;cursor:pointer}
+  .card:hover{border-color:var(--acc)}
+  .ch{font-size:11px;color:var(--amber);margin-bottom:4px}
+  .card h3{margin:0 0 6px;font-size:14px}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .detail{margin-top:14px;background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:16px;display:none}
+  .detail.show{display:block}
+  .detail h2{margin:0 0 8px;color:var(--acc)}
+  .detail .body{white-space:pre-wrap}
+  .concepts{margin-top:14px;padding:12px;background:var(--panel);border:1px solid #1c2735;border-radius:8px}
+  .concepts h2{margin:0 0 8px;font-size:13px;color:var(--amber)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Rape of the Mind — Chapter Explorer</h1>
+  <div class="sub">Joost A. M. Meerloo, M.D. (1956) &mdash; Psychology of Thought Control, Menticide &amp; Brainwashing. Self-contained; data distilled from archive.org OCR.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="filter chapters / themes…" style="flex:1;min-width:220px">
+    <select id="cat"><option value="">all</option><option value="mechanism">mechanism</option><option value="totalitarian">totalitarian</option><option value="resistance">resistance</option></select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="detail" id="detail"><h2 id="d-title"></h2><div class="body" id="d-body"></div></div>
+  <div class="concepts">
+    <h2>Key concepts (Meerloo's vocabulary)</h2>
+    <span class="pill">Menticide — the killing of the mind / independent thought</span>
+    <span class="pill">Brainwashing — systematic psychological dismantling</span>
+    <span class="pill">Pavlovian conditioning as control</span>
+    <span class="pill">Totalitaria — the totalitarian mind-space</span>
+    <span class="pill">Mental contagion / mass delusion</span>
+    <span class="pill">Fear as a tool of terror</span>
+    <span class="pill">Medication into submission (drugs + suggestion)</span>
+    <span class="pill">The turncoat in each of us</span>
+    <span class="pill">Freedom — our mental backbone</span>
+  </div>
+</main>
+<footer>
+  Source: archive.org item <code>the-rape-of-the-mind-...-brainwash</code> (open <code>opensource</code> copy; the originally-linked <code>loggedin</code> upload was 401-gated).
+  The linked upload's political subject tags are uploader noise &mdash; this book is 1956 clinical psychiatry. Open via file:// or any static host.
+</footer>
+<script>
+const CH = [
+  {n:1, cat:"mechanism", title:"You Too Would Confess", page:6, body:"Why ordinary, decent people confess under enough psychological + physical pressure. The core unsettling premise: given the right conditions, anyone can be broken — confession is a function of technique, not guilt."},
+  {n:2, cat:"mechanism", title:"Pavlov's Students as Circus Tamers", page:18, body:"Conditioning as a control technology. Reflex training, repetition, and reward/punishment schedules can reshape behavior — the physiological substrate of thought control."},
+  {n:3, cat:"mechanism", title:"Medication into Submission", page:30, body:"Drugs combined with suggestion lower resistance. Chemical blunting + authority opens the subject to implantation of thoughts and confessions."},
+  {n:4, cat:"mechanism", title:"Why Do They Yield? The Psychodynamics of False Confession", page:74, body:"The inner mechanics of yielding: isolation, exhaustion, enforced monotony, and the slow erosion of the self. Includes a survey of psychological processes in brainwashing and menticide (p52)."},
+  {n:5, cat:"totalitarian", title:"The Cold War Against the Mind", page:54, body:"Psychological warfare as a weapon of terror — propaganda aimed not at convincing but at confusing and demoralizing populations."},
+  {n:6, cat:"totalitarian", title:"Totalitaria and Its Dictatorship", page:61, body:"How a totalitarian system builds a self-contained mental world: cultural predilection for totalitarianism, and the psychology of the totalitarian leader."},
+  {n:7, cat:"totalitarian", title:"The Intrusion by Totalitarian Thinking", page:75, body:"How totalitarian thought patterns leak into ordinary institutions and relationships — the intrusion of the administrative/absolute mind."},
+  {n:8, cat:"mechanism", title:"Trial by Trial", page:86, body:"The ritual of accusation, public self-criticism, and staged trial as a tool to extort conformity and confessions."},
+  {n:9, cat:"mechanism", title:"Fear as a Tool of Terror", page:101, body:"Sustained fear degrades critical thinking. Terror is not a side effect — it is the operating mechanism of menticide."},
+  {n:10, cat:"totalitarian", title:"The Child Is Father to the Man", page:111, body:"How totalitarian personalities may develop — early conditioning, submission to authority, and the roots of compliance."},
+  {n:11, cat:"mechanism", title:"Mental Contagion and Mass Delusion", page:121, body:"How conviction spreads through groups like infection — crowds, rumors, and shared false beliefs (mass delusion) as a social-psychological phenomenon."},
+  {n:12, cat:"mechanism", title:"Technology Invades Our Minds", page:132, body:"Mass media, broadcasting, and the accelerating tech of persuasion — written before TV saturation, strikingly prescient about mediated manipulation."},
+  {n:13, cat:"totalitarian", title:"Intrusion by the Administrative Mind", page:139, body:"Bureaucratic rigidity and the 'administrative mind' as a softer totalitarianism — conformity enforced through procedure."},
+  {n:14, cat:"resistance", title:"The Turncoat in Each of Us", page:153, body:"The capacity to betray others (and oneself) is universal — understanding it is the first step to guarding against it."},
+  {n:15, cat:"resistance", title:"Education for Discipline or Higher Morale", page:169, body:"The difference between healthy discipline and brainwashing — education that builds autonomy vs. education that breaks it."},
+  {n:16, cat:"resistance", title:"From Old to New Courage — Who Resists", page:175, body:"What makes some people resist menticide: inner cohesion, meaning, and practiced moral courage."},
+  {n:17, cat:"resistance", title:"Freedom — Our Mental Backbone", page:188, body:"Freedom as a psychological necessity, not just a political right. The democratizing action of psychology and the future age of psychology."},
+  {n:18, cat:"resistance", title:"Freedom — Our Mental Backbone (cont.)", page:194, body:"The closing argument: independent thought must be actively maintained; mental freedom is the backbone that prevents rape of the mind."}
+];
+
+const grid = document.getElementById("grid");
+const detail = document.getElementById("detail");
+const q = document.getElementById("q");
+const cat = document.getElementById("cat");
+
+function render(){
+  const term = q.value.toLowerCase();
+  const c = cat.value;
+  grid.innerHTML = "";
+  CH.filter(d =>
+    (!c || d.cat === c) &&
+    (term === "" || d.title.toLowerCase().includes(term) || d.body.toLowerCase().includes(term))
+  ).forEach(d => {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `<div class="ch">CH ${d.n} · p${d.page} · ${d.cat}</div><h3>${d.title}</h3><p>${d.body.slice(0,90)}…</p>`;
+    el.onclick = () => show(d);
+    grid.appendChild(el);
+  });
+  detail.classList.remove("show");
+}
+function show(d){
+  document.getElementById("d-title").textContent = `CH ${d.n} — ${d.title} (p${d.page})`;
+  document.getElementById("d-body").textContent = d.body;
+  detail.classList.add("show");
+  detail.scrollIntoView({behavior:"smooth"});
+}
+q.oninput = render; cat.onchange = render;
+render();
+</script>
+</body>
+</html>
