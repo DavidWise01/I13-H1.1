@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>8051 Embedded Workbench — Full HTML Tool</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;--err:#ff5b6b;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:17px;margin:0;color:var(--acc)}
+  h2{font-size:14px;color:var(--amber);margin:18px 0 8px}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  nav{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid #1c2735}
+  nav button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:6px 12px;cursor:pointer}
+  nav button.active{color:var(--acc);border-color:#1d3b32;background:#10231d}
+  main{padding:14px 16px;max-width:1100px}
+  .view{display:none} .view.show{display:block}
+  table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+  th,td{border:1px solid #1c2735;padding:6px 8px;text-align:left}
+  th{color:var(--amber);background:#10171f}
+  code{color:var(--amber);background:#10171f;padding:1px 5px;border-radius:4px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px}
+  .card .meta{font-size:11px;color:var(--dim)}
+  .pill{display:inline-block;font-size:10px;padding:2px 7px;margin:2px 2px 0 0;border-radius:9px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin-top:6px}
+  a.dl:hover{background:#10231d}
+  svg{max-width:100%;height:auto;background:#0c1219;border:1px solid #1c2735;border-radius:8px}
+  .note{font-size:11px;color:var(--dim);margin-top:6px}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9881; 8051 Embedded Workbench</h1>
+  <div class="sub">Full offline HTML tool — 8051 quick-reference + 22-book embedded catalog. Self-contained: all data inline, no fetch, opens via <code>file://</code>. Source: archive.org item <code>EmbeddedProgramming</code> (the user URL <code>EmbeddedProgramming/8051Cmicro/</code> maps to file <code>8051Cmicro.pdf</code> inside it).</div>
+</header>
+<nav>
+  <button data-v="ref" class="active">SFR / Registers</button>
+  <button data-v="pin">Pinout</button>
+  <button data-v="isa">Instruction Set</button>
+  <button data-v="books">Book Catalog (22)</button>
+</nav>
+<main>
+  <!-- SFR VIEW -->
+  <section class="view show" id="ref">
+    <h2>Special Function Registers (8051, classic)</h2>
+    <table>
+      <tr><th>SFR</th><th>Addr</th><th>Role</th></tr>
+      <tr><td>P0</td><td><code>0x80</code></td><td>Port 0 (bidirectional I/O, also AD bus)</td></tr>
+      <tr><td>SP</td><td><code>0x81</code></td><td>Stack Pointer</td></tr>
+      <tr><td>DPL / DPH</td><td><code>0x82 / 0x83</code></td><td>Data Pointer (DPTR) low/high</td></tr>
+      <tr><td>PCON</td><td><code>0x87</code></td><td>Power Control (idle/power-down, baud x2)</td></tr>
+      <tr><td>TCON</td><td><code>0x88</code></td><td>Timer / Counter control</td></tr>
+      <tr><td>TMOD</td><td><code>0x89</code></td><td>Timer mode</td></tr>
+      <tr><td>TL0 / TH0</td><td><code>0x8A / 0x8C</code></td><td>Timer 0 low/high</td></tr>
+      <tr><td>TL1 / TH1</td><td><code>0x8B / 0x8D</code></td><td>Timer 1 low/high</td></tr>
+      <tr><td>P1</td><td><code>0x90</code></td><td>Port 1 (quasi-bidirectional I/O)</td></tr>
+      <tr><td>SCON</td><td><code>0x98</code></td><td>Serial port control</td></tr>
+      <tr><td>SBUF</td><td><code>0x99</code></td><td>Serial data buffer</td></tr>
+      <tr><td>P2</td><td><code>0xA0</code></td><td>Port 2 (I/O, also A15-A8 for ext. bus)</td></tr>
+      <tr><td>IE</td><td><code>0xA8</code></td><td>Interrupt Enable</td></tr>
+      <tr><td>P3</td><td><code>0xB0</code></td><td>Port 3 (I/O + alt functions: RXD/TXD/INT0/INT1/T0/T1/WR/RD)</td></tr>
+      <tr><td>IP</td><td><code>0xB8</code></td><td>Interrupt Priority</td></tr>
+      <tr><td>PSW</td><td><code>0xD0</code></td><td>Program Status Word (flags: CY, AC, F0, RS1, RS0, OV, P)</td></tr>
+      <tr><td>ACC</td><td><code>0xE0</code></td><td>Accumulator</td></tr>
+      <tr><td>B</td><td><code>0xF0</code></td><td>B register (multiply/divide)</td></tr>
+    </table>
+    <div class="note">Register banks 0-3 occupy internal RAM 0x00-0x1F; RS1:RS0 in PSW selects the active bank. 128 bytes IRAM (0x00-0x7F) + 128 SFR (0x80-0xFF). External XRAM via MOVX; code via MOVC.</div>
+  </section>
+
+  <!-- PINOUT VIEW -->
+  <section class="view" id="pin">
+    <h2>8051 DIP-40 Pinout</h2>
+    <svg viewBox="0 0 520 260" width="520" height="260" font-family="monospace" font-size="11">
+      <rect x="60" y="40" width="400" height="180" fill="#0c1219" stroke="#27e8a7"/>
+      <text x="250" y="30" fill="#ffb454" text-anchor="middle">8051 (DIP-40)</text>
+      <!-- left pins 1-20 -->
+      <g fill="#c8d6e5">
+        <text x="40" y="58">1 P1.0</text><text x="40" y="74">2 P1.1</text><text x="40" y="90">3 P1.2</text><text x="40" y="106">4 P1.3</text>
+        <text x="40" y="122">5 P1.4</text><text x="40" y="138">6 P1.5</text><text x="40" y="154">7 P1.6</text><text x="40" y="170">8 P1.7</text>
+        <text x="40" y="186">9 RST</text><text x="40" y="202">10 (RxD) P3.0</text>
+        <text x="40" y="218">11 (TxD) P3.1</text><text x="40" y="234" fill="#5a6b82">12..20 (INT0/T0..P3, XTAL..)</text>
+      </g>
+      <!-- right pins 21-40 -->
+      <g fill="#c8d6e5" text-anchor="end">
+        <text x="480" y="58">40 VCC</text><text x="480" y="74">39 P0.0 (AD0)</text><text x="480" y="90">38 P0.1 (AD1)</text>
+        <text x="480" y="106">37 P0.2 (AD2)</text><text x="480" y="122">36 P0.3 (AD3)</text><text x="480" y="138">35 P0.4 (AD4)</text>
+        <text x="480" y="154">34 P0.5 (AD5)</text><text x="480" y="170">33 P0.6 (AD6)</text><text x="480" y="186">32 P0.7 (AD7)</text>
+        <text x="480" y="202">31 (ALE/PROG)</text><text x="480" y="218">30 (PSEN)</text><text x="480" y="234" fill="#5a6b82">21..29 (P2, PSEN..XTAL2)</text>
+      </g>
+    </svg>
+    <div class="note">Ports: P0 = open-drain (needs pull-up, multiplexed AD bus); P1/P2/P3 = quasi-bidirectional with internal pull-up. P3 carries the alternate functions (serial, ext-int, timers, RD/WR).</div>
+  </section>
+
+  <!-- ISA VIEW -->
+  <section class="view" id="isa">
+    <h2>Instruction Set (categories, from 8051Cmicro OCR)</h2>
+    <table>
+      <tr><th>Class</th><th>Mnemonics (sample)</th><th>Purpose</th></tr>
+      <tr><td>Data Moving</td><td><code>MOV, MOVC, MOVX</code></td><td>Load/store IRAM, code (MOVC), external XRAM (MOVX)</td></tr>
+      <tr><td>Arithmetic</td><td><code>ADD, ADDC, SUBB, INC, DEC, MUL, DIV</code></td><td>Math on ACC/B</td></tr>
+      <tr><td>Logical</td><td><code>ANL, ORL, XRL, CLR, CPL, RL, RR</code></td><td>Bitwise &amp; rotate</td></tr>
+      <tr><td>Boolean (bit)</td><td><code>SETB, CLR, JB, JNB, JC, JNC</code></td><td>Bit-addressable space (0x20-0x2F + SFR bits)</td></tr>
+      <tr><td>Jump / Call</td><td><code>SJMP, AJMP, LJMP, JZ, JNZ, ACALL, LCALL, RET</code></td><td>Control flow</td></tr>
+      <tr><td>Addressing</td><td colspan="2">Immediate #data, Direct, Indirect @R0/@R1, Register Rn, Indexed @A+DPTR, Bit</td></tr>
+    </table>
+    <div class="note">The 8051 has 111 base opcodes. Book <code>8051Cmicro</code> walks all machine instructions in Section I (C+assembly). Use this table as a launch pad, not a complete ISA dump.</div>
+  </section>
+
+  <!-- BOOKS VIEW -->
+  <section class="view" id="books">
+    <h2>Embedded / 8051 Book Catalog (22, from archive.org <code>EmbeddedProgramming</code>)</h2>
+    <div class="row">
+      <input id="q" placeholder="search titles…" style="flex:1;min-width:220px">
+      <select id="fam"><option value="">all families</option><option value="8051">8051</option><option value="pic">PIC</option><option value="c">Embedded C</option><option value="general">General</option></select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+<footer>
+  Reference data (SFR map, pinout, ISA categories) are standard 8051 architecture facts cross-checked against the flayed OCR (<code>8051Cmicro_djvu.txt</code>). Book list is the REAL 22-title set from the archive.org item metadata. Each card links to the on-demand archive.org PDF (no repo bloat).
+</footer>
+
+<script>
+// ---- inline book catalog (22 real titles from EmbeddedProgramming metadata) ----
+const BOOKS = [
+  {n:"8051Cmicro", fam:"8051", note:"C + assembly for the 8051 family (the flayed book)"},
+  {n:"8051Cmicro_text", fam:"8051", note:"text-layer PDF of 8051Cmicro"},
+  {n:"8051_Interfacing_and_Applications", fam:"8051", note:"interfacing + applications"},
+  {n:"8051_Interfacing_and_Applications_text", fam:"8051", note:"text layer"},
+  {n:"8051_Microcontroller_Architecture__Programming_and_Applications-ayala", fam:"8051", note:"Ayala — classic 8051 architecture text"},
+  {n:"8051_Microcontroller_Architecture__Programming_and_Applications-ayala_text", fam:"8051", note:"text layer"},
+  {n:"MicrocontrollerProjectsInCForThe8051", fam:"8051", note:"hands-on C projects for 8051"},
+  {n:"Programming_Microcontrollers_in_C_2E", fam:"c", note:"generic MCU C (2nd ed.)"},
+  {n:"ExploringCForMicrocontrollers-AHandsOnApproach", fam:"c", note:"C for MCUs, hands-on"},
+  {n:"Embedded_C_Book", fam:"c", note:"the embedded C book"},
+  {n:"ArnoldK.2001.EmbeddedControllerHardwareDesign", fam:"general", note:"controller hardware design"},
+  {n:"EmbeddedProgramming", fam:"general", note:"general embedded programming"},
+  {n:"embedded-system-design", fam:"general", note:"embedded system design"},
+  {n:"Altera-embeddedProgrammable", fam:"general", note:"Altera embedded programmable logic"},
+  {n:"CompleteGuideToPic", fam:"pic", note:"PIC complete guide"},
+  {n:"PicMicrocontrollerProjectBook", fam:"pic", note:"PIC project book"},
+  {n:"PicMicrocontrollerProjectBook_text", fam:"pic", note:"text layer"},
+  {n:"Newnes.PIC.in.Practice.A.Project-based.Approach.2nd.Edition", fam:"pic", note:"PIC in practice (2nd ed.)"},
+  {n:"PicbasicProjects", fam:"pic", note:"PICBASIC projects"},
+  {n:"InterfacingPicMicrocontrollers_muya", fam:"pic", note:"interfacing PIC MCUs"},
+  {n:"Programming16BitMicrocontrollerInC", fam:"c", note:"16-bit MCU in C"},
+  {n:"IntelligentSensorDesignUsingTheMicrochipDspic", fam:"pic", note:"Microchip dsPIC sensor design"}
+];
+const ITEM = "EmbeddedProgramming";
+function renderBooks(){
+  const term = document.getElementById("q").value.toLowerCase();
+  const fam = document.getElementById("fam").value;
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  BOOKS.filter(b => (!term || b.n.toLowerCase().includes(term)) && (!fam || b.fam === fam))
+    .forEach(b => {
+      const el = document.createElement("div");
+      el.className = "card";
+      const url = "https://archive.org/download/" + ITEM + "/" + encodeURIComponent(b.n + ".pdf");
+      el.innerHTML = `<h3>${b.n}</h3><div class="meta">${b.note}</div>` +
+        `<span class="pill">${b.fam}</span>` +
+        `<br><a class="dl" href="${url}" target="_blank" rel="noopener">fetch PDF &#8599;</a>`;
+      grid.appendChild(el);
+    });
+}
+document.getElementById("q").oninput = renderBooks;
+document.getElementById("fam").onchange = renderBooks;
+
+// ---- nav switching ----
+document.querySelectorAll("nav button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("show"));
+    document.getElementById(btn.dataset.v).classList.add("show");
+  };
+});
+renderBooks();
+</script>
+</body>
+</html>
