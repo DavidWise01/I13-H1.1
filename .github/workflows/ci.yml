@@ -41,10 +41,13 @@ jobs:
         run: node --check docs/exploded-view.js
       - name: Check Stage 3 JavaScript syntax
         run: node --check docs/stages/ivm-reader.js
+      - name: Check Stage 4 JavaScript syntax
+        run: node --check docs/stages/stage4-toolchain.js
       - name: Check Pages wiring
         run: |
           grep -q 'src="exploded-view.js"' docs/index.html
           grep -q 'src="stages/ivm-reader.js"' docs/index.html
+          grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
       - name: Check canonical IVM opcode set
         run: |
           node <<'NODE'
@@ -66,5 +69,29 @@ jobs:
           grep -q "label: 'STEP'" docs/stages/ivm-reader.js
           grep -q "label: 'RUN'" docs/stages/ivm-reader.js
           grep -q "label: 'AUTO'" docs/stages/ivm-reader.js
-      - name: Keep later stages unmounted
-        run: test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 1
+      - name: Check Stage 4 mount contract
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage4-toolchain.js', 'utf8');
+          const idsMatch = source.match(/const MODULE_IDS = Object\.freeze\(\[(.*?)\]\);/s);
+          assert(idsMatch, 'MODULE_IDS declaration missing');
+          const ids = [...idsMatch[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+          assert.deepStrictEqual(ids, ['norm','python','wasm1','wasm2']);
+          const opMatch = source.match(/const CANONICAL_OPCODES = Object\.freeze\(\[(.*?)\]\);/s);
+          assert(opMatch, 'CANONICAL_OPCODES declaration missing');
+          const ops = [...opMatch[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+          assert.deepStrictEqual(ops, ['Const','Ask','Attr','Ret','Answer','Drop','Bin','Cmp','If','Call','Block','Else','End','Func','Halt']);
+          assert.strictEqual(ops.includes('br'), false);
+          assert(source.includes("label: 'PY ENGINE'"));
+          assert(source.includes("label: 'WASM SELFTEST'"));
+          assert(source.includes("label: 'RECEIPT'"));
+          assert(source.includes("label: 'CHECK'"));
+          NODE
+      - name: Keep deeper stages unmounted
+        run: |
+          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 2
+          ! grep -q 'I13Exploded.mount.(.jit' docs/stages/stage4-toolchain.js
+          ! grep -q 'I13Exploded.mount.(.gfx' docs/stages/stage4-toolchain.js
+          ! grep -q 'I13Exploded.mount.(.ology' docs/stages/stage4-toolchain.js
