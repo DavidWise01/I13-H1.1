@@ -65,9 +65,9 @@ jobs:
           grep -q 'src="stages/stage10-pulse.js"' docs/index.html
           grep -q 'src="stages/stage6-ology-live.js"' docs/index.html
 
-      - name: Check Stage 5 bounded layout contract
+      - name: Check Stage 13.1 bounded glass layout contract
         run: |
-          grep -q "version: '0.2.0'" docs/exploded-view.js
+          grep -q "version: '0.3.1'" docs/exploded-view.js
           grep -q 'function wrapLines' docs/exploded-view.js
           grep -q "createElementNS(SVG_NS, 'clipPath')\|el('clipPath'" docs/exploded-view.js
           grep -q 'machineExpanded: spec.machineExpanded === true' docs/exploded-view.js
@@ -75,6 +75,11 @@ jobs:
           grep -q 'expandMachine' docs/exploded-view.js
           grep -q 'collapseMachine' docs/exploded-view.js
           grep -q 'toggleMachine' docs/exploded-view.js
+          grep -q 'sectionFooterHeight: 56' docs/exploded-view.js
+          grep -q 'cycleSectionPage' docs/exploded-view.js
+          grep -q 'cycleMachinePage' docs/exploded-view.js
+          grep -q 'ev-glass-shell' docs/exploded-view.js
+          grep -q "layout: '13.1-glass-boundary'" docs/exploded-view.js
 
       - name: Check Stage 7 JIT mount contract
         run: |
