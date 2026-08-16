@@ -1,0 +1,153 @@
+:::: I13 VM CONTAINER | netc-cwgo | 16/16 ::::
+source:    unknown
+url:       https://archive.org/details/unknown
+local:     C:\Davids files\hermes agent\skill-worktop\netc-cwgo
+cells:     16/16
+files:
+  - name: 1.BAT
+    size: 11
+    sha256: 4030febb4ce0d6a7afd23cb6df153f8ef182f97b58b9c26c70f4edda57eba6b8
+    kind: bat
+  - name: 2.BAT
+    size: 11
+    sha256: da4f743a5a6d97c13ae823de606d4d7b9dc3fcdaaf8a4b893c0105131c854222
+    kind: bat
+  - name: ANTENNAS.CW
+    size: 173
+    sha256: 8e4b9cddbe02c310300fe8e3563c2e5432f53700d89b5b2708279da8351393af
+    kind: cw
+  - name: CITIES.CW
+    size: 2007
+    sha256: ee9d02df6c9e2e217b63e60d74cab896a6caeb2e58227341fc27da44bb5e852d
+    kind: cw
+  - name: CW.CFG
+    size: 32
+    sha256: 7545a42b7b5bec00437bb1e26500d8b66d2a082549ae4d17bc6fd05eadd69c98
+    kind: cfg
+  - name: CW.COM
+    size: 53770
+    sha256: e90fa37064a798f654b61233f60b366cae359d3e4f3b29d163f4e2ff9d41bcc4
+    kind: com
+  - name: CWGUIDE.TXT
+    size: 8000
+    sha256: b0fc15015be05db1ceee7e2bec0119585ec9d655215b9e134ccfdf31564a1d1a
+    kind: txt
+  - name: FEEDBACK.FRM
+    size: 1208
+    sha256: 526a0d187635e174ade1ef8448d3e38d152d415fd82b2c9e7777d6a35b993d0d
+    kind: frm
+  - name: FL.BAT
+    size: 27
+    sha256: a4d5a1594f7612930a6d9929b44ab92a13f3867670f2849f49951db7cc5c8f46
+    kind: bat
+  - name: FLAW2.MAP
+    size: 342
+    sha256: b714c50d7271cab8894d6243d70f2a89b56d863bd570bc7c9924d3becaa94960
+    kind: map
+  - name: GENIE.INF
+    size: 678
+    sha256: c29cf182e01a820394c71023e24338e0707a6a6379df39546839d388c86a7704
+    kind: inf
+  - name: GO.BAT
+    size: 1047
+    sha256: 4e97b02c460b1f8ba0da9d71a28906ad18033cda2c014798eaf1eba9b53697c7
+    kind: bat
+  - name: GROUP.DCT
+    size: 2503
+    sha256: 03c276d8ce89a6ad8975a27bd9d070f1748c4baaa11e464a05b1b56edaf20393
+    kind: dct
+  - name: GROUPS.1
+    size: 60
+    sha256: 11d757de1c1c65147401c01f8e7a887685ca8d3d9c1ce46d14399f3d56ddc13a
+    kind: 1
+  - name: GROUPS.2
+    size: 49
+    sha256: 3e378e4864dcc1736a402f7b0209e5a131d84b187e241c7b740a3d5d018a8e61
+    kind: 2
+  - name: GROUPS.CW
+    size: 53
+    sha256: 7941d5dd4e4c977f3dd644560f77dd5d3cab63688a20c7cd86da1934ca0a47bc
+    kind: cw
+  - name: HAMRADIO.INF
+    size: 5924
+    sha256: 1803ac1dc51fad8b46ce39ce31a856e0544a32005d91889af7491069bdc45c36
+    kind: inf
+  - name: HDINSTAL.BAT
+    size: 629
+    sha256: 365bb7629697a8f26b8344da13962c3a046011cb1f824d6f546e6e8e7fd6d4ea
+    kind: bat
+  - name: JOBS.CW
+    size: 417
+    sha256: 7b02106db2f041e74c00781e9ac079ba5a6bc0512f957c704b8755c4742b4976
+    kind: cw
+  - name: MC.BAT
+    size: 497
+    sha256: 9374f2c5e2eee88b6e616a0828d1af0160cc162b423dab57fbd967219c3f463e
+    kind: bat
+  - name: MORSE.DCT
+    size: 92860
+    sha256: 85d82b4f40d9b21a9f27f24c2081cd3b3a6e6a5e7d5d18744492099f66fda1f2
+    kind: dct
+  - name: MORSE.EXE
+    size: 59978
+    sha256: e24938f7f12fdcc692589661a7a9605b59d9ff8f3372c97a5d9742ec9c79416f
+    kind: exe
+  - name: MORSE1.DOC
+    size: 724
+    sha256: 179bd261115b9971a7ff63b0b7095a4c184db2b05e505791c95d440cbd800a74
+    kind: doc
+  - name: MORSECOD.BAS
+    size: 3968
+    sha256: 1825cba37634c6d645e58bb71a2947a7c7661bd1d1031fb51b65e3c124241fc6
+    kind: bas
+  - name: MORSETU1.EXE
+    size: 48982
+    sha256: 43f55781aa712ea6fc75d5c587d1e0f789cbec270241576efef063607d9f4939
+    kind: exe
+  - name: MORSETU2.EXE
+    size: 48982
+    sha256: b2ab8ee1449e4ecd0ae3dc6a05c43047afcb7693e2752eacf0d9f46d2d51ef79
+    kind: exe
+  - name: MT.BAT
+    size: 29
+    sha256: 5617adccaf9c83e267764a53657b6f56eefbceb60438bb2827acb1968d4fbdad
+    kind: bat
+  - name: MYGROUP.CW
+    size: 13
+    sha256: 35592e777e3d54f8f2e0df59fd6ed4179d6252a22a1df83a3b2307ba9c1eedc3
+    kind: cw
+  - name: NAMES.CW
+    size: 530
+    sha256: 3cb2e95d59ff5b0b2050a4ca132c3e5525164d2709910da48e55d53c1ef67206
+    kind: cw
+  - name: PAIRS.CW
+    size: 251
+    sha256: 112b5c3ee148d771572857b375f0ace677e39a03b23c2a41891efa340fae92d2
+    kind: cw
+  - name: PARIS.TXT
+    size: 256
+    sha256: d5d00b9ade387081d2cb6d987459ab6a2b5d7b2de0a960c87b8dedadd04d4a35
+    kind: txt
+  - name: PROBLEM.RPT
+    size: 1585
+    sha256: 5d461ff49cea1480ae9f7e3a5b3c3bb0a88164fc203e7e1d8301bec3b59f3d74
+    kind: rpt
+  - name: README.1ST
+    size: 2056
+    sha256: aaba0c52ac78bf890b07fdd75ebc489c2c2ecc97439bfb6d8dc769bac495fdc9
+    kind: 1st
+  - name: RIGS.CW
+    size: 358
+    sha256: a6055daa2b8528e5eb5cc62d69043460276aa4f5229469b8dedf66fb0f5dbdd4
+    kind: cw
+  - name: WORDS.CW
+    size: 1554
+    sha256: 2b923f445b745ca6fe7f05e3a1c2782bc58291aad2949da7215da363ee0a8f8c
+    kind: cw
+  - name: cw_tool.py
+    size: 6946
+    sha256: 634d80f3e7c2507fd10d71b383f5f49f0a8c2c2cb05cfb60b17791eea64e46c7
+    kind: py
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:01
+:::: END | netc-cwgo | ::::

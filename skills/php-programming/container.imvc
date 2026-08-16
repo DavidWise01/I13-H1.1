@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | php-programming | 16/16 ::::
+source:    ost-computer-science-php
+url:       https://archive.org/details/ost-computer-science-php
+local:     C:\Davids files\hermes agent\skill-worktop\php-programming
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 11641735
+    sha256: 3fc3d6d7e82754a1579144fd1733acbb6eccbeef0cc0e0f4635089e444e96b80
+    kind: pdf
+  - name: book_djvu.txt
+    size: 892222
+    sha256: 0df48e696257ab0338b4bfe8689d9eb5575b2512605727aa3ff8fca9a290f1b7
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:02
+:::: END | php-programming | ::::

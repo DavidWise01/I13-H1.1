@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | dantes-inferno-bandini | 16/16 ::::
+source:    bwb_S0-BSP-206
+url:       https://archive.org/details/bwb_S0-BSP-206
+local:     C:\Davids files\hermes agent\skill-worktop\dantes-inferno-bandini
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 27749414
+    sha256: bfa3fea2270340a15fe33e9f9fa13e239dbe44e29d8d84bcb0aae2880b75a1ff
+    kind: pdf
+  - name: book_djvu.txt
+    size: 1039891
+    sha256: d77770fed9d34a9bc24661bb21479000d722a481f4e742db69c7369e907f0f98
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:00
+:::: END | dantes-inferno-bandini | ::::

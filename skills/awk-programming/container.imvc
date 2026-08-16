@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | awk-programming | 16/16 ::::
+source:    pdfy-MgN0H1joIoDVoIC7
+url:       https://archive.org/details/pdfy-MgN0H1joIoDVoIC7
+local:     C:\Davids files\hermes agent\skill-worktop\awk-programming
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 8204128
+    sha256: e6274112ff6311161111e0e0b6c78e2e15db7243d19d773c957eed039f7d6cce
+    kind: pdf
+  - name: book_djvu.txt
+    size: 434683
+    sha256: 3127c1b3c5fb25978d3a4c85c872a89b4cc27f1ae519a94c245c33abc3415dd2
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:00
+:::: END | awk-programming | ::::

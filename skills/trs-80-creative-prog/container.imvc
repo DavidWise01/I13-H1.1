@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | trs-80-creative-prog | 16/16 ::::
+source:    Creative_Programming_TRS-80_Volume_1_1983
+url:       https://archive.org/details/Creative_Programming_TRS-80_Volume_1_1983
+local:     C:\Davids files\hermes agent\skill-worktop\trs-80-creative-prog
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 20404453
+    sha256: c8fab4ce2865442b6b8c0fd299b324e2b391f0b643669607f07935eaf12e5fa5
+    kind: pdf
+  - name: book_djvu.txt
+    size: 82804
+    sha256: da16d2a9e524ed15eaee1e8b9c6a8d15f66bbb42567c83cb2291381c744e9695
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:02
+:::: END | trs-80-creative-prog | ::::

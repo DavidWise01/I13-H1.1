@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | ia-unofficial-guide | 16/16 ::::
+source:    duccio-dogheria-internet-archive.-an-unofficial-guide-to-the-wolrds-most-innovat
+url:       https://archive.org/details/duccio-dogheria-internet-archive.-an-unofficial-guide-to-the-wolrds-most-innovat
+local:     C:\Davids files\hermes agent\skill-worktop\ia-unofficial-guide
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 1464011
+    sha256: fcb61047abb9f18d68f8c3620fe64c7e5a58ec700e1662b9dab42a5cc5c7319a
+    kind: pdf
+  - name: book_djvu.txt
+    size: 55032
+    sha256: f78468f9817b4cc8c2a20e595e5db1d0b9810170ae9c4c0a0a8787d64487c987
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:01
+:::: END | ia-unofficial-guide | ::::
