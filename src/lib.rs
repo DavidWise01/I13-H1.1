@@ -5,6 +5,7 @@ pub mod child;
 pub mod cortex;
 pub mod corpus;
 pub mod corpus_walker;
+pub mod curator;
 pub mod ology;
 pub mod pulse;
 pub mod quorum;
