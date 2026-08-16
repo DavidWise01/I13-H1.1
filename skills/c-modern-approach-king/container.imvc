@@ -1,0 +1,21 @@
+:::: I13 VM CONTAINER | c-modern-approach-king | 16/16 ::::
+source:    c-programming-a-modern-approach-2nd-ed-c-89-c-99-king-by
+url:       https://archive.org/details/c-programming-a-modern-approach-2nd-ed-c-89-c-99-king-by
+local:     C:\Davids files\hermes agent\skill-worktop\c-modern-approach-king
+cells:     16/16
+files:
+  - name: book.pdf
+    size: PENDING
+    sha256: PENDING
+    kind: pdf
+    note: 106MB Image Container PDF; OVER GitHub 100MB limit -> LOCAL-ONLY when downloaded
+  - name: book_djvu.txt
+    size: PENDING
+    sha256: PENDING
+    kind: txt
+    note: 1.69MB OCR; corpus blocked by archive.org 500 at flay time (2026-08-15)
+status:    LOCAL_ONLY  (binary not in git; corpus PENDING CDN recovery)
+packed:    2026-08-15T22:45:00
+NOTE:      corpus PENDING — archive.org returned HTTP 500 on every file of this item
+           at flay time (item page is public/200). Refresh container.imvc on CDN recovery.
+:::: END | c-modern-approach-king | ::::
