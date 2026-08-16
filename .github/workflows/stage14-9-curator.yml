@@ -1,0 +1,93 @@
+name: Stage 14.9 Corpus curator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/lib.rs'
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  curator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+      - name: Test Stage 14.9 curator kernel
+        run: cargo test curator::tests -- --nocapture
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+      - name: Check Stage 14.9 JavaScript syntax
+        run: node --check docs/stages/stage14-9-corpus-curator.js
+      - name: Execute Stage 14.9 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const source=fs.readFileSync('docs/stages/stage14-9-corpus-curator.js','utf8');
+          const manifest=JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json','utf8'));
+          const sandbox={window:{},document:{readyState:'loading',addEventListener(){},getElementById(){return null;}},console,Map,Set,Object,Math,JSON,Error,Uint8Array,BigInt,WebAssembly,TextEncoder,atob:v=>Buffer.from(v,'base64').toString('binary'),setTimeout(){return 0;},clearTimeout(){},setInterval(){return 0;},clearInterval(){}};
+          vm.createContext(sandbox);vm.runInContext(source,sandbox);
+          const stage=sandbox.window.I13CorpusCuratorStage;assert(stage,'Stage 14.9 export missing');
+          assert.strictEqual(stage.version,'14.9.0');
+          const result=stage.curatorSelfTest(manifest);assert.strictEqual(result.pass,true,JSON.stringify(result));assert.strictEqual(result.checks.length,10);
+          console.log(`STAGE 14.9 JS PASS · checks=${result.checks.length}`);
+          NODE
+      - name: Execute real Wasm curator contract
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          const bytes=fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+          const SUCCESS=1n<<63n,MASK32=0xffff_ffffn;
+          function fnv(text){let h=0x811c9dc5>>>0;for(const b of Buffer.from(text)){h^=b;h=Math.imul(h,0x01000193)>>>0;}return h>>>0;}
+          function proposal(v){v=BigInt(v);if((v&SUCCESS)===0n)return null;return{witness:Number(v&MASK32)>>>0,mask:Number((v>>32n)&0xffffn),skill:Number((v>>48n)&0xffn),status:Number((v>>56n)&0x7fn)};}
+          (async()=>{const {instance}=await WebAssembly.instantiate(bytes,{}),e=instance.exports;
+            for(const n of ['i13_curator_protocol_version','i13_curator_skill_mask','i13_curator_status','i13_curator_propose','i13_curator_cv'])assert.strictEqual(typeof e[n],'function',`missing ${n}`);
+            assert.strictEqual(e.i13_curator_commit,undefined,'Stage 14.9 must not export commit');
+            assert.strictEqual(Number(e.i13_curator_protocol_version()),1);
+            assert.strictEqual(Number(e.i13_curator_skill_mask(1)),0x000f);
+            assert.strictEqual(Number(e.i13_curator_skill_mask(2)),0x0017);
+            assert.strictEqual(Number(e.i13_curator_skill_mask(3)),0x0027);
+            assert.strictEqual(Number(e.i13_curator_skill_mask(99)),0);
+            const material='Sonia Kovalevskaya curator test material';
+            const context=fnv('sonia-003'),candidateId='curator-test-001',candidate=fnv(candidateId);
+            const p=proposal(e.i13_curator_propose(fnv(material),Buffer.byteLength(material),context,candidate,Buffer.byteLength(candidateId),1,1));assert(p);
+            assert.strictEqual(p.status,1);assert.strictEqual(p.skill,1);assert.strictEqual(p.mask,0x000f);assert(p.witness!==0);
+            assert.strictEqual(Number(e.i13_curator_cv(fnv(material),Buffer.byteLength(material),context,candidate,Buffer.byteLength(candidateId),1,p.status,p.mask,p.witness,1)),1);
+            assert.strictEqual(Number(e.i13_curator_cv(fnv(material),Buffer.byteLength(material),context,candidate,Buffer.byteLength(candidateId),1,p.status,p.mask,(p.witness^1)>>>0,1)),0,'tampered witness must VETO');
+            const occupied=proposal(e.i13_curator_propose(fnv(material),Buffer.byteLength(material),context,context,Buffer.byteLength('sonia-003'),2,1));assert(occupied);assert.strictEqual(occupied.status,2);
+            assert.strictEqual(BigInt(e.i13_curator_propose(fnv(material),Buffer.byteLength(material),context,candidate,Buffer.byteLength(candidateId),1,0)),0n,'authority OFF must VETO');
+            assert.strictEqual(BigInt(e.i13_curator_propose(fnv(material),Buffer.byteLength(material),context,candidate,Buffer.byteLength(candidateId),99,1)),0n,'unknown skill must VETO');
+            console.log(`CURATOR WASM PASS · status=NEW_ROOT · mask=0x${p.mask.toString(16).padStart(4,'0')} · witness=0x${p.witness.toString(16).padStart(8,'0')} · occupied=HOLD`);
+          })().catch(e=>{console.error(e);process.exit(1);});
+          NODE
+      - name: Check curator authority isolation
+        run: |
+          grep -q "SKILL != AUTHORITY" spec/STAGE14.9-CORPUS-CURATOR.md
+          grep -q "Stage 14.9 contains no corpus mutation API" spec/STAGE14.9-CORPUS-CURATOR.md
+          ! grep -q "i13_curator_commit" src/curator.rs
+          ! grep -q "navigator()?.step" docs/stages/stage14-9-corpus-curator.js
+          ! grep -q "requestSelected" docs/stages/stage14-9-corpus-curator.js
+      - name: Publish Stage 14.9 Wasm asset
+        if: github.event_name == 'push'
+        run: |
+          base64 -w 0 target/wasm32-unknown-unknown/release/i13_h1_1.wasm > docs/assets/i13_h1_1.wasm.b64
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- docs/assets/i13_h1_1.wasm.b64; then
+            echo "Wasm asset already current"
+            exit 0
+          fi
+          git add docs/assets/i13_h1_1.wasm.b64
+          git commit -m "stage14.9: publish curator Wasm"
+          git pull --rebase origin main
+          git push origin HEAD:main
