@@ -67,6 +67,6 @@ jobs:
 
       - name: Prove Stage 13 boundary lands in reserved rail
         run: |
-          grep -q 'const gy = y + h - 56;' docs/stages/stage13-h10-freeze.js
-          grep -q 'fixed 56 px footer rail' docs/STAGE13.1-GLASS-BOUNDARY.md
-          grep -q 'H1.0 stays frozen' docs/STAGE13.1-GLASS-BOUNDARY.md
+          grep -Fq 'const gy = y + h - 56;' docs/stages/stage13-h10-freeze.js
+          grep -Fq '56 px footer rail' docs/STAGE13.1-GLASS-BOUNDARY.md
+          grep -Fq 'H1.0 stays frozen' docs/STAGE13.1-GLASS-BOUNDARY.md
