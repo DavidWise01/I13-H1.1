@@ -32,3 +32,14 @@ jobs:
         run: python -m pip install numpy
       - name: Verify frozen/reference parity
         run: python scripts/verify_reference.py
+
+  pages-component:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check exploded-view JavaScript syntax
+        run: node --check docs/exploded-view.js
+      - name: Check Pages wiring
+        run: grep -q 'src="exploded-view.js"' docs/index.html
+      - name: Keep Stage 2 dormant
+        run: '! grep -q "I13Exploded.mount" docs/index.html'
