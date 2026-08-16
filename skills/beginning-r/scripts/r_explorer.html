@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Beginning R — Gardener Explorer</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:1000px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--acc)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin-top:6px}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Beginning R — Explorer</h1>
+  <div class="sub">Mark Gardener: <em>Beginning R: The Statistical Programming Language</em> (Wiley). Self-contained; 12-chapter map from the archive.org OCR. No fetch — opens via <code>file://</code>.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="filter chapters / topics…" style="flex:1;min-width:220px">
+    <select id="cat"><option value="">all parts</option><option value="Setup">Setup / Intro</option><option value="Data">Data &amp; Stats</option><option value="Graphics">Graphics</option><option value="Programming">Programming</option></select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="card" style="margin-top:14px">
+    <h3>Source files (archive.org item <code>isbn_9788126541201</code>)</h3>
+    <p><span class="pill">djvu.txt 1.0 MB (OCR)</span> <span class="pill">pdf 24 MB (primary)</span></p>
+    <a class="dl" href="https://archive.org/download/isbn_9788126541201/isbn_9788126541201.pdf" target="_blank" rel="noopener">fetch full PDF &#8599;</a>
+    <a class="dl" href="https://archive.org/details/isbn_9788126541201" target="_blank" rel="noopener">archive.org page &#8599;</a>
+  </div>
+</main>
+<footer>
+  Source: archive.org item <code>isbn_9788126541201</code> (Wiley, Indian ed.). VERIFIED R / statistics textbook — the mesh's first data-science node. Pairs with DSA (quantitative methods) and contrasts Python (data-language comparison). Open via file:// or any static host.
+</footer>
+<script>
+// 12 real chapters (from OCR CONTENTS) grouped by part
+const CH = [
+  {n:1, t:"Introducing R: What It Is and How to Get It", cat:"Setup"},
+  {n:2, t:"Starting Out: Becoming Familiar with R", cat:"Setup"},
+  {n:3, t:"Starting Out: Working with Objects", cat:"Data"},
+  {n:4, t:"Data: Descriptive Statistics and Tabulation", cat:"Data"},
+  {n:5, t:"Data: Distribution", cat:"Data"},
+  {n:6, t:"Simple Hypothesis Testing", cat:"Data"},
+  {n:7, t:"Introduction to Graphical Analysis", cat:"Graphics"},
+  {n:8, t:"Formula Notation and Complex Statistics", cat:"Data"},
+  {n:9, t:"Manipulating Data and Extracting Components", cat:"Data"},
+  {n:10, t:"Regression (Linear Modeling)", cat:"Data"},
+  {n:11, t:"More About Graphs", cat:"Graphics"},
+  {n:12, t:"Writing Your Own Scripts: Beginning to Program", cat:"Programming"}
+];
+const grid = document.getElementById("grid");
+function render(){
+  const term = document.getElementById("q").value.toLowerCase();
+  const cat = document.getElementById("cat").value;
+  grid.innerHTML = "";
+  CH.filter(c => (!term || c.t.toLowerCase().includes(term)) && (!cat || c.cat === cat))
+    .forEach(c => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<h3>Ch ${c.n}. ${c.t}</h3><p>part: ${c.cat}</p>`;
+      grid.appendChild(el);
+    });
+}
+document.getElementById("q").oninput = render;
+document.getElementById("cat").onchange = render;
+render();
+</script>
+</body>
+</html>
