@@ -1,0 +1,135 @@
+name: Stage 14.4 corpus spatial viewport
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'build.rs'
+      - 'Cargo.toml'
+      - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
+      - 'src/lib.rs'
+      - 'corpus/h1.1-corpus.jsonl'
+      - 'corpus/maps/WORLD-IV-SONIA.json'
+      - 'scripts/corpus_stage14.py'
+      - 'scripts/corpus_mesh_stage14_1.py'
+      - 'scripts/corpus_browser_stage14_3.py'
+      - 'scripts/test_corpus_spatial_stage14_4.py'
+      - 'docs/index.html'
+      - 'docs/stages/stage14-corpus-navigator.js'
+      - 'docs/stages/stage14-4-corpus-spatial.js'
+      - '.github/workflows/stage14-4-spatial.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  spatial-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Test Stage 14.4 spatial manifest
+        run: python -m unittest scripts.test_corpus_spatial_stage14_4
+
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+
+      - name: Test Stage 14.2 walker regression
+        run: cargo test corpus_walker::tests -- --nocapture
+
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Check Stage 14.4 JavaScript syntax
+        run: node --check docs/stages/stage14-4-corpus-spatial.js
+
+      - name: Execute Stage 14.4 spatial self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage14-4-corpus-spatial.js', 'utf8');
+          const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; } },
+            console, Map, Set, Object, Math, JSON, Error, Uint8Array, BigInt, WebAssembly,
+            atob: value => Buffer.from(value, 'base64').toString('binary'),
+            setTimeout() { return 0; }, clearTimeout() {}, setInterval() { return 0; }, clearInterval() {}
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const stage = sandbox.window.I13CorpusSpatialStage;
+          assert(stage, 'Stage 14.4 export missing');
+          assert.strictEqual(stage.version, '14.4.0');
+          const result = stage.spatialSelfTest(manifest);
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          assert.strictEqual(result.checks.length, 9);
+          const northWest = stage.projectSurface({ x: 65535, y: 0 }, { left: 10, top: 20, width: 100, height: 200 });
+          const southEast = stage.projectSurface({ x: 0, y: 65535 }, { left: 10, top: 20, width: 100, height: 200 });
+          assert.deepStrictEqual([northWest.sx, northWest.sy], [10, 20]);
+          assert.deepStrictEqual([southEast.sx, southEast.sy], [110, 220]);
+          console.log(`STAGE 14.4 JS PASS · checks=${result.checks.length} · roots=${manifest.counts.nodes}`);
+          NODE
+
+      - name: Execute Wasm-to-spatial traversal smoke test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          function fnv1a32(text) {
+            let h = 0x811c9dc5 >>> 0;
+            for (const byte of Buffer.from(text, 'utf8')) {
+              h ^= byte;
+              h = Math.imul(h, 0x01000193) >>> 0;
+            }
+            return h >>> 0;
+          }
+          (async () => {
+            const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+            const bytes = fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+            const { instance } = await WebAssembly.instantiate(bytes, {});
+            const e = instance.exports;
+            const byAddress = new Map(manifest.nodes.map(node => [node.address >>> 0, node]));
+            let current = fnv1a32('sonia-001');
+            const goal = fnv1a32('fractal-007');
+            const visited = [current];
+            let hops = 0;
+            while (current !== goal && hops < 54) {
+              const packed = BigInt(e.i13_corpus_walk_next(current, goal, 0, 54));
+              assert.notStrictEqual(packed & (1n << 63n), 0n, 'Wasm walker vetoed spatial route');
+              const next = Number(packed & 0xffff_ffffn) >>> 0;
+              const node = byAddress.get(next);
+              assert(node, `Wasm root ${next} absent from spatial manifest`);
+              const repacked = (((node.x & 0xffff) << 16) | (node.y & 0xffff)) >>> 0;
+              assert.strictEqual(repacked, next, `x16|y16 mismatch for ${node.id}`);
+              assert(node.x >= 0 && node.x <= 65535 && node.y >= 0 && node.y <= 65535);
+              assert.notStrictEqual(next, current, 'Queen failed to advance');
+              current = next;
+              visited.push(current);
+              hops++;
+            }
+            assert.strictEqual(current, goal, 'Queen spatial route did not reach Fractint');
+            assert(visited.length >= 2);
+            console.log(`SPATIAL WASM PASS · Sonia -> Fractint hops=${hops} · mapped roots=${visited.length}`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Check Stage 14.4 loader and isolation contract
+        run: |
+          grep -q "s5.src = 'stages/stage14-4-corpus-spatial.js'" docs/index.html
+          grep -q "s4.src = 'stages/stage14-corpus-navigator.js'" docs/index.html
+          test "$(grep -o 'src=\"stages/' docs/index.html | wc -l)" -eq 7
+          grep -q "Visual layer over Stage 14.3" docs/stages/stage14-4-corpus-spatial.js
+          grep -q "z remains local state" docs/stages/stage14-4-corpus-spatial.js
+          grep -q "+x UP" docs/stages/stage14-4-corpus-spatial.js
+          grep -q "+y RIGHT" docs/stages/stage14-4-corpus-spatial.js
