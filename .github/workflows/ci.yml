@@ -48,6 +48,16 @@ jobs:
           grep -q 'src="exploded-view.js"' docs/index.html
           grep -q 'src="stages/ivm-reader.js"' docs/index.html
           grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
+      - name: Check Stage 5 bounded layout contract
+        run: |
+          grep -q "version: '0.2.0'" docs/exploded-view.js
+          grep -q 'function wrapLines' docs/exploded-view.js
+          grep -q "createElementNS(SVG_NS, 'clipPath')\|el('clipPath'" docs/exploded-view.js
+          grep -q 'machineExpanded: spec.machineExpanded === true' docs/exploded-view.js
+          grep -q "'MACHINE +'" docs/exploded-view.js
+          grep -q 'expandMachine' docs/exploded-view.js
+          grep -q 'collapseMachine' docs/exploded-view.js
+          grep -q 'toggleMachine' docs/exploded-view.js
       - name: Check canonical IVM opcode set
         run: |
           node <<'NODE'
