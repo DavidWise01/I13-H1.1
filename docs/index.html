@@ -120,6 +120,7 @@ text{fill:var(--ink)}
 #module-layer [data-module="ology"] .tag{fill:var(--live-bg);stroke:var(--live)}
 .i13-exploded-panel[data-family="la"] .ev-shell{stroke:var(--la,#0f766e)}
 .i13-exploded-panel[data-family="qec"] .ev-shell{stroke:var(--qec,#6d28d9)}
+.i13-exploded-panel[data-family="freeze"] .ev-shell{stroke:var(--freeze,#64748b)}
 #lab > line.line{stroke:var(--live);stroke-width:2.5}
 #lab > .module-title{fill:var(--live)}
 #lab > g:nth-of-type(1) > .box{fill:#f8fbff;stroke:var(--wasm)}
@@ -162,6 +163,11 @@ text{fill:var(--ink)}
   s2.src = 'stages/stage12-vh2-cubi.js';
   s2.async = false;
   document.body.appendChild(s2);
+
+  const s3 = document.createElement('script');
+  s3.src = 'stages/stage13-h10-freeze.js';
+  s3.async = false;
+  document.body.appendChild(s3);
 })();
 </script>
 <script src="stages/stage6-ology-live.js"></script>
