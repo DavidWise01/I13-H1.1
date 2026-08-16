@@ -1,0 +1,67 @@
+name: Stage 15 WASM main suite
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/stages/stage15-wasm-main-suite.js'
+      - 'docs/index.html'
+      - 'spec/STAGE15-WASM-MAIN-SUITE.md'
+      - '.github/workflows/stage15-main-suite.yml'
+  pull_request:
+    paths:
+      - 'docs/stages/stage15-wasm-main-suite.js'
+      - 'docs/index.html'
+      - 'spec/STAGE15-WASM-MAIN-SUITE.md'
+      - '.github/workflows/stage15-main-suite.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Stage 15 JavaScript syntax
+        run: node --check docs/stages/stage15-wasm-main-suite.js
+
+      - name: Execute Stage 15 self-test
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const source=fs.readFileSync('docs/stages/stage15-wasm-main-suite.js','utf8');
+          const sandbox={
+            window:{localStorage:{getItem(){return null},setItem(){}}},
+            document:{readyState:'loading',addEventListener(){},getElementById(){return null}},
+            console,JSON,Object,Map,Set,Math,Error,
+            setTimeout(){return 0},clearTimeout(){},setInterval(){return 0},clearInterval(){}
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source,sandbox);
+          const stage=sandbox.window.I13MainSuite;
+          assert(stage,'Stage 15 export missing');
+          assert.strictEqual(stage.version,'15.0.0');
+          const result=stage.suiteSelfTest();
+          assert.strictEqual(result.pass,true,JSON.stringify(result));
+          assert.strictEqual(result.checks.length,10);
+          console.log(`STAGE 15 PASS · checks=${result.checks.length}`);
+          NODE
+
+      - name: Check Pages mount
+        run: |
+          grep -q 'src="stages/stage15-wasm-main-suite.js"' docs/index.html
+          grep -q 'suite list' spec/STAGE15-WASM-MAIN-SUITE.md
+          grep -q 'CORPUS / CURATOR' spec/STAGE15-WASM-MAIN-SUITE.md
+
+      - name: Check authority isolation
+        run: |
+          ! grep -q '\.step(' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'requestSelected' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_corpus_burrow' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_cv_verify' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_arrival_execute' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_curator_propose' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_curator_cv' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'i13_receipt_next' docs/stages/stage15-wasm-main-suite.js
