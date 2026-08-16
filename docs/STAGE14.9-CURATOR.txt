@@ -1,0 +1,17 @@
+I13 H1.1 · Stage 14.9 Corpus Inlet + Curator
+
+[c[v[corpus[curator[[(source),(context),(candidate),{skill}]]]]]cv]
+
+Browser module: stages/stage14-9-corpus-curator.js
+Runtime authority: Rust/Wasm
+Protocol: curator v1
+
+Curator may: observe, compare, propose.
+Curator may not: write corpus, commit candidate, move Q, create pending state, bypass CV.
+
+Candidate states:
+- NEW_ROOT: witnessed proposal only
+- ADDRESS_OCCUPIED: hold/compare; not proof of duplicate identity
+- browser-detected hash collision: quarantine
+
+Outer CV is required. Stage 14.9 contains no corpus mutation API.
