@@ -1,0 +1,437 @@
+SSTNPL: SBTCVM Simplified Ternary Numeric Programming Language
+
+# basic syntax notes:
+
+### Whitespace:
+you may use spaces and/or tabs at the start of any line of code, at your leisure.
+Such whitespace will be ignored automatically.
+
+### Split Lines:
+	
+	Split lines can be used to put multiple commands on one line of code.
+	FAIR WARNING: be wary of using split lines and print statements! ;)
+	
+	HELPFUL REMINDER: be sure you remove comments from the middle of adapted 
+	split-line statements!
+		example:
+			{asm setreg1;10x1 / asm segreg2;10x1 / asm add / set somevar}
+		excerpt from a fizzbuzz demo: 
+			{if remain3,@0 begin / print fizz / end}
+			{if remain5,@0 begin / print buzz / end}
+
+### Macros
+	see macros.txt
+	
+
+###line numbers in compiler messages:
+
+		1-0
+		
+	the left number is the real source line, while the right is used in 
+	split lines to identify individual commands.
+
+#### [nvalue] syntax for var, const, and val:####
+Literal prefixes are also acceptable
+So feel free to use them if its less confusing to you.
+
+for decimal values prepend '10x' or '@' i.e. 
+	var somevar=10x-15
+	var somevar=10x54
+	var somevar=@54
+	const someconst=@2
+	
+for characters prepend ':' i.e.
+	var somevar=:x
+	const someconst=:x
+
+for ternary values, no prefix is needed. you may use the '*' prefix though.:
+	var somevar=+-0+0
+	var somevar=pn0p0
+	var somevar=*pn0p0
+	const someconst=*pn0p0
+
+
+Literals:
+	
+	Certain instructions allow use of Literals:
+	
+	Decimal
+		add @20,@-4
+	
+	Ternary
+		add *+-,*++
+	
+	Character:
+		if :a,:a, goto somthing
+	
+		
+		
+		--NOTE: the following characters require escape sequences:
+		
+			ASCII        | escape sequence in SSTNPL character literals
+			-------------|----------
+			newline      | `\n`
+			null         | `\0`
+			backspace    | `\x`
+			vertical bar | `\v`
+			`;`          | `\c`
+			`\`          | `\\`
+			space        | `\s`
+			`#`          | `\p`
+			`,`          | `\m`
+	
+	Constants:
+		if somebool,$true goto somthing
+	
+		--Constants Note: non-builtin constants are imported from modules just like ints, labels, & tables, e.g.
+			dumpd $m.myconstant
+			include mymodule as m
+		
+		-- Builtin constants:
+			$true   (1)
+			$false  (0)
+
+A note on literals: literals still use a word of memory,
+	and just ease working with static values in some cases.
+
+Note that constants only use a word of memory if they are actually used as a literal.
+
+
+
+
+
+
+Command documentation:
+
+
+
+--Constants
+	const [constname]=[nvalue] : create a constant called [constname], with the value [nvalue].
+
+--Tables:
+	[see tables.txt]
+
+--Iterators:
+	[see iterate.txt]
+
+--Double-Ended Hardware Buffers:
+	[see hardware_buffers.txt]
+
+--Variables:
+	var [varname]=[nvalue]  : create a integer variable called [varname], with the value [nvalue].
+	
+	get1/get  : get value of a variable into register 1. Supports literals.
+	get2      : get value of a variable into register 2. Supports literals.
+	
+	set1/set [varname]  : set variable using value of register 1.
+	set2 [varname]      : set variable using value of register 2.
+	
+	val [nvalue] : set register 1 with value. use with set1/set.
+	
+	swap [var1],[var2] : swap the values of [var1] & [var2]
+	copy [var1],[var2] : copy [var1] to [var2]
+
+
+--Stack: 
+		SSTNPL exposes stack 2 of SBTCVM Gen 2's CPU as a general use stack:
+		Note: push2,peek2, and pop2 are available. they use register 2 instead
+			of register 1. intended for assembly-heavy programs.
+	push/push1: push item to stack. [use with 'get' or 'val']
+		like:
+			get [varname]
+			push
+		or:
+			val @10
+			push
+	pop/pop1: get item from stack [use with 'set']
+		like:
+			pop
+			set [varname]
+	peek/peek1: 'peek' at top of stack, but don't remove it. [use with 'set']
+		like:
+			peek
+			set [varname]
+	stackrev: Reverse order of items in stack.
+
+
+--Debugging:
+	marker [name] : Print an assembly debugging marker at assemble time. (with sstnpl source line appended to name)
+
+--System:
+	stop : Shutdown SBTCVM (this is how you quit a program in SBTCVM, when its loaded via a trom image.
+	waitcy [cycles] : wait for roughly the given number of cycles (numbers divisible by 6 are most accurate.)
+		values from 6 up to 59046 (6*9841) are valid.
+		NOTE: will print out a notice when [cycles] not divisible by 6.
+
+--Math: 
+	--- single-result math ---
+	-----NOTE var1 and var2 can be Literals-----
+	add [var1],[var2] : add 2 integer variables. use 'set' to store result.
+	sub [var1],[var2] : subtract 2 integer variables. use 'set' to store result.
+	mul [var1],[var2] : multiply 2 integer variables. use 'set' to store result.
+	div [var1],[var2] : divide 2 integer variables. use 'set' to store result.
+	
+	--- dual-result math ---
+	divmod [var1],[var2] : modulo division. use set1 to store modulo, use set2 to store quotient.
+		divmod @11,@2
+		set1 modulo
+		set2 quotient
+	
+	--- special multi-argument math ---
+	sum [var1],[var2],[var3]... : sum up an arbitrary 
+		combination & quantity of variables & literals. use 'set' to store result.
+			sum var1,var2,@40,*--,:4,$some_constant
+			set sum
+
+--Logic and tritwise:
+	invert [varname] : invert the sign of variable [varname], in-place. [DEPRECIATED]
+	inv [varname]    : invert the sign of an integer variable or literal. use set to store the result.
+	abs [varname]    : get the absolute value of an integer variable or literal. use set to store result.
+	nabs [varname]   : get the INVERTED absolute value of an integer variable or literal. use set to store result.
+
+--FLOW CONTROL COMMANDS:
+	----------FLOW CONTROL NOTES----------
+		SSTNPL v0.4 and later has a basic system for nestable conditional codeblocks,
+			assorted types of while/until loop blocks, & for loop blocks.
+		
+		conditional & loop blocks can be nested within each other.
+		
+		See conditional goto section on how to actually add 'begin' statements to code.
+		(note the conditional code block (begin, break, end, for, while, 
+			until. etc) system is fully automatic.
+			
+		please only place end statements in the same 'section' of code as 
+			the conditional begin/loop operation. 
+			
+		also make sure it is placed AFTER the begin/loop operation!
+		Doing otherwise WILL LEAD TO UNEXPECTED RESULTS!
+
+
+	break : skip to corrisponding 'end' statement
+	top   : behavior varies depending on context:
+			- in looped blocks, run next loop iteration, or if loop end condition 
+				has been met, loop exits as normal.
+			- in conditional blocks, run conditional block from its start again
+				unconditionally.
+			- in non-looped blocks, do the same as with conditional blocks.
+	end   : used in conjunction with conditional code blocks 
+			(made via the conditional operation 'begin') 
+
+--begin blocks:
+
+	Begin blocks are mostly identical to conditional blocks, and are provided to allow use
+	of 'top' outside of conditional blocks and loops, or within specific scopes, 
+	which can be more readable than using gotos in some cases.
+
+	--Example (from roms/stnp_flowcon5):
+
+		var kb=0
+		begin
+			prline press A to ask again, any other key to exit.
+			keyprompt
+			set kb
+			if kb,:A top
+			if kb,:a top
+			
+		end
+		stop
+
+--ignore blocks:
+	
+	Ignore blocks do just that, `ignore` (aka skip over) sections of code not 
+	meant to be executed in-line in a larger routine.\
+	
+	`end` statement is REQUIRED.
+	
+	DO NOT use with `break` or `top` statements, as this is NOT SUPPORTED.
+		(the above DOES NOT include usage in blocks nested WITHIN `ignore` blocks!)
+	
+	--example:
+	
+		ignore
+			label my_subroutine
+				prline do something.
+			return
+		end
+
+--for loops:
+		NOTE: like conditional 'begin' statements, an 'end' statement is REQUIRED.
+		NOTE: 'break' will break from loop. 
+		NOTE: 'top' will run next loop immediately/exit for loop on last iteration.
+		
+		basic syntax:  
+			for [var1] in [mode] <args>
+			
+		NOTE: see specific mode sections for syntax & meaning of <args> section.
+		
+		NOTE: var1 is created by for statement. should be unique to for 
+			loop. ESPECIALLY IF FOR LOOPS ARE NESTED!
+	
+		-----range iterator modes-----
+		
+			for [var1] in [mode] [start][end][step]
+		NOTE: start, end, and step can be literals.
+		
+			urange :  count from [start] UP TO [end] by increments of [step]
+			drange :  count from [start] DOWN TO [end] by increments of [step]
+		
+		-----random range mode-----
+		
+			for [var1] in random [start][end][loops]
+		NOTE: start, end, & loops can be literals.
+		
+			random : set [var1] to a random value between [start] and [end] for [loops]
+
+--Gotos & conditionals:
+	label [name] : create a label with the name [name], for use with gotos.
+	goto [name]  : goto label [name]
+	gsub [name]  : goto label [name], but store next block (line) of code as return address.
+	return : return to most recent return address stored.
+	
+	-----NOTE FOR CONDITIONAL GOTOS: var1 var2 var3 and var5 can be Literals as well as variables.-----
+	two argument conditionals:
+		[condition] [var1],[var2] [mode] (label)
+	three argument conditionals:
+		[condition] [var1],[var2],[var3] [mode] (label)
+	
+	(a goto label (label) is only needed for goto & gsub modes, but for
+	variable set mode (=[varname], it is replaced with an extra variable name
+	(that can be a literal))
+	
+	--2-argument conditions:
+		if         : true if [var1]=[var2]
+		ifnot     : true if [var1]!=[var2] (var1 not equal to var2)
+		ifmore     : true if [var1]>[var2]
+		ifless     : true if [var1]<[var2]
+		ifnotmore  : true if [var1]<=[var2]
+		ifnotless  : true if [var1]>=[var2]
+	--3-argument conditions:
+		ifrange    : true if [var1]<=[var3]<=[var2]
+		ifnotrange : false if [var1]<=[var3]<=[var2]
+	
+	--modes:
+		begin : begin a conditional code block for the following lines until the next 'end' statement.
+				(see FLOW CONTROL COMMANDS section above)
+		break : break from a conditional code block/looped code block
+		top   : 
+			- in looped blocks, run next loop iteration, or if loop end condition 
+				has been met, loop exits as normal.
+			- in conditional blocks/non-looped blocks, run conditional block from its start again
+				(bypasses conditional check that begun the block.)
+		goto : ordinary goto.
+		gsub : store next block (line) of code as return address. (same as normal gsub command)
+		return : just like normal return command. should omit label.
+		stop : just like normal stop command. should omit label.
+		chardump : a conditional character dump operation. using a [var5] in place of label. (var5 can be a literal)
+		dumpd : a conditional decimal dump. using a [var5] in place of label. (var5 can be a literal)
+		dumpt : a conditional ternary dump. using a [var5] in place of label. (var5 can be a literal)
+		=[var4] : conditional variable copy: set [var4] using a [var5] in place of label. (var5 can be a literal)
+	  
+	--Examples:
+		if var1,var2 goto somelabel
+		if var1,var2 return
+		if var1,@1 return
+		if var1,var2 =var4 var5
+		if var1,var2 =var4 @1
+		if var1,var2 =var4 :a
+		if var1,var2 chardump var5
+		if var1,var2 chardump :c
+		if var1,var2 dumpd var5
+		if var1,var2 dumpd @1
+		if var1,var2 dumpt var5
+		if var1,var2 dumpt *+0-
+	  
+
+-- Unconditional loops
+
+	loop: loops a block of code infinately until a break is triggered.
+	NOTE: like conditional 'begin' statements, an 'end' statement is REQUIRED.
+	NOTE: 'break' will break from loop. 
+
+-- While/Until loops
+	
+	SSTNPL has a selection of various while/until commands available:
+	-----NOTE FOR WHILE/UNTIL LOOPS: var1 var2 and var3 can be Literals as well as variables.-----
+	NOTE: like conditional 'begin' statements, an 'end' statement is REQUIRED.
+	NOTE: 'break' will break from loop. 
+	NOTE: 'top' will run loop exit condition check immediately, if loop
+			should continue based upon exit condition, run next iteration
+			as normal.
+	
+	--2-argument conditions:
+		while         : runs while [var1]=[var2]
+		until         : runs until [var1]=[var2]
+		whilemore     : runs while [var1]>[var2]
+		whileless     : runs while [var1]<[var2]
+		untilmore     : runs until [var1]>[var2]
+		untilless     : runs until [var1]<[var2]
+	--3-argument conditions:
+		whilerange    : runs while [var1]<=[var3]<=[var2]
+		untilrange    : runs until [var1]<=[var3]<=[var2]
+
+
+
+--TTY output:
+	print [string]      : print specified raw text.
+	prline [string]     : print specified raw text, but append a newline.
+	newline             : print newline
+	space               : print space
+	dumpt [varname]     : Dump integer variable [varname], to TTY in ternary form. Can use Literals
+	dumpd [varname]     : Dump integer variable [varname], to TTY in signed decimal form. Can use Literals
+	chardump [varname]  : Dump a variable to the TTY as a character. Can use Literals
+	textcolor [varname] : set text color (on frontends that support it) Can use Literals
+	packcolor [varname] : set ternary packed art color (on frontends that support it) Can use Literals
+	tpack [varname]     : Print ternary packed art segment. Can use Literals
+	cpack [varname]     : Print 27 COLOR ternary packed art segment. Can use Literals
+	mulpk [chunks]      : specify multiple raw 9-trit ternary values, semicolon divided, for output.
+		mulpk +++++++++;++++++000
+	linepk [chunks]     : same as mulpk, but appends a newline after the chunk sequence.
+	cmulpk, clinepk     : Same as mulpk, and linepk respectively, but for use with 27 COLOR Ternary Packed Art.
+
+--SBTGA:
+	gamode [variable] : switch to the mode specified by the given variable.
+		30: 243x243 plotter, 31: 575x575 plotter, 0: standard TTY (default mode)
+
+--SBTGA plotter:
+	drawx1    [varname]: set plotter x1
+	drawy1    [varname]: set plotter y1
+	drawx2    [varname]: set plotter x2
+	drawy2    [varname]: set plotter y2
+	drawx3    [varname]: set plotter x3
+	drawy3    [varname]: set plotter y3
+	drawtri            : draw trinagle between x1,y1 x2,y2 & x3,y3 using plotter color
+	drawwdith  [varname]: set plotter width register
+	drawheight  [varname]: set plotter height register
+	drawcolor [varname]: set plotter color (9-trit RGB)
+	drawline           : draw line from x1,y1, to x2,y2 using plotter color
+	drawrect           : draw rect at x1,y1 using plotter width/height registers for size.
+	drawfill  [varname]: fill plotter display with given (9-trit RGB) color
+	drawflock [varname]: instruct plotter to stop parsing items for the
+		current frame, rather than break at 30 items.
+	
+	--Buffers:
+		the plotter buffer system allows up to 26 additional screens, 
+		(with 0 being the SBTGA display) all draw commands affect the active surface
+		(defaults to 0)
+	
+		changing the SBTGA display mode, will RESET the buffer system.
+	
+	--Buffer commands:
+	
+		drawcopy  [varname]: copy active buffer to buffer [varname]
+		drawblit  [varname]: blit buffer [varname] to active buffer
+		drawselect [varname]: select active buffer
+
+--VDI (DISK SYSTEM) see 'SBTVDI' directory in 'textdocs' for more details.
+	vdi [string]     : send a command to VDI serial
+	vdin [string]    : send a command to VDI serial (with no appended newline, for more complex command building)
+	vdistat [varname]: get VDI serial status.
+	vdimode [mode]   : set VDI serial mode/init vdi serial.
+
+--Random
+	rrange [start],[end] : Get a random number between [start] and [end] (including [start] and [end]. use set to store result. Can use Literals
+
+--TTY input:
+	getchar [var] : Gets a character from the TTY input buffer and puts it in [var] returns 0/null on empty buffer.
+	keyprompt : Wait in a loop until a keystroke is detected, then continue. use set to store result.
+	clearcharbuff : Clear TTY input buffer.

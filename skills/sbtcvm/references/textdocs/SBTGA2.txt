@@ -1,0 +1,11 @@
+SBTCVM Balanced Ternary Graphics Adapter v2
+--planning and specifications--
+
+Modes:
+
+
+Display modes:
+0: SBTGA off (TTY) [implemented]
+30: 243x243 plotter mode. [implemented in pygame frontend]
+31: 575x575 plotter mode
+

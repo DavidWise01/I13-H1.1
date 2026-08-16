@@ -1,0 +1,112 @@
+# Overview of SSTNPL's tables:
+
+SSTNPL provides a capable 2-axis data table system.
+
+You can use this system for game level data, algorithms, and other sorts of things.
+
+
+
+# Table COMMANDS
+
+note: xpos,ypos both start at 0
+-
+tabr [name],[xpos],[ypos]
+set [var]
+
+[xpos] and [ypos] can either be an integer variable or a Literal
+
+
+--write at [xpos],[ypos] in table [name] using data in variable/literal [var]
+tabw [name],[xpos],[ypos],[var]
+
+
+The following share syntax with tabr, but have the following added actions:
+tabcd: print raw character
+tabdd: print data in decimal
+tabtd: print data in ternary
+
+
+##### tabstrc Table String Check #####
+
+tabstrc [tablename],[xoffset],[ypos],[string]
+set boolean_flag
+
+[xoffset] is where the first letter of [string] should be on the table's x axis.
+[ypos] is the same as table read/write operations. the table y position.
+[string] is the string to be tested for [STATIC]
+
+[xoffset] and [ypos] can be literals.
+
+use 'set' to store the returned boolean flag:
+	1: string IS at the given location in the table
+	0: string IS NOT at the given location in the table.
+
+##### BASIC (SINGLE CELL) TABLES #####
+
+
+-Building your tables works like so:
+table [name],[width],[height]
+tstr ABC
+tstr 123
+tstr .|.
+tdat 10x1;+0-;:F
+#@ (decimal) and * (ternary) syntaxes are also valid:
+tdat @1;*+-;:F
+prline HI
+
+[name] is the table name of your table.
+[width] is the table width in decimal
+[height] is the table height in decimal
+
+As you can see, the table is built of tstr and tdat statements.
+
+tstr is handy for tables containing rows of only characters
+tdat is semicolon-divided and accepts the same data value syntaxes as var and val. (shown)
+tpad [size]: can be used to pad tables with zeros. handy for tables used as buffers.
+
+##### MAKING FAST SELF-PRINTING TABLES #####
+	prline statements must use strings ONE LESS than actual table width.
+	This is due to the appended NEWLINE. ALSO: DON'T USE tab*2 (DOUBLE CELL)
+	instructions with tables made this way!
+	
+	You CAN however, make prline-based tables function as self-printing tables.
+	Just avoid writing to the highest column (where the newline characters are):
+		label tableprint
+		table mytable,4,3
+		prline abc
+		prline 123
+		prline XYZ
+		return
+	This gives you an ultra-fast-printing table. This is due to prline using a
+	Fast Output Port (or FOP) connected to the TTY. Each cell taking 1 cycle to
+	print. Giving a THEORETICAL print speed of 6500 characters per second.
+
+
+
+
+############# (ADVANCED) DOUBLE CELL TABLES #############
+### WARNING: DOUBLE CELL TABLES USE THE INSTRUCTION WORD FOR EXTRA VALUE
+##### TRYING TO 'RUN' THEM WILL HAVE UNPREDICTABLE RESULTS!!!!!!!!!!
+
+to use DOUBLE CELL TABLES use the following tdat syntax:
+
+Notice cell2 is on the LEFT
+Notice 'cell' (with no number) IS ON THE RIGHT.
+Notice each DOUBLE-CELL's pair of values is space-separated.
+	tdat cell2 cell;cell2 cell
+
+Note: you CAN mix and match single and double cells in tdat statements.
+
+ALL tab* instructions by themselves reference the RIGHT cell HOWEVER, 
+They can be suffixed with 2 to reference the LEFT cell (cell2 in tdat example),
+in double-cell tables.
+i.e.
+	tabr2
+	tabw2
+	tabcd2
+	tabdd2
+	tabtd2
+Otherwise, syntax is IDENTICAL 
+
+
+

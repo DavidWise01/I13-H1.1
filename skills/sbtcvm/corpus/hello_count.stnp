@@ -1,0 +1,16 @@
+# hello_count.stnp - SSTNPL demo: greet, then count 1..5 with a urange for loop
+# assembled via: python stnpcom.py hello_count.stnp  -> hello_count.trom
+# run via:       python bare_sbtcvm.py hello_count
+
+prline hello from SSTNPL on SBTCVM Gen2-9
+prline counting 1 to 5:
+newline
+
+for i in urange @1,@5,@1
+    print i
+    print space
+end
+
+prline
+prline done.
+stop

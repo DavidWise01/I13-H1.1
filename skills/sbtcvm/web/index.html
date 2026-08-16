@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SBTCVM-Gen2-9 :: Web Wrapper</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--err:#ff5c7a;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:10px 16px;border-bottom:1px solid #1c2735;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;color:var(--acc);letter-spacing:.5px}
+  header .badge{font-size:11px;color:var(--dim);border:1px solid #1c2735;padding:2px 8px;border-radius:10px}
+  .live{color:var(--acc)}
+  .live.off{color:var(--dim)}
+  main{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px;height:calc(100vh - 52px)}
+  .panel{background:var(--panel);border:1px solid #1c2735;border-radius:8px;display:flex;flex-direction:column;min-height:0}
+  .panel h2{font-size:12px;margin:0;padding:8px 12px;border-bottom:1px solid #1c2735;color:var(--dim);text-transform:uppercase;letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
+  .body{padding:12px;overflow:auto;flex:1;display:flex;flex-direction:column}
+  select,button,textarea{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  button:active{transform:translateY(1px)}
+  button.ghost{color:var(--dim);border-color:#233044}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  textarea{flex:1;min-height:160px;resize:vertical;white-space:pre}
+  pre{margin:0;white-space:pre-wrap;word-break:break-word;flex:1;overflow:auto}
+  .ok{color:var(--acc)} .bad{color:var(--err)} .amb{color:var(--amber)}
+  .meta{font-size:11px;color:var(--dim);margin-top:6px}
+  .trit{color:var(--acc)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--dim);margin-left:6px}
+  .dot.on{background:var(--acc);box-shadow:0 0 6px var(--acc)}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 10px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; SBTCVM-Gen2-9</h1>
+  <span class="badge">balanced-ternary 9-trit VM &middot; web wrapper</span>
+  <span class="badge" id="status">connecting&hellip;</span>
+  <span class="badge live off" id="liveDot">&#9679; live off<span class="dot" id="dot"></span></span>
+</header>
+<main>
+  <section class="panel">
+    <h2>1 &middot; Run a TROM (real 9-trit VM) <span id="h1"></span></h2>
+    <div class="body">
+      <div class="row">
+        <select id="tromSel"></select>
+        <button id="runBtn">RUN &#9654;</button>
+        <button id="liveBtn" class="ghost">LIVE &#9679;</button>
+      </div>
+      <pre id="out1" class="ok">// output appears here&hellip;</pre>
+      <div class="meta" id="meta1"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>2 &middot; Write SSTNPL &rarr; compile &rarr; run <span id="h2"></span></h2>
+    <div class="body">
+      <textarea id="src" spellcheck="false">prline hello from SSTNPL in the browser
+prline counting 1 to 5:
+newline
+for i in urange @1,@5,@1
+    print i
+    print space
+end
+prline
+prline done.
+stop</textarea>
+      <div class="row" style="margin-top:10px">
+        <button id="stnpBtn">COMPILE &amp; RUN &#9889;</button>
+        <button id="stnpLiveBtn" class="ghost">LIVE &#9679;</button>
+      </div>
+      <pre id="out2" class="ok">// compile + run output&hellip;</pre>
+      <div class="meta" id="meta2"></div>
+    </div>
+  </section>
+</main>
+<footer>
+  Backend = Python <code>bare_sbtcvm.py</code> (real VM). Browser is the display. <b>LIVE</b> streams the VM's stdout in real time (for looping/long troms like <code>counttestprint</code>). pygame/curses frontends are WALLed on this host.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+let live1=null, live2=null;
+function setLive(on){
+  $("liveDot").className = "badge live" + (on ? "" : " off");
+  $("dot").className = "dot" + (on ? " on" : "");
+}
+
+async function loadList(){
+  try{
+    const r = await fetch("/api/list"); const d = await r.json();
+    const sel = $("tromSel"); sel.innerHTML = "";
+    for(const [k,label] of [["roms","roms"],["vmuser","vmuser"],["apps","apps"]]){
+      if(d[k] && d[k].length){
+        const og = document.createElement("optgroup"); og.label = label;
+        for(const t of d[k]){ const o=document.createElement("option"); o.value=t; o.textContent=t; og.appendChild(o); }
+        sel.appendChild(og);
+      }
+    }
+    $("status").textContent = "ready";
+  }catch(e){ $("status").textContent = "backend offline"; }
+}
+
+// ---- non-streaming ----
+$("runBtn").onclick = async () => {
+  const trom = $("tromSel").value;
+  $("out1").textContent = "running " + trom + " …";
+  const r = await fetch("/api/run?trom=" + encodeURIComponent(trom));
+  const d = await r.json();
+  if(d.ok){ $("out1").innerHTML = '<span class="trit">'+esc(d.stdout)+'</span>'; $("meta1").textContent = "trom: "+d.trom+"  rc="+(d.rc??""); }
+  else { $("out1").innerHTML = '<span class="bad">'+esc(d.error||d.stderr||"")+'</span>'; }
+};
+
+$("stnpBtn").onclick = async () => {
+  const src = $("src").value;
+  $("out2").textContent = "compiling + running …";
+  const r = await fetch("/api/stnp", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({src})});
+  const d = await r.json();
+  if(d.ok){ $("out2").innerHTML = '<span class="trit">'+esc(d.stdout)+'</span>'; $("meta2").textContent = "compile+run ok"; }
+  else { $("out2").innerHTML = '<span class="bad">STAGE '+esc(d.stage)+'\n'+esc(d.stdout)+'\n---\n'+esc(d.stderr||"")+'</span>'; }
+};
+
+// ---- streaming (SSE) ----
+function stopLive(which){
+  if(which===1 && live1){ live1.close(); live1=null; }
+  if(which===2 && live2){ live2.close(); live2=null; }
+  if(!live1 && !live2) setLive(false);
+}
+
+$("liveBtn").onclick = () => {
+  if(live1){ stopLive(1); $("meta1").textContent="stream closed"; return; }
+  const trom = $("tromSel").value;
+  $("out1").textContent = ""; setLive(true);
+  live1 = new EventSource("/api/stream/run?trom=" + encodeURIComponent(trom));
+  live1.onmessage = e => {}; // unused
+  live1.addEventListener("line", e => { $("out1").textContent += e.data + "\n"; $("out1").scrollTop = $("out1").scrollHeight; });
+  live1.addEventListener("done", e => { $("meta1").textContent = "done: " + e.data; stopLive(1); });
+  live1.addEventListener("error", e => { $("meta1").textContent = "stream: " + e.data; stopLive(1); });
+};
+
+$("stnpLiveBtn").onclick = () => {
+  if(live2){ stopLive(2); $("meta2").textContent="stream closed"; return; }
+  const src = $("src").value;
+  $("out2").textContent = ""; setLive(true);
+  live2 = new EventSource("/api/stream/stnp", {withCredentials:false});
+  // EventSource only does GET; send src via POST through fetch + ReadableStream is complex.
+  // Simpler: POST to a one-shot that returns an SSE stream isn't supported by EventSource.
+  // Workaround: stash src server-side via a quick POST, then open GET stream on web_user.
+  fetch("/api/stnp", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({src})})
+    .then(r=>r.json()).then(d=>{
+      if(!d.ok){ $("out2").innerHTML='<span class="bad">'+esc(d.stdout)+'</span>'; setLive(false); return; }
+      live2 = new EventSource("/api/stream/run?trom=web_user");
+      live2.addEventListener("line", e => { $("out2").textContent += e.data + "\n"; $("out2").scrollTop = $("out2").scrollHeight; });
+      live2.addEventListener("done", e => { $("meta2").textContent = "done: " + e.data; stopLive(2); });
+      live2.addEventListener("error", e => { $("meta2").textContent = "stream: " + e.data; stopLive(2); });
+    });
+};
+
+loadList();
+</script>
+</body>
+</html>
