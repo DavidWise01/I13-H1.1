@@ -3,6 +3,7 @@
 
 pub mod child;
 pub mod cortex;
+pub mod corpus;
 pub mod ology;
 pub mod pulse;
 pub mod quorum;
@@ -10,6 +11,7 @@ pub mod width;
 
 pub use child::{ChildPhase, ChildReceipt, CortexChild};
 pub use cortex::{CortexVerifier, CvContext, CvVerdict, Queen};
+pub use corpus::{fnv1a32 as corpus_fingerprint32, CorpusAddress, CorpusCvContext, CorpusVerifier};
 pub use ology::{Direction, OlogyPoint, VoxelCursor, VoxelTransition};
 pub use quorum::OddSplit;
 pub use width::{mixed_width, natural_width, vh1_width};
