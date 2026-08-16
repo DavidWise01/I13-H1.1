@@ -1,0 +1,98 @@
+name: Stage 14.7 Arrival execution
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'build.rs'
+      - 'src/arrival.rs'
+      - 'src/child.rs'
+      - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
+      - 'corpus/h1.1-corpus.jsonl'
+      - 'docs/stages/stage14-7-corpus-arrival.js'
+      - 'docs/index.html'
+      - 'spec/STAGE14.7-ARRIVAL-EXECUTION.md'
+      - '.github/workflows/stage14-7-arrival.yml'
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  arrival:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+      - name: Test Stage 14.7 Rust arrival kernel
+        run: cargo test arrival::tests -- --nocapture
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+      - name: Check Stage 14.7 JavaScript syntax
+        run: node --check docs/stages/stage14-7-corpus-arrival.js
+      - name: Execute Stage 14.7 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const source=fs.readFileSync('docs/stages/stage14-7-corpus-arrival.js','utf8');
+          const manifest=JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json','utf8'));
+          const sandbox={window:{},document:{readyState:'loading',addEventListener(){},getElementById(){return null;}},console,Map,Set,Object,Math,JSON,Error,Uint8Array,BigInt,WebAssembly,atob:v=>Buffer.from(v,'base64').toString('binary'),setTimeout(){return 0;},clearTimeout(){},setInterval(){return 0;},clearInterval(){}};
+          vm.createContext(sandbox);vm.runInContext(source,sandbox);
+          const stage=sandbox.window.I13CorpusArrivalStage;assert(stage,'Stage 14.7 export missing');
+          assert.strictEqual(stage.version,'14.7.0');
+          const result=stage.arrivalSelfTest(manifest);assert.strictEqual(result.pass,true,JSON.stringify(result));assert.strictEqual(result.checks.length,10);
+          console.log(`STAGE 14.7 JS PASS · checks=${result.checks.length}`);
+          NODE
+      - name: Execute real Wasm arrival contract
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          const bytes=fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+          const SUCCESS=1n<<63n,MASK32=0xffff_ffffn;
+          function fnv(text){let h=0x811c9dc5>>>0;for(const b of Buffer.from(text)){h^=b;h=Math.imul(h,0x01000193)>>>0;}return h>>>0;}
+          function decode(v){v=BigInt(v);if((v&SUCCESS)===0n)return null;const bits=Number(v&MASK32)>>>0;return{result:bits|0,resultBits:bits,steps:Number((v>>32n)&0xffffn),program:Number((v>>48n)&0xffn),kind:Number((v>>56n)&0x7fn)};}
+          (async()=>{const {instance}=await WebAssembly.instantiate(bytes,{}),e=instance.exports;
+            for(const n of ['i13_arrival_opcode_count','i13_arrival_kind','i13_arrival_program','i13_arrival_execute','i13_arrival_witness'])assert.strictEqual(typeof e[n],'function',`missing ${n}`);
+            assert.strictEqual(Number(e.i13_arrival_opcode_count()),15);
+            const context=fnv('sonia-001'),program=fnv('sonia-003');
+            assert.strictEqual(Number(e.i13_arrival_kind(context)),1);assert.strictEqual(Number(e.i13_arrival_program(context)),0);
+            assert.strictEqual(Number(e.i13_arrival_kind(program)),2);assert.strictEqual(Number(e.i13_arrival_program(program)),1);
+            const read=decode(e.i13_arrival_execute(context,8,1));assert(read);assert.deepStrictEqual({kind:read.kind,program:read.program,result:read.result,steps:read.steps},{kind:1,program:0,result:0,steps:0});
+            const run=decode(e.i13_arrival_execute(program,5,1));assert(run);assert.strictEqual(run.kind,2);assert.strictEqual(run.program,1);assert.strictEqual(run.steps,5);assert.strictEqual(run.result,91735);
+            assert.strictEqual(BigInt(e.i13_arrival_execute(program,4,1)),0n,'step budget must VETO');
+            assert.strictEqual(BigInt(e.i13_arrival_execute(program,8,0)),0n,'authority OFF must VETO');
+            assert.strictEqual(BigInt(e.i13_arrival_execute(0xfffffffe,8,1)),0n,'unknown root must VETO');
+            const w1=Number(e.i13_arrival_witness(program,run.resultBits,run.steps,run.kind,run.program))>>>0;
+            const w2=Number(e.i13_arrival_witness(program,run.resultBits,run.steps,run.kind,run.program))>>>0;
+            assert(w1!==0);assert.strictEqual(w1,w2);
+            console.log(`ARRIVAL WASM PASS · context=READ · sonia-003 result=${run.result} · steps=${run.steps} · witness=0x${w1.toString(16).padStart(8,'0')}`);
+          })().catch(e=>{console.error(e);process.exit(1);});
+          NODE
+      - name: Check Stage 14.7 loader and isolation
+        run: |
+          grep -q "s8.src = 'stages/stage14-7-corpus-arrival.js'" docs/index.html
+          grep -q "s7.src = 'stages/stage14-6-corpus-intent.js'" docs/index.html
+          grep -q "ARRIVAL != EXECUTION" spec/STAGE14.7-ARRIVAL-EXECUTION.md
+          grep -q "This is not a claim of full frozen VM parity" src/arrival.rs
+      - name: Publish Stage 14.7 Wasm asset
+        if: github.event_name == 'push'
+        run: |
+          base64 -w 0 target/wasm32-unknown-unknown/release/i13_h1_1.wasm > docs/assets/i13_h1_1.wasm.b64
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- docs/assets/i13_h1_1.wasm.b64; then
+            echo "Wasm asset already current"
+            exit 0
+          fi
+          git add docs/assets/i13_h1_1.wasm.b64
+          git commit -m "stage14.7: publish arrival execution Wasm"
+          git pull --rebase origin main
+          git push origin HEAD:main
