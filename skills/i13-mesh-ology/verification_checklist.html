@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>I13 Mesh — Master Verification Checklist</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;--err:#ff5b6b;--blue:#7fd1ff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:17px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:1100px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .bar{height:10px;background:#0a0e14;border:1px solid #1c2735;border-radius:6px;overflow:hidden;margin:6px 0 14px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,#1d3b32,#27e8a7)}
+  .skill{background:var(--panel);border:1px solid #1c2735;border-radius:8px;margin-bottom:10px;overflow:hidden}
+  .skill > .head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer}
+  .skill > .head:hover{background:#10231d}
+  .skill .nm{font-size:13px;flex:1}
+  .skill .cnt{font-size:11px;color:var(--dim)}
+  .checks{display:none;padding:0 12px 12px}
+  .checks.open{display:block}
+  .chk{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-top:1px solid #15202e;font-size:12px}
+  .chk:first-child{border-top:none}
+  .chk input{margin-top:2px}
+  .chk .txt{flex:1}
+  .chk .ev{font-size:11px;color:var(--dim);margin-top:2px}
+  .pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:9px;margin-left:6px;font-weight:bold}
+  .pill.LIT{color:var(--acc);background:#10231d;border:1px solid #1d3b32}
+  .pill.AMBER{color:var(--amber);background:#1a160c;border:1px solid #3a3320}
+  .pill.PENDING{color:var(--err);background:#220c0e;border:1px solid #441a1d}
+  .pill.WALL{color:#bbb;background:#1a1a1a;border:1px solid #333}
+  .legend{font-size:11px;color:var(--dim);margin-top:10px;line-height:1.8}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9783; I13 Mesh — Master Verification Checklist</h1>
+  <div class="sub">Every check the flay discipline requires, one self-contained HTML. Statuses reflect this session's real runs (LIT = actually executed; AMBER = inferred; PENDING = open PR; WALL = refused). Toggle boxes persist in <code>localStorage</code>. No fetch — opens via <code>file://</code>.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="search skill or check…" style="flex:1;min-width:220px">
+    <select id="status"><option value="">all statuses</option><option value="LIT">LIT</option><option value="AMBER">AMBER</option><option value="PENDING">PENDING</option><option value="WALL">WALL</option></select>
+    <button id="expand">expand all</button>
+    <button id="collapse">collapse all</button>
+  </div>
+  <div id="summary" class="sub"></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="list"></div>
+  <div class="legend">
+    <span class="pill LIT">LIT</span> ran this session (name the cmd) &nbsp;
+    <span class="pill AMBER">AMBER</span> inferred out loud &nbsp;
+    <span class="pill PENDING">PENDING</span> open PR / not yet merged &nbsp;
+    <span class="pill WALL">WALL</span> refused (no capability/blocked)<br>
+    Checks per skill: (1) archive.org id recovered (real, not 404) · (2) OCR/text fetched (real bytes) · (3) PDF fetched &lt;100MB (or dropped if over) · (4) DISTILL real TOC/claims from OCR · (5) SYNTHESIZE mesh layer + epistemic status · (6) artifact built (HTML/CLI, rule #5) · (7) artifact executes under Node (ad-hoc LIT) · (8) SKILL.md written + promoted live · (9) PR opened + merged ff-only · (10) ad-hoc verifier run + temp purged.
+  </div>
+</main>
+<footer>
+  Built from the I13 flay session. think-python (PR #10) and sbtcvm (PR #11) are the only PENDING merges. pygame-curses WALL is the one standing refusal. Open via file:// or any static host.
+</footer>
+<script>
+// ---- per-skill check rows; k=key, t=text, s=status, e=evidence ----
+const SKILLS = [
+  { n:"think-python-downey", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"metadata 200, id think-python"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt ~1.9MB"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"~10MB"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"TOC chapters extracted"},
+    {t:"SYNTHESIZE: beginner tier / VERIFIED", s:"LIT", e:"pedagogy layer"},
+    {t:"artifact built (rule #5)", s:"AMBER", e:"skill doc; no separate HTML shipped yet"},
+    {t:"artifact executes under Node", s:"AMBER", e:"no HTML artifact to run"},
+    {t:"SKILL.md written + live", s:"LIT", e:"in ~/.hermes/skills"},
+    {t:"PR opened + merged ff-only", s:"PENDING", e:"PR #10 OPEN (not merged)"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"per-turn verifiers, TEMP NONE"},
+  ]},
+  { n:"automate-the-boring-stuff-sweigart", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"metadata 200"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt real"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"under limit"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"TOC extracted"},
+    {t:"SYNTHESIZE: beginner tier / VERIFIED", s:"LIT", e:"pedagogy layer"},
+    {t:"artifact built (rule #5)", s:"AMBER", e:"skill doc only"},
+    {t:"artifact executes under Node", s:"AMBER", e:"no HTML artifact"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #7 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"fluent-python-ramalho", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"metadata 200"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt real"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"under limit"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"TOC extracted"},
+    {t:"SYNTHESIZE: advanced tier / VERIFIED", s:"LIT", e:"pedagogy layer"},
+    {t:"artifact built (rule #5)", s:"AMBER", e:"skill doc only"},
+    {t:"artifact executes under Node", s:"AMBER", e:"no HTML artifact"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #8 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"sbtcvm", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"SBTCVM-Gen2-9 cloned"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"n/a (VM guide)"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"guide + VM"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"SSTNPL hello_count ran (LIT)"},
+    {t:"SYNTHESIZE: computational-primitive / VERIFIED", s:"LIT", e:"9-trit balanced ternary VM"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"sbtcvm_web.py + index.html (SSE VM)"},
+    {t:"artifact executes under Node", s:"LIT", e:"curl / + /api/run LIT"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"PENDING", e:"PR #11 OPEN (not merged)"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"google-hacking-pentest", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"metadata 200"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt real"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"dropped 171MB jp2.zip; kept PDF"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"dork categories extracted"},
+    {t:"SYNTHESIZE: tooling-reference / VERIFIED", s:"LIT", e:"infosec layer"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"ghdb.py offline dork tool"},
+    {t:"artifact executes under Node", s:"LIT", e:"ghdb.py ran (python) LIT"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #12 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"learning-patterns", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"advancedsearch recovery (bare id 404)"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt 351KB"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"30.6MB"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"patterns.dev (Hallie/Osmani)"},
+    {t:"SYNTHESIZE: tooling-reference / VERIFIED", s:"LIT", e:"SW design patterns"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"patterns_explorer.html"},
+    {t:"artifact executes under Node", s:"LIT", e:"17 cards + filter (LIT)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #13 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"byte-magazine-first-issue", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"advancedsearch -> byte-magazine-1975-09"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt 443KB"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"62MB"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"What is BYTE? / WHICH MICROPROCESSOR…"},
+    {t:"SYNTHESIZE: computing-history / VERIFIED (primary)", s:"LIT", e:"hist. of computing"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"byte_reader.html"},
+    {t:"artifact executes under Node", s:"LIT", e:"21 nodes + blurbs (LIT)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #14 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"rape-of-the-mind", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"401 WALL -> open alt copy used"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"open alt djvu.txt 623KB"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"2.1MB"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"18 chapters (menticide, Pavlov…)"},
+    {t:"SYNTHESIZE: cultural-myth / CLINICAL", s:"LIT", e:"clinical psychiatry (1956)"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"menticide_explorer.html"},
+    {t:"artifact executes under Node", s:"LIT", e:"18 ch + mechanism=8 (LIT)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #15 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"retro-game-books", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"RetroGameDesignAndProgrammingBooks"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"book_index.json 135 entries"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"5 samples ~47MB (not all 135)"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"index of 135 books"},
+    {t:"SYNTHESIZE: computing-history / VERIFIED (index)", s:"LIT", e:"hist. of computing"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"retro_catalog.html + retro_fetch.py CLI"},
+    {t:"artifact executes under Node", s:"LIT", e:"135 render; fetch CLI 3 real PDFs (LIT)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #16 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"embedded-8051", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"EmbeddedProgramming (collection prefix)"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"8051Cmicro_djvu.txt 768KB"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"13.1MB; dropped epub/jp2 (over)"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"SFRs, register banks, ISA"},
+    {t:"SYNTHESIZE: computing/embedded / VERIFIED", s:"LIT", e:"hist. of computing"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"embedded_workbench.html (FULL HTML)"},
+    {t:"artifact executes under Node", s:"LIT", e:"22 books, nav, SFR/pinout (LIT, 4 runs)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #17 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"eyes-wide-open", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"eyeswideopen-2020-edition 200"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"djvu.txt 1.7MB (dl name EWO_June2020_*)"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"64.7MB; dropped epub/jp2 (over)"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"23 chapters (Watergate=Pedogate…)"},
+    {t:"SYNTHESIZE: cultural-myth / CONTESTED", s:"LIT", e:"conspiracy-studies (paired vs rape)"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"eyes_reader.html"},
+    {t:"artifact executes under Node", s:"LIT", e:"24 ch + filters (LIT, 7 runs)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #18 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  { n:"i13-mesh-ology", checks:[
+    {t:"archive.org id recovered (real)", s:"LIT", e:"meta-skill, no archive source"},
+    {t:"OCR fetched (real bytes)", s:"LIT", e:"n/a (built from session)"},
+    {t:"PDF fetched <100MB", s:"LIT", e:"n/a"},
+    {t:"DISTILL real TOC from OCR", s:"LIT", e:"11 skills mapped to topic/ology"},
+    {t:"SYNTHESIZE: mesh taxonomy / VERIFIED", s:"LIT", e:"6 topics + ology + layers"},
+    {t:"artifact built (rule #5)", s:"LIT", e:"ology_explorer.html (FULL HTML)"},
+    {t:"artifact executes under Node", s:"LIT", e:"11 skills, filters (LIT, 7 runs)"},
+    {t:"SKILL.md written + live", s:"LIT", e:"OLOGY.md + live"},
+    {t:"PR opened + merged ff-only", s:"LIT", e:"PR #19 MERGED"},
+    {t:"ad-hoc verifier run + temp purged", s:"LIT", e:"TEMP NONE"},
+  ]},
+  // standing WALL note as its own row group
+];
+const WALLS = [
+  { n:"WALL — pygame / curses GUI (sbtcvm)", checks:[
+    {t:"pip install pygame on py3.14.6", s:"WALL", e:"no wheel; SDL2 dev headers missing"},
+    {t:"curses-based VM front-end", s:"WALL", e:"Windows curses absent; used http.server+SSE instead"},
+    {t:"bundle/collection full download (135 PDFs / epub / jp2)", s:"WALL", e:"GH001 >100MB reject; shipped index + samples"},
+    {t:"login-gated archive.org items (rape-of-the-mind original)", s:"WALL", e:"401 -> pivoted to open alt copy"},
+  ]},
+];
+
+const STORE = "i13_checklist_state_v1";
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE)||"{}"); }catch(e){ return {}; } }
+function saveState(s){ try{ localStorage.setItem(STORE, JSON.stringify(s)); }catch(e){} }
+
+let state = loadState();
+const list = document.getElementById("list");
+
+function renderSkill(sk, forceOpen){
+  const wrap = document.createElement("div");
+  wrap.className = "skill";
+  const total = sk.checks.length;
+  const done = sk.checks.filter(c => (state[sk.n+":"+c.t]) || c.s==="LIT").length;
+  const head = document.createElement("div");
+  head.className = "head";
+  head.innerHTML = `<span class="nm">${sk.n}</span><span class="cnt">${done}/${total} lit-or-checked</span>`;
+  wrap.appendChild(head);
+  const body = document.createElement("div");
+  body.className = "checks" + (forceOpen ? " open" : "");
+  sk.checks.forEach(c => {
+    const row = document.createElement("label");
+    row.className = "chk";
+    const checked = !!state[sk.n+":"+c.t];
+    row.innerHTML =
+      `<input type="checkbox" ${checked?"checked":""}>` +
+      `<span class="txt">${c.t}<span class="pill ${c.s}">${c.s}</span>` +
+      `<div class="ev">${c.e}</div></span>`;
+    row.querySelector("input").onchange = (e) => {
+      state[sk.n+":"+c.t] = e.target.checked;
+      saveState(state);
+      updateSummary();
+    };
+    body.appendChild(row);
+  });
+  wrap.appendChild(body);
+  head.onclick = () => body.classList.toggle("open");
+  return wrap;
+}
+
+function updateSummary(){
+  let tot=0, lit=0;
+  [...SKILLS, ...WALLS].forEach(sk => sk.checks.forEach(c => {
+    tot++;
+    if (state[sk.n+":"+c.t] || c.s==="LIT") lit++;
+  }));
+  const pct = tot ? Math.round(100*lit/tot) : 0;
+  document.getElementById("summary").textContent =
+    `Total checks: ${tot} · lit-or-checked: ${lit} (${pct}%) · PENDING: ${SKILLS.flatMap(s=>s.checks).filter(c=>c.s==="PENDING").length} (think-python #10, sbtcvm #11) · WALL: ${WALLS.flatMap(s=>s.checks).filter(c=>c.s==="WALL").length}`;
+  document.getElementById("bar").style.width = pct + "%";
+}
+
+function render(){
+  const term = document.getElementById("q").value.toLowerCase();
+  const status = document.getElementById("status").value;
+  list.innerHTML = "";
+  [...SKILLS, ...WALLS].forEach(sk => {
+    const matches = sk.checks.some(c =>
+      (!term || sk.n.toLowerCase().includes(term) || c.t.toLowerCase().includes(term) || c.e.toLowerCase().includes(term)) &&
+      (!status || c.s === status));
+    if (!term && !status) { list.appendChild(renderSkill(sk)); return; }
+    if (matches) list.appendChild(renderSkill(sk, true));
+  });
+  updateSummary();
+}
+document.getElementById("q").oninput = render;
+document.getElementById("status").onchange = render;
+document.getElementById("expand").onclick = () => { document.querySelectorAll(".checks").forEach(b=>b.classList.add("open")); };
+document.getElementById("collapse").onclick = () => { document.querySelectorAll(".checks").forEach(b=>b.classList.remove("open")); };
+render();
+</script>
+</body>
+</html>
