@@ -1,0 +1,991 @@
+{
+ "item": "RetroGameDesignAndProgrammingBooks",
+ "total": 135,
+ "books": [
+  {
+   "name": "24 Tested, Ready-to-Run Game Programs in BASIC (1978)",
+   "size": 9655836,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "25ExcitingComputerGamesInBasicForAllAges1983",
+   "size": 6981713,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "33AdultComputerGamesInBasicForTheIbmPcAppleIi-iieAndTrs-801983",
+   "size": 16566075,
+   "plat": [
+    "Apple",
+    "IBM",
+    "TRS-80"
+   ],
+   "lang": "BASIC"
+  },
+  {
+   "name": "33ChallengingComputerGamesForTrs-80-apple-pet1981",
+   "size": 9221196,
+   "plat": [
+    "Apple",
+    "PET",
+    "TRS-80"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "34MoreTestedReady-to-runGameProgramsInBasic1981",
+   "size": 9951154,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "35AmazingGamesForYourCommodore1281986",
+   "size": 12082513,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "35AmazingGamesForYourCommodore641984",
+   "size": 11111909,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "4112FunProjectsForYourCommodore1984",
+   "size": 10726447,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "57PracticalProgramsAndGamesInBasic1978",
+   "size": 5960526,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "6502Games1980",
+   "size": 15715123,
+   "plat": [
+    "6502"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ABitOfLogoMagicForTheTi994a-AdventuresForIntermediateProgrammers1984",
+   "size": 8700715,
+   "plat": [],
+   "lang": "Logo"
+  },
+  {
+   "name": "AdventureGamesForTheCommodore641984",
+   "size": 69533769,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AdventureGamewritersHandbookForCommodore641985",
+   "size": 11794037,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AdventuresWithTheAtari1984",
+   "size": 90569825,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AmigaGameMakersManualWithAmosBasic1993",
+   "size": 56430229,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "AnimationGamesAndSoundForTheTi994a1984",
+   "size": 14218336,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "AppleGraphicsArcadeGameDesign1982",
+   "size": 23081437,
+   "plat": [
+    "Apple"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ArcadeGamesForTheCommodore641985",
+   "size": 18177925,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Atari130xeGamesBook1985",
+   "size": 9149951,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AtariFunGames1985",
+   "size": 75168641,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AtariGamesRecreations1982",
+   "size": 82378621,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AtariGraphicsAndArcadeGameDesign1984",
+   "size": 148118180,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AtariInWonderland-22ProgramsForLearningAndFun1983",
+   "size": 41967683,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AtariPuzzlementsForTheAtariHomeComputer1984",
+   "size": 12302065,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "AwesomeGamesForYourAtariComputer1984",
+   "size": 28511563,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "BasicComputerGamesmicrocomputerEdition-1978",
+   "size": 13394283,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "BasicFun-ComputerGamesPuzzlesAndProblemsKidsCanWrite1982",
+   "size": 25107528,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "BasicFunWithAdventureGames1984",
+   "size": 2101618,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "BigComputerGames1984",
+   "size": 14478548,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "BrainGamesForKidsAndAdultsUsingTheCommodore641984",
+   "size": 22820038,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CastlesKingdoms-AdventuresForYourCommodore641985",
+   "size": 11588270,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64-AssemblyLanguageArcadeProgramming1985",
+   "size": 26907368,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64AdvancedGameDesign1985",
+   "size": 16860015,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64Adventures-AGuideToPlayingAndWritingAdventures1983",
+   "size": 51236542,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64FunAndGames1984",
+   "size": 20444543,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64FunAndGamesVolume21985",
+   "size": 26196146,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64GameConstructionKit1984",
+   "size": 9030363,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64GamesBook1983",
+   "size": 5877947,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64GamesBook21984",
+   "size": 15163147,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64GamesForKids1984",
+   "size": 26050133,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64InWonderland-23ProgramsForLearningAndFun1984",
+   "size": 13378598,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Commodore64Puzzlements1984",
+   "size": 8077741,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerAdventures-TheSecretArt1990",
+   "size": 24085915,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerBattlegamesForZxSpectrumZx81BbcTrs-80AppleVicAndPet1982",
+   "size": 7490429,
+   "plat": [
+    "Apple",
+    "PET",
+    "TRS-80"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerBibleGames-ComputerFunForTheWholeFamily1984",
+   "size": 6503172,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerGames-Micromasters1984",
+   "size": 8801940,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerGamesToPlayAndWrite1983",
+   "size": 21544171,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerSpacegamesForZxSpectrumZx81BbcTrs-80AppleVicAndPet1982",
+   "size": 20623899,
+   "plat": [
+    "Apple",
+    "PET",
+    "TRS-80"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputerSpyGamesForCommodore64Vic-20AppleTrs-80BbcElectronAndSpectrum1984",
+   "size": 4019502,
+   "plat": [
+    "Apple",
+    "Commodore",
+    "TRS-80",
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesFirstBookOfCommodore64Games1983",
+   "size": 18145140,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesFirstBookOfTiGames1983",
+   "size": 14782558,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesFirstBookOfVicGames1983",
+   "size": 24533155,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesMachineLanguageGamesForTheCommodore641986",
+   "size": 19395990,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesMoreMachineLanguageGamesForTheCommodore641987",
+   "size": 25338092,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesSecondBookOfCommodore64Games1984",
+   "size": 23694918,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesSecondBookOfVicGames1984",
+   "size": 4135035,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "ComputesThirdBookOfCommodore64Games1987",
+   "size": 29098639,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CosmicGamesForTheCommodoreVic-201983",
+   "size": 2691173,
+   "plat": [
+    "Commodore",
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CrazyGamesForYourCommodore641984",
+   "size": 5160737,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreateYourOwnGamesComputersPlay1984",
+   "size": 63950471,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingAdventureGamesOnYourComputer1984",
+   "size": 47048582,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingAdventuresOnYourCommodore641984",
+   "size": 10404074,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingArcadeGamesOnTheCommodore641984",
+   "size": 30919875,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingArcadeGamesOnTheTi-994a1984",
+   "size": 16332442,
+   "plat": [
+    "TI-99"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingArcadeGamesOnTheVic1984",
+   "size": 15414425,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingPoliticalAndMilitarySimulationGamesOnYourMicro1985",
+   "size": 10663786,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "CreatingSimulationGamesOnYourComputer1986",
+   "size": 16441612,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "DavidAhlsBasicComputerAdventures1986",
+   "size": 8461622,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "Dr.C.WackosMiracleGuideToDesigningAndProgrammingYourOwnAtariComputerArcadeGames1983",
+   "size": 67909710,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "EntertainmentGamesInTiBasicAndExtendedBasic1984",
+   "size": 8271632,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "ExploringAdventuresOnTheCommodore641983",
+   "size": 34427241,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "FantasticGamesForTheCommodore641984",
+   "size": 8775239,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "FantasticGamesForTheTrs-80ColourComputer1984",
+   "size": 5525010,
+   "plat": [
+    "TRS-80"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "FunAndGamesWithTheComputer1975",
+   "size": 9109659,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "FurtherAdventuresOnTheCommodore641281986",
+   "size": 20610831,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesApplesPlay1984",
+   "size": 57949153,
+   "plat": [
+    "Apple"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesAtarisPlay1983",
+   "size": 74063779,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesCommodore64ComputersPlay1984",
+   "size": 12130874,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesCommodoresPlay1984",
+   "size": 19004413,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesForTheAtari1982",
+   "size": 26871182,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesForYourAtariComputer1983",
+   "size": 26960070,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GamesForYourVic-201983",
+   "size": 3102000,
+   "plat": [
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "GoldenFlutesGreatEscapes-HowToWriteAdventureGames-1984",
+   "size": 15501368,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "GoldenFlutesGreatEscapes-HowToWriteAdventureGamesForTheCommodore64-1984",
+   "size": 24680921,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "HowToCreateAdventureGames1986",
+   "size": 1675988,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "HowToCreateComputerGames1986",
+   "size": 3609140,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "HowToWriteAdventureGamesForTheBbcMicrocomputerModelBAndAcornElectron1984",
+   "size": 41511724,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "HowToWriteExcitingGamesForTheCommodore641984",
+   "size": 9005192,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "InsideBasicGames1981",
+   "size": 9086760,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "InventYourOwnComputerGames1983",
+   "size": 2311446,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "K-powerCollection-10AwesomeOriginalUnusualSuperFantasticComputerPuzzlesAndGames1984",
+   "size": 7809347,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "MakeProgrammingYourCommodore64AGame-DiveBomber1984",
+   "size": 5934291,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "MarvelSuperHeroesComputerFun-BookOne1984",
+   "size": 5618502,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "MarvelSuperHeroesComputerFun-BookTwo1984",
+   "size": 28667409,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "MindMoves-StrategyBrainGamesForTheCommodore641984",
+   "size": 40776006,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "MoreBasicComputerGames1979",
+   "size": 25066466,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "MysteryAdventureComputerPuzzleBook1983",
+   "size": 8379831,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "PetFunAndGames-SelectedCursorPrograms1981",
+   "size": 13246338,
+   "plat": [
+    "PET"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "PetGamesAndRecreations1981",
+   "size": 5743455,
+   "plat": [
+    "PET"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ReplicatingReality-ExploringComputerSimulations1985",
+   "size": 6279665,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "SpaceAdventuresForTheCommodore641984",
+   "size": 137269698,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "SpaceAdventuresForTheTrs-80ColourComputer1984",
+   "size": 7442919,
+   "plat": [
+    "TRS-80"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "SpaceAdventuresForTheVic-201984",
+   "size": 22525897,
+   "plat": [
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "SpectrumAdventures-AGuideToPlayingAndWritingAdventures1983",
+   "size": 43307927,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "StimulatingSimulationsForTheAtari1977",
+   "size": 23682354,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "StimulatingSimulationsForTheCommodore641977",
+   "size": 1884383,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "StimulatingSimulationsForTheVic1977",
+   "size": 2021840,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "TechniquesForCreatingGoldenDeliciousGamesForTheAppleComputer1982",
+   "size": 10924199,
+   "plat": [
+    "Apple"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "TheAToZBookOfComputerGames1987",
+   "size": 14487406,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "TheArtOfComputerGameDesign1997",
+   "size": 715278,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "TheAtariBookOfGames1983",
+   "size": 9165100,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "TheCaptain80BookOfBasicAdventures1981",
+   "size": 101419916,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "TheCommodore64GamesBook-21SensationalGames1983",
+   "size": 44729605,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "TheGameMakersManual-AtariStAndStosBasic1990",
+   "size": 99524816,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "BASIC"
+  },
+  {
+   "name": "Ti-994aGamePrograms1983",
+   "size": 19690171,
+   "plat": [
+    "TI-99"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "TiGamesForKids1984",
+   "size": 12898368,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "TimHartnellsGiantBookOfComputerGames1984",
+   "size": 10158449,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "TimHartnellsSecondGiantBookOfComputerGames1985",
+   "size": 8104563,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "Vic-20-50Easy-to-runComputerGames1983",
+   "size": 5502573,
+   "plat": [
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Vic-20GamesGraphicsAndApplications1983",
+   "size": 4283826,
+   "plat": [
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "VicGamesForKids1983",
+   "size": 23307635,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "VicGamesPlusBonusProgramsForGraphicsDisplaysSoundAndMusicEffectsAndMore1984",
+   "size": 15366053,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WeirdComputerGamesForCommodore64Vic-20Trs-80BbcElectronAndApple1984",
+   "size": 4454007,
+   "plat": [
+    "Apple",
+    "Commodore",
+    "TRS-80",
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "WinningGamesOnTheCommodore641984",
+   "size": 16709087,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnAdventureProgramsForYourMicrocomputer1983",
+   "size": 41203590,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnFantasyGamesForYourMicrocomputer1984",
+   "size": 46912049,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnProgram-AdvancedGraphics-HauntedHouse1985",
+   "size": 7570896,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnProgram-BeginningBasic-SpaceJourney1984",
+   "size": 11504260,
+   "plat": [],
+   "lang": "BASIC"
+  },
+  {
+   "name": "WriteYourOwnProgram-CreatingADatabase-AdventureGame1985",
+   "size": 10244555,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnProgram-Graphics-Hangman1984",
+   "size": 12364824,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WriteYourOwnProgram-MovingGraphics-AlienIncaders1985",
+   "size": 8637276,
+   "plat": [],
+   "lang": "mixed"
+  },
+  {
+   "name": "WritingStrategyGamesOnYourAtari-TechniquesForIntelligentGames1984",
+   "size": 16506311,
+   "plat": [
+    "Atari"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ZapPowBoomArcadeGamesForTheVic-201982",
+   "size": 17375426,
+   "plat": [
+    "VIC-20"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "Zappers-HavingFunAndProgramming23GamesForTheTi-994a1984",
+   "size": 14902461,
+   "plat": [
+    "TI-99"
+   ],
+   "lang": "mixed"
+  },
+  {
+   "name": "ZappersForTheCommodore64-HaveFunAndLearnToProgramWith30UnforgettableGames1984",
+   "size": 14806155,
+   "plat": [
+    "Commodore"
+   ],
+   "lang": "mixed"
+  }
+ ]
+}

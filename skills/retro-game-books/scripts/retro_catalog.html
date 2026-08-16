@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Retro Game Books — Catalog</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px;max-width:1100px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px}
+  .card h3{margin:0;font-size:13px;line-height:1.3}
+  .meta{font-size:11px;color:var(--dim)}
+  .pill{display:inline-block;font-size:10px;padding:2px 7px;margin:2px 2px 0 0;border-radius:9px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  .pill.p{color:var(--amber);border-color:#3a3320}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;margin-top:4px;text-align:center}
+  a.dl:hover{background:#10231d}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9670; Retro Game Books — Catalog</h1>
+  <div class="sub">135 retro game-design/programming PDFs (archive.org <code>RetroGameDesignAndProgrammingBooks</code>). Self-contained; loads <code>references/book_index.json</code> + fetches on demand.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="search titles…" style="flex:1;min-width:220px">
+    <select id="plat"><option value="">all platforms</option><option value="commodore">Commodore</option><option value="apple">Apple</option><option value="atari">Atari</option><option value="trs-80">TRS-80</option><option value="ti-99">TI-99</option><option value="6502">6502</option></select>
+    <select id="lang"><option value="">all langs</option><option value="BASIC">BASIC</option><option value="Logo">Logo</option><option value="mixed">mixed</option></select>
+    <span id="count" class="meta" style="align-self:center"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>
+  Index: 135 real books from archive.org. Sample PDFs shipped in <code>corpus/</code> (~47 MB). Every card's link opens the real archive.org download URL on demand — no repo bloat.
+</footer>
+<script>
+const ITEM = "RetroGameDesignAndProgrammingBooks";
+let BOOKS = [];
+
+function mb(b){ return (b/1048576).toFixed(1) + " MB"; }
+function enc(s){ return encodeURIComponent(s + ".pdf"); }
+
+async function load(){
+  try {
+    const r = await fetch("references/book_index.json");
+    const data = await r.json();
+    BOOKS = data.books || [];
+  } catch(e){
+    document.getElementById("grid").innerHTML =
+      "<div class='card' style='grid-column:1/-1'>Could not load references/book_index.json (serve over http or open beside the file).</div>";
+    return;
+  }
+  render();
+}
+
+function render(){
+  const term = document.getElementById("q").value.toLowerCase();
+  const plat = document.getElementById("plat").value.toLowerCase();
+  const lang = document.getElementById("lang").value;
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const list = BOOKS.filter(b =>
+    (!term || b.name.toLowerCase().includes(term)) &&
+    (!plat || (b.plat||[]).some(p=>p.toLowerCase().includes(plat))) &&
+    (!lang || b.lang === lang)
+  );
+  document.getElementById("count").textContent = list.length + " / " + BOOKS.length + " books";
+  list.forEach(b => {
+    const el = document.createElement("div");
+    el.className = "card";
+    const pills = (b.plat||[]).map(p=>`<span class="pill p">${p}</span>`).join("");
+    const langPill = b.lang ? `<span class="pill">${b.lang}</span>` : "";
+    const url = `https://archive.org/download/${ITEM}/${enc(b.name)}`;
+    el.innerHTML =
+      `<h3>${b.name}</h3>` +
+      `<div class="meta">${mb(b.size)}</div>` +
+      `<div>${langPill}${pills}</div>` +
+      `<a class="dl" href="${url}" target="_blank" rel="noopener">fetch PDF &#8599;</a>`;
+    grid.appendChild(el);
+  });
+}
+
+document.getElementById("q").oninput = render;
+document.getElementById("plat").onchange = render;
+document.getElementById("lang").onchange = render;
+load();
+</script>
+</body>
+</html>
