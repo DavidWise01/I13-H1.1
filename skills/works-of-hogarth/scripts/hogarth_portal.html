@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Works of William Hogarth (Trusler, 1833) — Portal</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:900px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--acc)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin:3px}
+  .warn{margin-top:14px;padding:10px 12px;background:#1a1410;border:1px solid #3b2d1d;border-radius:8px;font-size:12px;color:var(--amber)}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Works of William Hogarth — Portal</h1>
+  <div class="sub">John Trusler: <em>The Works of William Hogarth, in a Series of Engravings, with Descriptions and a Comment on their Moral Tendency</em> (1833). Self-contained catalog. No fetch — opens via <code>file://</code>.</div>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="warn">
+    &#9888; OCR note: this is an engraving-heavy art book (Hogarth's plates + Trusler's moral commentary). The archive.org <code>djvu.txt</code> is thin (348 KB) — title page + captions only; the body is image-driven. Treat the PDF as the primary source for the plates.
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>Source files (archive.org item <code>worksofwilliamho030737mbp</code>)</h3>
+    <p><span class="pill">djvu.txt 348 KB (OCR, title/captions)</span> <span class="pill">pdf 79.5 MB (primary, plates)</span></p>
+    <a class="dl" href="https://archive.org/download/worksofwilliamho030737mbp/worksofwilliamho030737mbp.pdf" target="_blank" rel="noopener">PDF &#8599;</a>
+    <a class="dl" href="https://archive.org/download/worksofwilliamho030737mbp/worksofwilliamho030737mbp_djvu.txt" target="_blank" rel="noopener">OCR txt &#8599;</a>
+    <a class="dl" href="https://archive.org/details/worksofwilliamho030737mbp" target="_blank" rel="noopener">archive.org page &#8599;</a>
+  </div>
+</main>
+<footer>
+  Humanities / Art History node — sibling to libanius-1517 (classics). VERIFIED-PROVENANCE (title/author/date confirmed via archive.org metadata + "THE WORKS OF WILLIAM HOGARTH" in OCR). Not a technical text.
+</footer>
+<script>
+// Real metadata facts (from archive.org metadata + OCR title line)
+const FACTS = [
+  {k:"Artist", v:"William Hogarth (1697–1764), English painter & engraver"},
+  {k:"Commentator", v:"John Trusler — moral commentary on the engravings (1833 ed.)"},
+  {k:"Title", v:"The Works of William Hogarth, in a Series of Engravings, with Descriptions and a Comment on their Moral Tendency"},
+  {k:"Edition", v:"1833 (19th-c. compilation of Hogarth's moral satires)"},
+  {k:"Genre", v:"Art history / satirical print commentary (Beer Street, Gin Lane, A Rake's Progress, Marriage à-la-mode, etc.)"},
+  {k:"Mesh role", v:"Humanities / Art History — 2nd non-technical node; sibling to libanius-1517 (classics)"}
+];
+const grid = document.getElementById("grid");
+FACTS.forEach(f => {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = `<h3>${f.k}</h3><p>${f.v}</p>`;
+  grid.appendChild(el);
+});
+</script>
+</body>
+</html>
