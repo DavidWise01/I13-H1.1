@@ -10,6 +10,7 @@
 
   const VERSION = '15.0.0';
   const STORAGE_KEY = 'i13.stage15.main-suite';
+  const FRAME_ID = 'i13-suite-runtime';
   const OBJECT_ID = 'i13';
 
   const MODULE_IDS = Object.freeze([
@@ -94,7 +95,10 @@
     } catch (_) {}
   }
 
-  function objectEl() { return document.getElementById(OBJECT_ID); }
+  function frameEl() { return document.getElementById(FRAME_ID); }
+  function runtimeWindow() { return frameEl()?.contentWindow || null; }
+  function runtimeDocument() { return frameEl()?.contentDocument || null; }
+  function objectEl() { return runtimeDocument()?.getElementById(OBJECT_ID) || null; }
   function svgDoc() { return objectEl()?.contentDocument || null; }
 
   function panel(moduleId) {
@@ -112,7 +116,7 @@
   }
 
   function collapseAllModules() {
-    const api = window.I13Exploded;
+    const api = runtimeWindow()?.I13Exploded;
     if (!api?.isReady?.()) return false;
     for (const id of MODULE_IDS) {
       try {
@@ -124,7 +128,7 @@
   }
 
   function showModule(moduleId) {
-    const api = window.I13Exploded;
+    const api = runtimeWindow()?.I13Exploded;
     if (!api?.isReady?.() || !moduleId) return false;
     try {
       const s = api.getState(moduleId);
@@ -187,28 +191,30 @@
     if (!object || !p || typeof p.getBoundingClientRect !== 'function') return false;
     const or = object.getBoundingClientRect();
     const pr = p.getBoundingClientRect();
-    const y = window.scrollY + or.top + Math.max(0, pr.top) - 88;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    const rw = runtimeWindow();
+    if (!rw) return false;
+    const y = rw.scrollY + or.top + Math.max(0, pr.top) - 88;
+    rw.scrollTo({ top: y, behavior: 'smooth' });
     return true;
   }
 
   function focusOlogy() {
-    if (typeof window.I13OlogyLive?.jumpToLab === 'function') {
-      try { window.I13OlogyLive.jumpToLab(); return true; } catch (_) {}
+    const rw = runtimeWindow();
+    if (typeof rw?.I13OlogyLive?.jumpToLab === 'function') {
+      try { rw.I13OlogyLive.jumpToLab(); return true; } catch (_) {}
     }
-    const object = objectEl();
-    if (object) object.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    return !!object;
+    if (rw) rw.scrollTo({ top: rw.document.documentElement.scrollHeight, behavior: 'smooth' });
+    return !!rw;
   }
 
   function applySelection(focus = false) {
     const selected = suiteById(state.suite);
-    const signature = `${state.suite}:${state.corpusView}:${!!window.I13Exploded?.isReady?.()}:${!!spatialGroup()}`;
+    const signature = `${state.suite}:${state.corpusView}:${!!runtimeWindow()?.I13Exploded?.isReady?.()}:${!!spatialGroup()}`;
 
     if (selected.id === 'MAIN') {
       restoreCorpusVisibility();
       collapseAllModules();
-      if (focus) window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (focus) runtimeWindow()?.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (selected.id === 'OLOGY') {
       restoreCorpusVisibility();
       collapseAllModules();
@@ -235,8 +241,8 @@
 
   function createShell() {
     if (document.getElementById('i13-main-suite-shell')) return document.getElementById('i13-main-suite-shell');
-    const object = objectEl();
-    if (!object) return null;
+    const frame = frameEl();
+    if (!frame) return null;
 
     const shell = document.createElement('section');
     shell.id = 'i13-main-suite-shell';
@@ -276,7 +282,7 @@
       <div class="suite-note" data-suite-note>one working suite at a time</div>
     `;
 
-    document.body.insertBefore(shell, object);
+    document.body.insertBefore(shell, frame);
 
     state.shell = shell;
     state.suiteSelect = shell.querySelector('[data-suite-select]');
@@ -351,20 +357,25 @@
     state.booted = true;
     updateShellText();
 
-    const object = objectEl();
-    object?.addEventListener('load', () => setTimeout(() => applySelection(false), 120));
-    window.addEventListener('i13-exploded-ready', () => setTimeout(() => applySelection(false), 80));
+    const frame = frameEl();
+    const attachRuntimeEvents = () => {
+      const rw = runtimeWindow();
+      rw?.addEventListener?.('i13-exploded-ready', () => setTimeout(() => applySelection(false), 80));
+      setTimeout(() => applySelection(false), 140);
+    };
+    frame?.addEventListener('load', attachRuntimeEvents);
+    if (runtimeDocument()?.readyState === 'complete') attachRuntimeEvents();
 
     if (state.timer) clearInterval(state.timer);
     state.timer = setInterval(() => {
       if (state.suite === 'CORPUS') filterCorpus(state.corpusView);
       const selected = suiteById(state.suite);
-      if (selected.module && window.I13Exploded?.getState?.(selected.module)?.expanded !== true) {
+      const api = runtimeWindow()?.I13Exploded;
+      if (selected.module && api?.getState?.(selected.module)?.expanded !== true) {
         applySelection(false);
       }
     }, 400);
 
-    setTimeout(() => applySelection(false), 140);
   }
 
   window.I13MainSuite = Object.freeze({
