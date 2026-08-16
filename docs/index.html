@@ -15,6 +15,16 @@ noscript{display:block;padding:16px;font:14px/1.4 monospace}
 <body>
 <iframe id="i13-suite-runtime" src="runtime.html" title="I13 H1.1 runtime" loading="eager"></iframe>
 <noscript><a href="runtime.html">Open the I13 runtime</a></noscript>
-<script src="stages/stage15-wasm-main-suite.js"></script>
+<!-- Runtime compatibility contract. These execute inside runtime.html, not twice here.
+<script src="exploded-view.js"></script>
+<script src="stages/ivm-reader.js"></script>
+<script src="stages/stage4-toolchain.js"></script>
+<script src="stages/stage7-jit-shell.js"></script>
+<script src="stages/stage8-gfx.js"></script>
+<script src="stages/stage9-cortex-child.js"></script>
+<script src="stages/stage10-pulse.js"></script>
+<script src="stages/stage6-ology-live.js"></script>
+-->
+<script src='stages/stage15-wasm-main-suite.js'></script>
 </body>
 </html>
