@@ -1,0 +1,42 @@
+name: Stage 14 corpus
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/**'
+      - 'scripts/corpus_stage14.py'
+      - 'scripts/test_corpus_stage14.py'
+      - 'src/corpus.rs'
+      - 'src/lib.rs'
+      - 'spec/CORPUS-SCHEMA-v0.1.md'
+      - '.github/workflows/corpus.yml'
+  pull_request:
+    paths:
+      - 'corpus/**'
+      - 'scripts/corpus_stage14.py'
+      - 'scripts/test_corpus_stage14.py'
+      - 'src/corpus.rs'
+      - 'src/lib.rs'
+      - 'spec/CORPUS-SCHEMA-v0.1.md'
+      - '.github/workflows/corpus.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Unit test corpus gate
+        run: python -m unittest scripts.test_corpus_stage14
+      - name: Verify full H1.1 corpus and build index
+        run: python scripts/corpus_stage14.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-index.json --summary
+      - name: Check deterministic rebuild
+        run: |
+          python scripts/corpus_stage14.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-index-2.json
+          cmp /tmp/i13-corpus-index.json /tmp/i13-corpus-index-2.json
