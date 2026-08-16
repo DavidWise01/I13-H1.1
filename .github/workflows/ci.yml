@@ -47,6 +47,8 @@ jobs:
         run: node --check docs/stages/stage7-jit-shell.js
       - name: Check Stage 8 JavaScript syntax
         run: node --check docs/stages/stage8-gfx.js
+      - name: Check Stage 9 JavaScript syntax
+        run: node --check docs/stages/stage9-cortex-child.js
       - name: Check Stage 6 JavaScript syntax
         run: node --check docs/stages/stage6-ology-live.js
 
@@ -57,6 +59,7 @@ jobs:
           grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
           grep -q 'src="stages/stage7-jit-shell.js"' docs/index.html
           grep -q 'src="stages/stage8-gfx.js"' docs/index.html
+          grep -q 'src="stages/stage9-cortex-child.js"' docs/index.html
           grep -q 'src="stages/stage6-ology-live.js"' docs/index.html
 
       - name: Check Stage 5 bounded layout contract
@@ -153,6 +156,55 @@ jobs:
           assert.strictEqual(checks['reference facts preserved'], true);
           NODE
 
+      - name: Check Stage 9 Cortex child mount contract
+        run: |
+          grep -q "const MODULE_ID = 'child'" docs/stages/stage9-cortex-child.js
+          grep -q "title: 'CORTEX CHILD · BOUNDED EPHEMERAL · EXPLODED'" docs/stages/stage9-cortex-child.js
+          grep -q "family: 'cortex'" docs/stages/stage9-cortex-child.js
+          grep -q 'expanded: false' docs/stages/stage9-cortex-child.js
+          grep -q 'machineExpanded: false' docs/stages/stage9-cortex-child.js
+          grep -q "label: 'RESET'" docs/stages/stage9-cortex-child.js
+          grep -q "label: 'STEP'" docs/stages/stage9-cortex-child.js
+          grep -q "label: 'RUN'" docs/stages/stage9-cortex-child.js
+          grep -q "label: 'OBSERVE GFX'" docs/stages/stage9-cortex-child.js
+          grep -q "label: 'RECEIPT'" docs/stages/stage9-cortex-child.js
+          grep -q 'stage9-child-output-clip' docs/stages/stage9-cortex-child.js
+          grep -q 'direct commit · FORBIDDEN' docs/stages/stage9-cortex-child.js
+          grep -q '0xdeadbeef' docs/stages/stage9-cortex-child.js
+
+      - name: Execute Stage 9 Cortex child self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage9-cortex-child.js', 'utf8');
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {} },
+            console, Map, Object, Math, JSON, Error
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const result = sandbox.window.I13CortexChild.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          const checks = Object.fromEntries(result.checks.map(c => [c.name, c.pass]));
+          assert.strictEqual(checks['canonical lifecycle order'], true);
+          assert.strictEqual(checks['returns to zero'], true);
+          assert.strictEqual(checks['private state erased'], true);
+          assert.strictEqual(checks['receipt survives termination'], true);
+          assert.strictEqual(checks['receipt preserves depth width witness'], true);
+          assert.strictEqual(checks['private state omitted from receipt'], true);
+          assert.strictEqual(checks['vh1 sample width preserved'], true);
+          assert.strictEqual(checks['direct commit forbidden'], true);
+          assert.strictEqual(result.receipt.childId, 13);
+          assert.strictEqual(result.receipt.depth, 4);
+          assert.strictEqual(result.receipt.width, 81);
+          assert.strictEqual(result.receipt.witness, 42);
+          assert.strictEqual(result.receipt.terminated, true);
+          assert.strictEqual(JSON.stringify(result.receipt).includes('deadbeef'), false);
+          NODE
+
       - name: Check Stage 6 live observer contract
         run: |
           grep -q "version: '0.1.0'" docs/stages/stage6-ology-live.js
@@ -211,11 +263,10 @@ jobs:
 
       - name: Keep later deep stages unmounted
         run: |
-          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 5
-          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage8-gfx.js
-          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage8-gfx.js
+          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 6
+          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage9-cortex-child.js
+          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage9-cortex-child.js
+          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage9-cortex-child.js
+          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage9-cortex-child.js
+          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage9-cortex-child.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage9-cortex-child.js
