@@ -197,6 +197,7 @@ fn main() {
     writeln!(generated, "pub static NEIGHBORS: [u16; {}] = {:?};", neighbors.len(), neighbors).unwrap();
     writeln!(generated, "pub static EDGE_FLAGS: [u8; {}] = {:?};", flags.len(), flags).unwrap();
     writeln!(generated, "pub static EDGE_WEIGHTS: [u8; {}] = {:?};", weights.len(), weights).unwrap();
+    writeln!(generated, "pub mod arrival {{ include!(concat!(env!(\"CARGO_MANIFEST_DIR\"), \"/src/arrival.rs\")); }}").unwrap();
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR"));
     fs::write(out_dir.join("corpus_mesh_generated.rs"), generated).expect("write generated corpus mesh");
