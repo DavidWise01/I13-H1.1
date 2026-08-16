@@ -1,30 +1,34 @@
-# I13 GitHub Pages surface
+# I13 GitHub Pages
 
-Production source for the single Icarium/I13 public page.
+The Pages UI has one visual source of truth:
 
 ```text
-docs/
-├── index.html
-├── .nojekyll
-└── assets/
-    ├── style.css
-    ├── app.js
-    ├── forge-reference.webp
-    └── runtime-reference.webp
+docs/i13.svg
 ```
 
-The visible page intentionally contains only the canonical 13 I-13 words.
+`index.html` is only a thin wrapper so GitHub Pages opens the SVG at the repository root URL.
 
-`app.js` supplies the live 2D OLOGY layer beneath them:
+## Adding a module
 
-- 32-bit surface is modeled visually as a 2D vector field.
-- each vector root has local voxel-depth cues.
-- the Queen walks across surface roots.
-- a deterministic Cortex Verifier gate can pass/veto candidate movement.
-- local burrow depth changes without consuming the surface x/y address.
-- pointer input can retarget the Queen; arrow keys propose cardinal moves.
-- reduced-motion clients receive a static rendered frame.
+Add one object to the `MODULES` array inside `i13.svg`:
 
-The WebP files are compact visual fallbacks/reference assets derived from the Icarium forge dashboard concepts.
+```js
+{
+  id: 'module-id',
+  title: 'MODULE NAME',
+  version: 'vX.Y',
+  eng: ['I13', 'WASM', 'PY'],
+  status: 'test/status',
+  body: ['line one', 'line two']
+}
+```
 
-Production/live surface is published from `main:/docs`.
+The trunk renderer lays modules onto the vertical spine automatically.
+
+## Embedded engines
+
+- **Wasm:** a tiny OLOGY/CV/Pulse reference core is embedded directly as base64 WebAssembly and self-tests on page load.
+- **Python:** Python is intentionally lazy-loaded only when requested through the `PY ENGINE` control. It uses Pyodide in-browser and runs the Python AST + Pulse reference check.
+- **SVG:** the 2D OLOGY surface, vector-rooted voxel, Queen movement, burrowing, authority toggle, and CV verdict are all drawn and controlled inside the single SVG.
+
+The large historical/source engines remain in the repository; this SVG is the live visual/runtime map, not a replacement for those sources.
