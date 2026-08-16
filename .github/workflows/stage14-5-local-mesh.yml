@@ -1,0 +1,176 @@
+name: Stage 14.5 Queen local mesh field
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'build.rs'
+      - 'Cargo.toml'
+      - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
+      - 'src/lib.rs'
+      - 'corpus/h1.1-corpus.jsonl'
+      - 'corpus/maps/WORLD-IV-SONIA.json'
+      - 'scripts/corpus_stage14.py'
+      - 'scripts/corpus_mesh_stage14_1.py'
+      - 'scripts/corpus_browser_stage14_3.py'
+      - 'docs/index.html'
+      - 'docs/stages/stage14-corpus-navigator.js'
+      - 'docs/stages/stage14-4-corpus-spatial.js'
+      - 'docs/stages/stage14-5-corpus-local-mesh.js'
+      - 'spec/STAGE14.5-CORPUS-LOCAL-MESH.md'
+      - '.github/workflows/stage14-5-local-mesh.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-mesh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+
+      - name: Test Stage 14.2 walker regression
+        run: cargo test corpus_walker::tests -- --nocapture
+
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Check Stage 14.5 JavaScript syntax
+        run: node --check docs/stages/stage14-5-corpus-local-mesh.js
+
+      - name: Execute Stage 14.5 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage14-5-corpus-local-mesh.js', 'utf8');
+          const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; } },
+            console, Map, Set, Object, Math, JSON, Error, Uint8Array, BigInt, WebAssembly,
+            atob: value => Buffer.from(value, 'base64').toString('binary'),
+            setTimeout() { return 0; }, clearTimeout() {}, setInterval() { return 0; }, clearInterval() {}
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const stage = sandbox.window.I13CorpusLocalMeshStage;
+          assert(stage, 'Stage 14.5 export missing');
+          assert.strictEqual(stage.version, '14.5.0');
+          const result = stage.meshSelfTest(manifest);
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          assert.strictEqual(result.checks.length, 10);
+          console.log(`STAGE 14.5 JS PASS · checks=${result.checks.length} · roots=${manifest.counts.nodes} · edges=${manifest.counts.edges}`);
+          NODE
+
+      - name: Execute full Wasm local-neighborhood contract
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          const manifest = JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json', 'utf8'));
+          const bytes = fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+          const SUCCESS = 1n << 63n;
+          const MASK32 = 0xffff_ffffn;
+          function fnv1a32(text) {
+            let h = 0x811c9dc5 >>> 0;
+            for (const byte of Buffer.from(text, 'utf8')) {
+              h ^= byte;
+              h = Math.imul(h, 0x01000193) >>> 0;
+            }
+            return h >>> 0;
+          }
+          function decodeNeighbor(value) {
+            const v = BigInt(value);
+            assert.notStrictEqual(v & SUCCESS, 0n, 'neighbor success bit missing');
+            return {
+              address: Number(v & MASK32) >>> 0,
+              flags: Number((v >> 32n) & 0xffn),
+              weight: Number((v >> 40n) & 0xffn)
+            };
+          }
+          (async () => {
+            const { instance } = await WebAssembly.instantiate(bytes, {});
+            const e = instance.exports;
+            const byAddress = new Map(manifest.nodes.map(node => [node.address >>> 0, node]));
+            let directed = 0;
+            let minDegree = Infinity;
+            let maxDegree = 0;
+            let evidenceDirected = 0;
+            const edgeMap = new Map();
+
+            for (const source of manifest.nodes) {
+              const sourceAddress = source.address >>> 0;
+              const count = Number(e.i13_corpus_neighbor_count(sourceAddress, 0));
+              directed += count;
+              minDegree = Math.min(minDegree, count);
+              maxDegree = Math.max(maxDegree, count);
+              const seen = new Set();
+              for (let slot = 0; slot < count; slot++) {
+                const edge = decodeNeighbor(e.i13_corpus_neighbor(sourceAddress, slot, 0));
+                assert(edge.flags === 1 || edge.flags === 2 || edge.flags === 3, `invalid edge flags ${edge.flags}`);
+                assert(edge.weight > 0, 'edge weight must be positive');
+                assert.notStrictEqual(edge.address, sourceAddress, 'self edge forbidden');
+                assert(!seen.has(edge.address), 'duplicate local neighbor');
+                seen.add(edge.address);
+                const target = byAddress.get(edge.address);
+                assert(target, `neighbor root ${edge.address} missing from manifest`);
+                edgeMap.set(`${sourceAddress}:${edge.address}`, `${edge.flags}:${edge.weight}`);
+              }
+
+              const evidenceCount = Number(e.i13_corpus_neighbor_count(sourceAddress, 1));
+              evidenceDirected += evidenceCount;
+              if (!source.evidence) {
+                assert.strictEqual(evidenceCount, 0, `non-evidence source ${source.id} exposed evidence neighbors`);
+              } else {
+                for (let slot = 0; slot < evidenceCount; slot++) {
+                  const edge = decodeNeighbor(e.i13_corpus_neighbor(sourceAddress, slot, 1));
+                  assert.strictEqual(byAddress.get(edge.address)?.evidence, true, 'evidence mode exposed contextual/Vogel target');
+                }
+              }
+            }
+
+            assert.strictEqual(directed, manifest.counts.directed_edges, 'directed degree sum mismatch');
+            assert.strictEqual(directed, manifest.counts.edges * 2, 'undirected/directed edge invariant failed');
+            for (const [key, meta] of edgeMap) {
+              const [a, b] = key.split(':');
+              assert.strictEqual(edgeMap.get(`${b}:${a}`), meta, `reverse edge metadata mismatch ${key}`);
+            }
+
+            const start = fnv1a32('sonia-001');
+            const goal = fnv1a32('fractal-007');
+            const step = BigInt(e.i13_corpus_walk_next(start, goal, 0, 54));
+            assert.notStrictEqual(step & SUCCESS, 0n, 'Sonia -> Fractint next hop vetoed');
+            const next = Number(step & MASK32) >>> 0;
+            const count = Number(e.i13_corpus_neighbor_count(start, 0));
+            const local = [];
+            for (let slot = 0; slot < count; slot++) local.push(decodeNeighbor(e.i13_corpus_neighbor(start, slot, 0)).address);
+            assert(local.includes(next), 'walk_next result is not in Q local neighborhood');
+            assert.strictEqual(Number(e.i13_corpus_neighbor_count(start, 1)), 0, 'contextual Sonia root must have zero evidence-mode degree');
+
+            console.log(`LOCAL MESH WASM PASS · directed=${directed} · evidence-directed=${evidenceDirected} · degree=${minDegree}..${maxDegree} · Sonia degree=${count} · next-in-neighborhood=YES`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Check Stage 14.5 loader and authority isolation
+        run: |
+          grep -q "s6.src = 'stages/stage14-5-corpus-local-mesh.js'" docs/index.html
+          grep -q "s5.src = 'stages/stage14-4-corpus-spatial.js'" docs/index.html
+          grep -q "s4.src = 'stages/stage14-corpus-navigator.js'" docs/index.html
+          test "$(grep -o 'src=\"stages/' docs/index.html | wc -l)" -eq 7
+          grep -q "does not own traversal" docs/stages/stage14-5-corpus-local-mesh.js
+          grep -q "preview only" docs/stages/stage14-5-corpus-local-mesh.js
+          grep -q "EDGE_DOMAIN = 0x01" docs/stages/stage14-5-corpus-local-mesh.js
+          grep -q "EDGE_WORLD = 0x02" docs/stages/stage14-5-corpus-local-mesh.js
