@@ -75,9 +75,11 @@
 
   function chooseStep() {
     let dx = 0, dy = 0;
+    const qx = Math.round(state.queen.tx);
+    const qy = Math.round(state.queen.ty);
     if (state.target) {
-      dx = Math.sign(state.target.x - state.queen.x);
-      dy = Math.sign(state.target.y - state.queen.y);
+      dx = Math.sign(state.target.x - qx);
+      dy = Math.sign(state.target.y - qy);
       if (dx && dy && rand() < 0.5) dx = 0; else if (dx && dy) dy = 0;
       if (!dx && !dy) state.target = null;
     }
@@ -86,13 +88,13 @@
       [dx,dy] = dirs[Math.floor(rand() * dirs.length)];
     }
 
-    const nx = state.queen.x + dx;
-    const ny = state.queen.y + dy;
+    const nx = qx + dx;
+    const ny = qy + dy;
     state.verdict = authority(nx, ny) ? 1 : 0;
     state.pulse = 1;
 
     if (state.verdict) {
-      state.trail.push({ x: state.queen.x, y: state.queen.y, depth: state.queen.depth, age: 1 });
+      state.trail.push({ x: qx, y: qy, depth: state.queen.depth, age: 1 });
       if (state.trail.length > 28) state.trail.shift();
       state.queen.tx = nx;
       state.queen.ty = ny;
@@ -214,8 +216,8 @@
     const d = map[event.key];
     if (!d) return;
     event.preventDefault();
-    const nx = Math.round(state.queen.x) + d[0];
-    const ny = Math.round(state.queen.y) + d[1];
+    const nx = Math.round(state.queen.tx) + d[0];
+    const ny = Math.round(state.queen.ty) + d[1];
     state.verdict = authority(nx, ny) ? 1 : 0;
     state.pulse = 1;
     if (state.verdict) { state.queen.tx = nx; state.queen.ty = ny; }
