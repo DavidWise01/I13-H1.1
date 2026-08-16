@@ -1,4 +1,5 @@
 // Stage 14.7 arrival execution.
+// Stage 14.8 extends the witnessed receipt into read-only decision context.
 //
 // Movement only changes the Queen's surface root. Arrival execution is a
 // separate, authority-gated step. The default corpus action is read/resolve;
@@ -263,6 +264,35 @@ pub fn execute_arrival(address: u32, step_limit: u32, authority: bool) -> Option
     Some(ArrivalReceipt { kind, program_id, result, steps, witness, terminated: true })
 }
 
+fn exact_receipt(address: u32, result_bits: u32, steps: u32, kind: u32, program_id: u32, witness: u32) -> Option<ArrivalReceipt> {
+    if steps > u16::MAX as u32 || program_id > u8::MAX as u32 || witness == 0 { return None; }
+    let supplied_kind = match kind { 1 => ArrivalKind::Context, 2 => ArrivalKind::Program, _ => return None };
+    let expected = execute_arrival(address, HARD_STEP_LIMIT, true)?;
+    if expected.kind != supplied_kind || expected.program_id != program_id as u8 || expected.result as u32 != result_bits || expected.steps as u32 != steps || expected.witness != witness { return None; }
+    Some(expected)
+}
+
+pub fn receipt_context32(address: u32, result_bits: u32, steps: u32, kind: u32, program_id: u32, witness: u32) -> Option<u32> {
+    let receipt = exact_receipt(address, result_bits, steps, kind, program_id, witness)?;
+    let mut bytes = [0u8; 24];
+    bytes[0..4].copy_from_slice(b"CTX8");
+    bytes[4..8].copy_from_slice(&address.to_le_bytes());
+    bytes[8..12].copy_from_slice(&result_bits.to_le_bytes());
+    bytes[12..14].copy_from_slice(&receipt.steps.to_le_bytes());
+    bytes[14] = receipt.kind as u8;
+    bytes[15] = receipt.program_id;
+    bytes[16..20].copy_from_slice(&receipt.witness.to_le_bytes());
+    bytes[20..24].copy_from_slice(&corpus_walker::source_fingerprint().to_le_bytes());
+    let token = fnv1a32(&bytes);
+    Some(if token == 0 { 1 } else { token })
+}
+
+pub fn receipt_context_next(address: u32, goal: u32, result_bits: u32, steps: u32, kind: u32, program_id: u32, witness: u32, evidence_only: bool, max_steps: u32) -> Option<corpus_walker::WalkStep> {
+    receipt_context32(address, result_bits, steps, kind, program_id, witness)?;
+    if address == goal { return None; }
+    corpus_walker::walk_next(address, goal, evidence_only, max_steps)
+}
+
 #[no_mangle]
 pub extern "C" fn i13_arrival_opcode_count() -> u32 { OPCODE_COUNT }
 #[no_mangle]
@@ -279,6 +309,16 @@ pub extern "C" fn i13_arrival_witness(address: u32, result_bits: u32, steps: u32
     let kind = match kind { 1 => ArrivalKind::Context, 2 => ArrivalKind::Program, _ => return 0 };
     if steps > u16::MAX as u32 || program_id > u8::MAX as u32 { return 0; }
     witness32(address, result_bits as i32, steps as u16, kind, program_id as u8)
+}
+#[no_mangle]
+pub extern "C" fn i13_receipt_context(address: u32, result_bits: u32, steps: u32, kind: u32, program_id: u32, witness: u32) -> u32 {
+    receipt_context32(address, result_bits, steps, kind, program_id, witness).unwrap_or(0)
+}
+#[no_mangle]
+pub extern "C" fn i13_receipt_next(address: u32, goal: u32, result_bits: u32, steps: u32, kind: u32, program_id: u32, witness: u32, evidence_only: u32, max_steps: u32) -> u64 {
+    let Some(step) = receipt_context_next(address, goal, result_bits, steps, kind, program_id, witness, evidence_only != 0, max_steps) else { return 0; };
+    if step.distance > 0x7fff_ffff { return 0; }
+    (1u64 << 63) | ((step.distance as u64) << 32) | step.next_address as u64
 }
 
 #[cfg(test)]
@@ -316,5 +356,30 @@ mod tests {
         let address = fnv1a32(b"sonia-003");
         let a = witness32(address, 7, 5, ArrivalKind::Program, 1); let b = witness32(address, 7, 5, ArrivalKind::Program, 1); let c = witness32(address, 8, 5, ArrivalKind::Program, 1);
         assert_eq!(a, b); assert_ne!(a, c);
+    }
+    #[test]
+    fn receipt_context_requires_exact_runtime_receipt() {
+        let address = fnv1a32(b"sonia-003");
+        let receipt = execute_arrival(address, 8, true).unwrap();
+        let token = receipt_context32(address, receipt.result as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness).unwrap();
+        assert_ne!(token, 0);
+        assert_eq!(receipt_context32(address, receipt.result as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness ^ 1), None);
+        assert_eq!(receipt_context32(address, receipt.result.wrapping_add(1) as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness), None);
+    }
+    #[test]
+    fn receipt_context_routes_only_after_valid_receipt() {
+        let address = fnv1a32(b"sonia-003");
+        let goal = fnv1a32(b"fractal-007");
+        let receipt = execute_arrival(address, 8, true).unwrap();
+        let expected = corpus_walker::walk_next(address, goal, false, 54).unwrap();
+        let next = receipt_context_next(address, goal, receipt.result as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness, false, 54).unwrap();
+        assert_eq!(next, expected);
+        assert_eq!(receipt_context_next(address, goal, receipt.result as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness ^ 1, false, 54), None);
+    }
+    #[test]
+    fn receipt_context_stops_at_goal() {
+        let goal = fnv1a32(b"fractal-007");
+        let receipt = execute_arrival(goal, 8, true).unwrap();
+        assert_eq!(receipt_context_next(goal, goal, receipt.result as u32, receipt.steps as u32, receipt.kind as u32, receipt.program_id as u32, receipt.witness, false, 54), None);
     }
 }

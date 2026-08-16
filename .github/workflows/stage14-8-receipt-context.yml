@@ -1,0 +1,80 @@
+name: Stage 14.8 Receipt context
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/arrival.rs'
+      - 'docs/index.html'
+      - 'docs/stages/stage14-8-receipt-context.js'
+      - 'spec/STAGE14.8-RECEIPT-CONTEXT.md'
+      - '.github/workflows/stage14-8-receipt-context.yml'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  receipt-context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Generate browser manifest
+        run: python scripts/corpus_browser_stage14_3.py --output docs/assets/corpus-browser.json --summary
+      - name: Test Stage 14.8 receipt context
+        run: cargo test receipt_context -- --nocapture
+      - name: Build release Wasm
+        run: cargo build --release --target wasm32-unknown-unknown
+      - name: Check Stage 14.8 JavaScript syntax
+        run: node --check docs/stages/stage14-8-receipt-context.js
+      - name: Execute Stage 14.8 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const source=fs.readFileSync('docs/stages/stage14-8-receipt-context.js','utf8');
+          const manifest=JSON.parse(fs.readFileSync('docs/assets/corpus-browser.json','utf8'));
+          const sandbox={window:{},document:{readyState:'loading',addEventListener(){},getElementById(){return null;}},console,Map,Set,Object,Math,JSON,Error,Uint8Array,BigInt,WebAssembly,atob:v=>Buffer.from(v,'base64').toString('binary'),setTimeout(){return 0;},clearTimeout(){},setInterval(){return 0;},clearInterval(){}};
+          vm.createContext(sandbox);vm.runInContext(source,sandbox);
+          const stage=sandbox.window.I13CorpusReceiptContextStage;assert(stage,'Stage 14.8 export missing');
+          assert.strictEqual(stage.version,'14.8.0');
+          const result=stage.contextSelfTest(manifest);assert.strictEqual(result.pass,true,JSON.stringify(result));assert.strictEqual(result.checks.length,10);
+          console.log(`STAGE 14.8 JS PASS · checks=${result.checks.length}`);
+          NODE
+      - name: Execute real Wasm receipt-context contract
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          const bytes=fs.readFileSync('target/wasm32-unknown-unknown/release/i13_h1_1.wasm');
+          const SUCCESS=1n<<63n,MASK32=0xffff_ffffn;
+          function fnv(text){let h=0x811c9dc5>>>0;for(const b of Buffer.from(text)){h^=b;h=Math.imul(h,0x01000193)>>>0;}return h>>>0;}
+          function receipt(v){v=BigInt(v);if((v&SUCCESS)===0n)return null;const bits=Number(v&MASK32)>>>0;return{resultBits:bits,result:bits|0,steps:Number((v>>32n)&0xffffn),program:Number((v>>48n)&0xffn),kind:Number((v>>56n)&0x7fn)};}
+          function walk(v){v=BigInt(v);if((v&SUCCESS)===0n)return null;return{address:Number(v&MASK32)>>>0,distance:Number((v>>32n)&0x7fff_ffffn)};}
+          (async()=>{const {instance}=await WebAssembly.instantiate(bytes,{}),e=instance.exports;
+            for(const n of ['i13_arrival_execute','i13_arrival_witness','i13_receipt_context','i13_receipt_next','i13_corpus_walk_next'])assert.strictEqual(typeof e[n],'function',`missing ${n}`);
+            const current=fnv('sonia-003'),goal=fnv('fractal-007');
+            const r=receipt(e.i13_arrival_execute(current,8,1));assert(r);
+            const witness=Number(e.i13_arrival_witness(current,r.resultBits,r.steps,r.kind,r.program))>>>0;assert(witness);
+            const token=Number(e.i13_receipt_context(current,r.resultBits,r.steps,r.kind,r.program,witness))>>>0;assert(token);
+            assert.strictEqual(Number(e.i13_receipt_context(current,r.resultBits,r.steps,r.kind,r.program,(witness^1)>>>0))>>>0,0,'forged witness must VETO');
+            const receiptNext=walk(e.i13_receipt_next(current,goal,r.resultBits,r.steps,r.kind,r.program,witness,0,54));assert(receiptNext);
+            const walkerNext=walk(e.i13_corpus_walk_next(current,goal,0,54));assert(walkerNext);
+            assert.deepStrictEqual(receiptNext,walkerNext,'receipt context must preserve walker authority');
+            assert.strictEqual(BigInt(e.i13_receipt_next(current,goal,r.resultBits,r.steps,r.kind,r.program,(witness^1)>>>0,0,54)),0n,'bad receipt must not suggest intent');
+            const gr=receipt(e.i13_arrival_execute(goal,8,1));assert(gr);const gw=Number(e.i13_arrival_witness(goal,gr.resultBits,gr.steps,gr.kind,gr.program))>>>0;
+            assert.strictEqual(BigInt(e.i13_receipt_next(goal,goal,gr.resultBits,gr.steps,gr.kind,gr.program,gw,0,54)),0n,'goal receipt has no next intent');
+            console.log(`RECEIPT CONTEXT WASM PASS · token=0x${token.toString(16).padStart(8,'0')} · next=0x${receiptNext.address.toString(16).padStart(8,'0')} · distance=${receiptNext.distance}`);
+          })().catch(e=>{console.error(e);process.exit(1);});
+          NODE
+      - name: Check authority isolation and loader
+        run: |
+          grep -q "stage14-8-receipt-context.js" docs/index.html
+          grep -q "RECEIPT != CONTEXT != INTENT != REQUEST != PENDING != COMMIT" spec/STAGE14.8-RECEIPT-CONTEXT.md
+          grep -q "context token is correlation not authority" docs/stages/stage14-8-receipt-context.js
+          ! grep -q "requestSelected" docs/stages/stage14-8-receipt-context.js
+          ! grep -q "navigator()?.step" docs/stages/stage14-8-receipt-context.js
