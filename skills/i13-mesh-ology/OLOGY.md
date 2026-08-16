@@ -38,7 +38,10 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 | `byte-magazine-first-issue` | cultural-myth | VERIFIED (primary source) | `byte_reader.html` |
 | `retro-game-books` | computing-history | VERIFIED (index) | `retro_catalog.html` + `retro_fetch.py` |
 | `embedded-8051` | computing/embedded | VERIFIED | `embedded_workbench.html` (full HTML) |
+| `programming-8086` | computing-history | VERIFIED | `8086_explorer.html` |
 
+> **8086 pairs with embedded-8051** as the microprocessor-programming contrast:
+> x86 (Coffron, 8086/8088 + IBM PC) vs 8051 MCU. Different ISA, same theme.
 ## E2. CS FOUNDATIONS (topic) — Computer Science / Algorithms (-ology: algorithms & data structures)
 | Skill | Layer | Status | Tool |
 |---|---|---|---|
