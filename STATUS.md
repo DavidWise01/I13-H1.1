@@ -15,11 +15,24 @@ Last parity pass: 2026-08-16.
 - generic natural width helper plus frozen VH1 ternary width helper.
 - odd-width quorum law `N=2k+1 -> k | k+1`.
 - bounded ephemeral child lifecycle with receipt-only persistence.
-- 54-record technical corpus.
-- Stage 14 corpus admission gate: schema/provenance/ID/address/V-layer CV.
-- Stage 14.1 corpus mesh: shared-domain edges, explicit world-path overlays, neighbor/path queries and bounded local burrow.
-- Vogel/context nodes remain traversable but are excluded by evidence-only traversal.
+- Stage 14: 54-record technical corpus admission gate with deterministic 32-bit OLOGY roots.
+- Stage 14.1: traversable semantic corpus mesh, 54 nodes / 187 undirected edges / 9 World-IV overlay steps.
+- Stage 14.2: compile-time CSR corpus mesh baked into Rust/Wasm; direct neighbor, bounded path, evidence and verified-burrow ABI.
 - GitHub Pages source intentionally restricted to Icarium's 13 words.
+
+## STAGE 14.2 CONTRACT
+
+```text
+corpus JSONL
+  -> Stage 14 CV
+  -> Stage 14.1 mesh
+  -> build.rs
+  -> CSR numeric tables
+  -> Rust Cortex walker
+  -> WebAssembly exports
+```
+
+Runtime corpus identity remains the existing 32-bit OLOGY root; no second public node ID is introduced.
 
 ## FROZEN / REFERENCE
 
@@ -34,11 +47,11 @@ Last parity pass: 2026-08-16.
 - no physical quantum-computer claim.
 - no fault-tolerant hardware claim.
 - no claim that IPv4 itself is an OLOGY coordinate system.
+- no claim that OLOGY corpus adjacency is physical network adjacency.
 - no claim that every 2-erasure partition of the five-qubit code has been independently reconstruction-tested in this repository yet.
 - no lexical-closure implementation yet.
 - Pulse remains experimental; `...` is a proposed hard pulse boundary, not a frozen I-13 token.
-- exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled; the Sonia technical branch is independently correlated and the Stage 14.1 World IV file is only a curated navigation overlay.
-- dynamic semantic-mesh loading/querying has not yet been moved into the Wasm ABI.
+- exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled; the Sonia technical branch and curated overlay are independently correlated.
 
 ## BUILD GATE
 
@@ -48,7 +61,6 @@ Required green checks:
 cargo test --all-targets
 cargo build --release --target wasm32-unknown-unknown
 python scripts/verify_reference.py
-python -m unittest scripts.test_corpus_stage14 scripts.test_corpus_mesh_stage14_1
-python scripts/corpus_stage14.py --summary
-python scripts/corpus_mesh_stage14_1.py --summary
+python -m unittest scripts.test_corpus_stage14
+python -m unittest scripts.test_corpus_mesh_stage14_1
 ```

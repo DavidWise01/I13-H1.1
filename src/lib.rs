@@ -4,6 +4,7 @@
 pub mod child;
 pub mod cortex;
 pub mod corpus;
+pub mod corpus_walker;
 pub mod ology;
 pub mod pulse;
 pub mod quorum;
@@ -12,6 +13,7 @@ pub mod width;
 pub use child::{ChildPhase, ChildReceipt, CortexChild};
 pub use cortex::{CortexVerifier, CvContext, CvVerdict, Queen};
 pub use corpus::{fnv1a32 as corpus_fingerprint32, CorpusAddress, CorpusCvContext, CorpusVerifier};
+pub use corpus_walker::{CorpusNeighbor, WalkStep};
 pub use ology::{Direction, OlogyPoint, VoxelCursor, VoxelTransition};
 pub use quorum::OddSplit;
 pub use width::{mixed_width, natural_width, vh1_width};
@@ -76,6 +78,73 @@ pub extern "C" fn i13_vh1_width(depth: u32) -> u32 {
 pub extern "C" fn i13_odd_split(width: u32) -> u64 {
     let Some(s) = OddSplit::resolve(width) else { return 0; };
     ((s.external as u64) << 32) | s.internal as u64
+}
+
+// ---- Stage 14.2 compact corpus / Wasm ABI ---------------------------------
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_node_count() -> u32 {
+    corpus_walker::node_count() as u32
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_edge_count() -> u32 {
+    corpus_walker::edge_count() as u32
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_world_steps() -> u32 {
+    corpus_walker::world_step_count() as u32
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_source_fingerprint() -> u32 {
+    corpus_walker::source_fingerprint()
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_world_fingerprint() -> u32 {
+    corpus_walker::world_fingerprint()
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_is_evidence(address: u32) -> u32 {
+    corpus_walker::is_evidence(address) as u32
+}
+
+#[no_mangle]
+pub extern "C" fn i13_corpus_neighbor_count(address: u32, evidence_only: u32) -> u32 {
+    corpus_walker::neighbor_count(address, evidence_only != 0) as u32
+}
+
+/// Neighbor result encoding:
+/// bit63 success | bits40..47 weight | bits32..39 flags | bits0..31 OLOGY address.
+#[no_mangle]
+pub extern "C" fn i13_corpus_neighbor(address: u32, slot: u32, evidence_only: u32) -> u64 {
+    let Some(n) = corpus_walker::neighbor(address, slot as usize, evidence_only != 0) else { return 0; };
+    (1u64 << 63) | ((n.weight as u64) << 40) | ((n.flags as u64) << 32) | n.address as u64
+}
+
+/// Walk result encoding:
+/// bit63 success | bits32..62 shortest distance | bits0..31 next OLOGY address.
+#[no_mangle]
+pub extern "C" fn i13_corpus_walk_next(start: u32, goal: u32, evidence_only: u32, max_steps: u32) -> u64 {
+    let Some(step) = corpus_walker::walk_next(start, goal, evidence_only != 0, max_steps) else { return 0; };
+    if step.distance > 0x7fff_ffff {
+        return 0;
+    }
+    (1u64 << 63) | ((step.distance as u64) << 32) | step.next_address as u64
+}
+
+/// Verified voxel result encoding:
+/// bit63 success | bits32..62 local z | bits0..31 unchanged OLOGY root.
+#[no_mangle]
+pub extern "C" fn i13_corpus_burrow(address: u32, depth: u32, max_depth: u32, authority: u32) -> u64 {
+    if depth > 0x7fff_ffff {
+        return 0;
+    }
+    let Some(location) = corpus_walker::verified_burrow(address, depth, max_depth, authority != 0) else { return 0; };
+    (1u64 << 63) | ((location.depth as u64) << 32) | location.root.pack() as u64
 }
 
 #[cfg(test)]
@@ -185,5 +254,17 @@ mod tests {
     fn pulse_strict_boundary_matches_experiment() {
         assert_eq!(pulse::execute_pulse_transition(120.0, 10.0, 2.0), Some(260.0));
         assert_eq!(pulse::execute_pulse_transition(120.0, 8.0, 2.0), None);
+    }
+
+    #[test]
+    fn stage14_2_abi_exposes_compiled_mesh() {
+        assert_eq!(i13_corpus_node_count(), 54);
+        assert_eq!(i13_corpus_edge_count(), 187);
+        assert_eq!(i13_corpus_world_steps(), 9);
+        let sonia = corpus_fingerprint32(b"sonia-003");
+        assert!(i13_corpus_neighbor_count(sonia, 0) > 0);
+        assert_ne!(i13_corpus_neighbor(sonia, 0, 0), 0);
+        assert_ne!(i13_corpus_burrow(sonia, 81, 81, 1), 0);
+        assert_eq!(i13_corpus_burrow(sonia, 82, 81, 1), 0);
     }
 }

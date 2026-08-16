@@ -10,9 +10,13 @@ on:
       - 'scripts/corpus_mesh_stage14_1.py'
       - 'scripts/test_corpus_mesh_stage14_1.py'
       - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
       - 'src/lib.rs'
+      - 'build.rs'
+      - 'Cargo.toml'
       - 'spec/CORPUS-SCHEMA-v0.1.md'
       - 'spec/CORPUS-MESH-v0.1.md'
+      - 'spec/CORPUS-WASM-v0.1.md'
       - '.github/workflows/corpus.yml'
   pull_request:
     paths:
@@ -22,9 +26,13 @@ on:
       - 'scripts/corpus_mesh_stage14_1.py'
       - 'scripts/test_corpus_mesh_stage14_1.py'
       - 'src/corpus.rs'
+      - 'src/corpus_walker.rs'
       - 'src/lib.rs'
+      - 'build.rs'
+      - 'Cargo.toml'
       - 'spec/CORPUS-SCHEMA-v0.1.md'
       - 'spec/CORPUS-MESH-v0.1.md'
+      - 'spec/CORPUS-WASM-v0.1.md'
       - '.github/workflows/corpus.yml'
 
 permissions:
@@ -62,3 +70,34 @@ jobs:
         run: |
           python scripts/corpus_mesh_stage14_1.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-mesh-2.json
           cmp /tmp/i13-corpus-mesh.json /tmp/i13-corpus-mesh-2.json
+
+  wasm-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Test Stage 14.2 compiled corpus walker
+        run: cargo test corpus_walker::tests -- --nocapture
+      - name: Build Stage 14.2 Wasm core
+        run: cargo build --release --target wasm32-unknown-unknown
+      - name: Check Stage 14.2 Wasm export contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          wasm = Path('target/wasm32-unknown-unknown/release/i13_h1_1.wasm').read_bytes()
+          names = [
+              b'i13_corpus_node_count',
+              b'i13_corpus_edge_count',
+              b'i13_corpus_neighbor_count',
+              b'i13_corpus_neighbor',
+              b'i13_corpus_walk_next',
+              b'i13_corpus_burrow',
+              b'i13_corpus_is_evidence',
+              b'i13_corpus_source_fingerprint',
+          ]
+          missing = [name.decode() for name in names if name not in wasm]
+          assert not missing, f'missing Wasm exports: {missing}'
+          print(f'WASM CORPUS PASS · bytes={len(wasm)} · exports={len(names)}')
+          PY

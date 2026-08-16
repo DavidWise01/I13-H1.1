@@ -4,9 +4,13 @@ version = "0.1.0"
 edition = "2021"
 description = "I13 H1.1 Cortex / OLOGY / voxel core"
 publish = false
+build = "build.rs"
 
 [lib]
 crate-type = ["rlib", "cdylib"]
+
+[build-dependencies]
+serde_json = "1"
 
 [profile.release]
 lto = true
