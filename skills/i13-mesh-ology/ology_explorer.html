@@ -41,7 +41,7 @@
 <main>
   <div class="row">
     <input id="q" placeholder="search skill…" style="flex:1;min-width:200px">
-    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
+    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="PL Foundations">PL Foundations</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
     <select id="status"><option value="">all statuses</option><option value="VERIFIED">VERIFIED</option><option value="CLINICAL">CLINICAL</option><option value="CONTESTED">CONTESTED</option></select>
   </div>
   <div class="grid" id="grid"></div>
@@ -69,7 +69,8 @@ const SKILLS = [
   {n:"embedded-8051", topic:"Computing History", ology:"History of Computing", layer:"computing/embedded", status:"VERIFIED", tool:"embedded_workbench.html", note:"8051 MCU + 22-book catalog (full HTML)"},
   {n:"rape-of-the-mind", topic:"Mind / Thought-Control", ology:"Clinical Psychology", layer:"cultural-myth", status:"CLINICAL", tool:"menticide_explorer.html", note:"Meerloo 1956 — menticide/brainwashing (clinical)"},
   {n:"eyes-wide-open", topic:"Mind / Thought-Control", ology:"Conspiracy Studies", layer:"cultural-myth", status:"CONTESTED", tool:"eyes_reader.html", note:"Barnett 2020 — alleged MK-ULTRA exposure (contested)"},
-  {n:"data-structures-algorithms", topic:"CS Foundations", ology:"Computer Science (algorithms)", layer:"cs-foundations", status:"VERIFIED", tool:"dsa_explorer.html", note:"Karumanchi DSA Made Easy — 19-chapter reference (merged #20)"}
+  {n:"data-structures-algorithms", topic:"CS Foundations", ology:"Computer Science (algorithms)", layer:"cs-foundations", status:"VERIFIED", tool:"dsa_explorer.html", note:"Karumanchi DSA Made Easy — 19-chapter reference (merged #20)"},
+  {n:"fundamentals-cpp", topic:"PL Foundations", ology:"Programming Languages (C++)", layer:"pl-foundations", status:"VERIFIED", tool:"cpp_explorer.html", note:"Halterman Fundamentals of C++ — 22-chapter ref (merged #22)"}
 ];
 function render(){
   const term = document.getElementById("q").value.toLowerCase();
