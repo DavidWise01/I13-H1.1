@@ -49,7 +49,7 @@ reference for: retro game-dev study, platform-game pattern archaeology, and
   `learning-patterns` (modern JS/React) as the *historical* counterpart.
 - **Non-affinity:** NOT a modern engine tutorial; NOT an attack/pentest skill.
 
-## Tooling — `scripts/retro_catalog.html`
+## Tooling — `scripts/retro_catalog.html` + `scripts/retro_fetch.py`
 A self-contained HTML/JS catalog of all **135 books** loaded from
 `references/book_index.json` (fetched relative to the file). Features: search by
 title, filter by platform (Commodore/Apple/Atari/TRS-80/TI-99/6502) and
@@ -58,6 +58,20 @@ opens the real archive.org download URL on demand (so the reader pulls only what
 they need — no 100 MB repo bloat). Opens via `file://` or any static host.
 (Per flay rule #5 — every flay ships a runnable artifact. Plain HTML/JS,
 honestly labeled; not WASM.)
+
+**`scripts/retro_fetch.py`** — the power-user CLI over the same index (added
+post-merge). Stdlib-only; uses `curl` for download. Examples:
+```
+python3 retro_fetch.py --list-platforms
+python3 retro_fetch.py --platform commodore --lang basic --year 1984 --dry-run
+python3 retro_fetch.py --platform commodore --lang basic --download --out ./pull
+python3 retro_fetch.py --title "6502" --download --out ./pull --verify
+```
+It filters by platform / language / year / title, downloads the subset, and
+verifies each PDF (header `%PDF-` + page-count via `pdfinfo` when available).
+LIT-proven: `--list-platforms` → 135 (Commodore 44, Atari 16, …); dry-run
+filters return real titles; real download of one book landed the correct 5.7 MB
+PDF and passed header verification.
 
 **On-demand fetch helper (no download needed up front):**
 ```
