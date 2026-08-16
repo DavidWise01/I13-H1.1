@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | vague-21-cyberpunk | 16/16 ::::
+source:    vague-21
+url:       https://archive.org/details/vague-21
+local:     C:\Davids files\hermes agent\skill-worktop\vague-21-cyberpunk
+cells:     16/16
+files:
+  - name: book.pdf
+    size: 198705675
+    sha256: 610ceb74b8330f7193417df07b3b2d8424863a99b4824b2d4a344d4e59aa066b
+    kind: pdf
+  - name: book_djvu.txt
+    size: 364865
+    sha256: c74afabb4735401632ec1f405bc31e79bf023df155cdd1bd991e7bf1f20d93a4
+    kind: txt
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:03
+:::: END | vague-21-cyberpunk | ::::

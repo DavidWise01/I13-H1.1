@@ -1,0 +1,9 @@
+:::: I13 VM CONTAINER | flay | 16/16 ::::
+source:    unknown
+url:       https://archive.org/details/unknown
+local:     C:\Davids files\hermes agent\skill-worktop\flay
+cells:     16/16
+files:
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:01
+:::: END | flay | ::::

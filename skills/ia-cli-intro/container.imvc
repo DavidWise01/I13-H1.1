@@ -1,0 +1,17 @@
+:::: I13 VM CONTAINER | ia-cli-intro | 16/16 ::::
+source:    ia-cli-intro-2021-09-22
+url:       https://archive.org/details/ia-cli-intro-2021-09-22
+local:     C:\Davids files\hermes agent\skill-worktop\ia-cli-intro
+cells:     16/16
+files:
+  - name: ia_tool.asr.srt
+    size: 38401
+    sha256: 902a23f3e80e76a84c39b754b1be9bfacb68648a6d3fd6a12768e65170d59f73
+    kind: srt
+  - name: ia_tool.mp3
+    size: 20785964
+    sha256: ea4a84346b15ecd3eb9da17ce452d01097b8193000a8792a777a5f6b79d7eefd
+    kind: mp3
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:01
+:::: END | ia-cli-intro | ::::

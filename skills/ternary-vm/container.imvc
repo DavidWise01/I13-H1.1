@@ -1,0 +1,9 @@
+:::: I13 VM CONTAINER | ternary-vm | 16/16 ::::
+source:    sbtcvm-gen-2-9-tern-oo-v-1.0
+url:       https://archive.org/details/sbtcvm-gen-2-9-tern-oo-v-1.0
+local:     C:\Davids files\hermes agent\skill-worktop\ternary-vm
+cells:     16/16
+files:
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:02
+:::: END | ternary-vm | ::::

@@ -1,0 +1,21 @@
+:::: I13 VM CONTAINER | ternary-quantum | 16/16 ::::
+source:    unknown
+url:       https://archive.org/details/unknown
+local:     C:\Davids files\hermes agent\skill-worktop\ternary-quantum
+cells:     16/16
+files:
+  - name: arxiv-1505.02854.pdf
+    size: 379807
+    sha256: dfc9353b74380556f7cbbad45645fac97f6248dd6c55c722900110702c74dcca
+    kind: pdf
+  - name: arxiv-1512.03824.pdf
+    size: 248359
+    sha256: f7c2cd36bb953e401f254b56cfff0b8cc57c5421198f09dee7caaa32180ecb51
+    kind: pdf
+  - name: arxiv-quant-ph0511041.pdf
+    size: 149008
+    sha256: ae98e3b3d5549a65debeb137b22bcb24362fe515a654a44485236d03f2aec910
+    kind: pdf
+status:    LOCAL_ONLY  (binary not in git)
+packed:    2026-08-15T22:36:02
+:::: END | ternary-quantum | ::::
