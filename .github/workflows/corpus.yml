@@ -7,18 +7,24 @@ on:
       - 'corpus/**'
       - 'scripts/corpus_stage14.py'
       - 'scripts/test_corpus_stage14.py'
+      - 'scripts/corpus_mesh_stage14_1.py'
+      - 'scripts/test_corpus_mesh_stage14_1.py'
       - 'src/corpus.rs'
       - 'src/lib.rs'
       - 'spec/CORPUS-SCHEMA-v0.1.md'
+      - 'spec/CORPUS-MESH-v0.1.md'
       - '.github/workflows/corpus.yml'
   pull_request:
     paths:
       - 'corpus/**'
       - 'scripts/corpus_stage14.py'
       - 'scripts/test_corpus_stage14.py'
+      - 'scripts/corpus_mesh_stage14_1.py'
+      - 'scripts/test_corpus_mesh_stage14_1.py'
       - 'src/corpus.rs'
       - 'src/lib.rs'
       - 'spec/CORPUS-SCHEMA-v0.1.md'
+      - 'spec/CORPUS-MESH-v0.1.md'
       - '.github/workflows/corpus.yml'
 
 permissions:
@@ -34,9 +40,25 @@ jobs:
           python-version: '3.12'
       - name: Unit test corpus gate
         run: python -m unittest scripts.test_corpus_stage14
+      - name: Unit test Stage 14.1 corpus mesh
+        run: python -m unittest scripts.test_corpus_mesh_stage14_1
       - name: Verify full H1.1 corpus and build index
         run: python scripts/corpus_stage14.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-index.json --summary
-      - name: Check deterministic rebuild
+      - name: Check deterministic Stage 14 rebuild
         run: |
           python scripts/corpus_stage14.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-index-2.json
           cmp /tmp/i13-corpus-index.json /tmp/i13-corpus-index-2.json
+      - name: Build Stage 14.1 mesh and verify World IV overlay
+        run: |
+          python scripts/corpus_mesh_stage14_1.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-mesh.json --summary | tee /tmp/mesh-summary.txt
+          grep -q 'MESH PASS · nodes=54' /tmp/mesh-summary.txt
+          grep -q 'world_steps=9' /tmp/mesh-summary.txt
+          python scripts/corpus_mesh_stage14_1.py --input corpus/h1.1-corpus.jsonl --path sonia-001 fractal-007 > /tmp/sonia-path.json
+          grep -q '"sonia-001"' /tmp/sonia-path.json
+          grep -q '"fractal-007"' /tmp/sonia-path.json
+          python scripts/corpus_mesh_stage14_1.py --input corpus/h1.1-corpus.jsonl --burrow sonia-003 81 > /tmp/sonia-burrow.json
+          grep -q '"z": 81' /tmp/sonia-burrow.json
+      - name: Check deterministic Stage 14.1 mesh rebuild
+        run: |
+          python scripts/corpus_mesh_stage14_1.py --input corpus/h1.1-corpus.jsonl --output /tmp/i13-corpus-mesh-2.json
+          cmp /tmp/i13-corpus-mesh.json /tmp/i13-corpus-mesh-2.json

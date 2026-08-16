@@ -25,6 +25,17 @@ impl CorpusAddress {
     pub const fn at_depth(self, depth: u32) -> Self {
         Self { depth, ..self }
     }
+
+    /// Burrow inside the voxel rooted at this OLOGY point.
+    /// The 32-bit surface root never changes; only local depth moves.
+    pub fn burrow(self, delta: i32) -> Option<Self> {
+        let depth = if delta >= 0 {
+            self.depth.checked_add(delta as u32)?
+        } else {
+            self.depth.checked_sub(delta.unsigned_abs())?
+        };
+        Some(Self { depth, ..self })
+    }
 }
 
 /// Corpus-specific pre-commit verification state.
@@ -88,6 +99,18 @@ mod tests {
         let deep = root.at_depth(81);
         assert_eq!(root.root, deep.root);
         assert_eq!(deep.depth, 81);
+    }
+
+    #[test]
+    fn signed_burrow_is_bounded_and_keeps_root() {
+        let root = CorpusAddress::from_id("sonia-003").at_depth(10);
+        let deep = root.burrow(71).unwrap();
+        assert_eq!(deep.root, root.root);
+        assert_eq!(deep.depth, 81);
+        let up = deep.burrow(-80).unwrap();
+        assert_eq!(up.root, root.root);
+        assert_eq!(up.depth, 1);
+        assert!(up.burrow(-2).is_none());
     }
 
     #[test]
