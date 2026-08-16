@@ -27,7 +27,6 @@ object{display:block;width:100%;height:2940px;border:0;background:#f5f8fb}
   --muted:#64748b;
   --line:#94a3b8;
   --line-strong:#475569;
-
   --root:#334155;
   --designate:#0891b2;
   --designate-bg:#ecfeff;
@@ -37,7 +36,6 @@ object{display:block;width:100%;height:2940px;border:0;background:#f5f8fb}
   --decide-bg:#f5f3ff;
   --transform:#d97706;
   --transform-bg:#fffbeb;
-
   --i13:#0e7490;
   --i13-bg:#ecfeff;
   --python:#ca8a04;
@@ -64,7 +62,6 @@ object{display:block;width:100%;height:2940px;border:0;background:#f5f8fb}
   --veto:#dc2626;
   --running:#d97706;
 }
-
 text{fill:var(--ink)}
 .muted{fill:var(--muted)}
 .line{stroke:var(--line-strong)}
@@ -77,11 +74,9 @@ text{fill:var(--ink)}
 .hot:hover{fill:#eef6ff;stroke:var(--wasm)}
 .voxel{stroke:var(--wasm);fill:#eff6ff;fill-opacity:.42}
 .queen{fill:var(--cortex)}
-
 #root > circle.node{fill:var(--root);stroke:var(--root)}
 #root > circle.node + text{fill:#ffffff}
 #root > .title{fill:#0f172a}
-
 #words > rect:nth-of-type(-n+3){fill:var(--designate-bg);stroke:var(--designate)}
 #words > rect:nth-of-type(n+4):nth-of-type(-n+6){fill:var(--bind-bg);stroke:var(--bind)}
 #words > rect:nth-of-type(n+7):nth-of-type(-n+9){fill:var(--decide-bg);stroke:var(--decide)}
@@ -90,52 +85,31 @@ text{fill:var(--ink)}
 #words > text:nth-of-type(5){fill:var(--bind)}
 #words > text:nth-of-type(9){fill:var(--decide)}
 #words > text:nth-of-type(13){fill:var(--transform)}
-
-#module-layer [data-module="reader"] .box,
-#module-layer [data-module="norm"] .box{fill:var(--i13-bg);stroke:var(--i13)}
-#module-layer [data-module="reader"] circle,
-#module-layer [data-module="norm"] circle{fill:var(--i13);stroke:var(--i13)}
-
-#module-layer [data-module="python"] .box,
-#module-layer [data-module="jit"] .box{fill:var(--python-bg);stroke:var(--python)}
-#module-layer [data-module="python"] circle,
-#module-layer [data-module="jit"] circle{fill:var(--python);stroke:var(--python)}
-
-#module-layer [data-module="wasm1"] .box,
-#module-layer [data-module="wasm2"] .box{fill:var(--wasm-bg);stroke:var(--wasm)}
-#module-layer [data-module="wasm1"] circle,
-#module-layer [data-module="wasm2"] circle{fill:var(--wasm);stroke:var(--wasm)}
-
+#module-layer [data-module="reader"] .box,#module-layer [data-module="norm"] .box{fill:var(--i13-bg);stroke:var(--i13)}
+#module-layer [data-module="reader"] circle,#module-layer [data-module="norm"] circle{fill:var(--i13);stroke:var(--i13)}
+#module-layer [data-module="python"] .box,#module-layer [data-module="jit"] .box{fill:var(--python-bg);stroke:var(--python)}
+#module-layer [data-module="python"] circle,#module-layer [data-module="jit"] circle{fill:var(--python);stroke:var(--python)}
+#module-layer [data-module="wasm1"] .box,#module-layer [data-module="wasm2"] .box{fill:var(--wasm-bg);stroke:var(--wasm)}
+#module-layer [data-module="wasm1"] circle,#module-layer [data-module="wasm2"] circle{fill:var(--wasm);stroke:var(--wasm)}
 #module-layer [data-module="gfx"] .box{fill:var(--gpu-bg);stroke:var(--gpu)}
 #module-layer [data-module="gfx"] circle{fill:var(--gpu);stroke:var(--gpu)}
-
 #module-layer [data-module="child"] .box{fill:var(--cortex-bg);stroke:var(--cortex)}
 #module-layer [data-module="child"] circle{fill:var(--cortex);stroke:var(--cortex)}
-
 #module-layer [data-module="pulse"] .box{fill:var(--pulse-bg);stroke:var(--pulse)}
 #module-layer [data-module="pulse"] circle{fill:var(--pulse);stroke:var(--pulse)}
-
 #module-layer [data-module="vh1"] .box{fill:var(--la-bg);stroke:var(--la)}
 #module-layer [data-module="vh1"] circle{fill:var(--la);stroke:var(--la)}
-
 #module-layer [data-module="vh2"] .box{fill:var(--qec-bg);stroke:var(--qec)}
 #module-layer [data-module="vh2"] circle{fill:var(--qec);stroke:var(--qec)}
-
 #module-layer [data-module="freeze"] .box{fill:var(--freeze-bg);stroke:var(--freeze)}
 #module-layer [data-module="freeze"] circle{fill:var(--freeze);stroke:var(--freeze)}
-
 #module-layer [data-module="corpus"] .box{fill:var(--corpus-bg);stroke:var(--corpus)}
 #module-layer [data-module="corpus"] circle{fill:var(--corpus);stroke:var(--corpus)}
-
 #module-layer [data-module="ology"] .box{fill:var(--live-bg);stroke:var(--live);stroke-width:2.2}
 #module-layer [data-module="ology"] circle{fill:var(--live);stroke:var(--live)}
-
-#module-layer [data-module="reader"] .tag,
-#module-layer [data-module="norm"] .tag{fill:var(--i13-bg);stroke:var(--i13)}
-#module-layer [data-module="python"] .tag,
-#module-layer [data-module="jit"] .tag{fill:var(--python-bg);stroke:var(--python)}
-#module-layer [data-module="wasm1"] .tag,
-#module-layer [data-module="wasm2"] .tag{fill:var(--wasm-bg);stroke:var(--wasm)}
+#module-layer [data-module="reader"] .tag,#module-layer [data-module="norm"] .tag{fill:var(--i13-bg);stroke:var(--i13)}
+#module-layer [data-module="python"] .tag,#module-layer [data-module="jit"] .tag{fill:var(--python-bg);stroke:var(--python)}
+#module-layer [data-module="wasm1"] .tag,#module-layer [data-module="wasm2"] .tag{fill:var(--wasm-bg);stroke:var(--wasm)}
 #module-layer [data-module="gfx"] .tag{fill:var(--gpu-bg);stroke:var(--gpu)}
 #module-layer [data-module="child"] .tag{fill:var(--cortex-bg);stroke:var(--cortex)}
 #module-layer [data-module="pulse"] .tag{fill:var(--pulse-bg);stroke:var(--pulse)}
@@ -144,9 +118,7 @@ text{fill:var(--ink)}
 #module-layer [data-module="freeze"] .tag{fill:var(--freeze-bg);stroke:var(--freeze)}
 #module-layer [data-module="corpus"] .tag{fill:var(--corpus-bg);stroke:var(--corpus)}
 #module-layer [data-module="ology"] .tag{fill:var(--live-bg);stroke:var(--live)}
-
 .i13-exploded-panel[data-family="la"] .ev-shell{stroke:var(--la,#0f766e)}
-
 #lab > line.line{stroke:var(--live);stroke-width:2.5}
 #lab > .module-title{fill:var(--live)}
 #lab > g:nth-of-type(1) > .box{fill:#f8fbff;stroke:var(--wasm)}
@@ -158,7 +130,6 @@ text{fill:var(--ink)}
 #lab #py-runtime{fill:var(--python);font-weight:700}
 #lab #authority-text{fill:var(--cortex);font-weight:700}
 `;
-
   function applyColorSystem() {
     const doc = object.contentDocument;
     if (!doc || !doc.documentElement) return;
@@ -169,7 +140,6 @@ text{fill:var(--ink)}
     style.textContent = palette;
     doc.documentElement.appendChild(style);
   }
-
   object.addEventListener('load', applyColorSystem);
 })();
 </script>
@@ -180,7 +150,14 @@ text{fill:var(--ink)}
 <script src="stages/stage8-gfx.js"></script>
 <script src="stages/stage9-cortex-child.js"></script>
 <script src="stages/stage10-pulse.js"></script>
-<script src="stages/stage11-vh1.js"></script>
+<script>
+(() => {
+  const s = document.createElement('script');
+  s.src = 'stages/stage11-vh1.js';
+  s.async = false;
+  document.body.appendChild(s);
+})();
+</script>
 <script src="stages/stage6-ology-live.js"></script>
 </body>
 </html>
