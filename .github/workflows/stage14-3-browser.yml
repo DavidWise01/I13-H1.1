@@ -70,6 +70,74 @@ jobs:
           assert not missing, missing
           print(f"STAGE 14.3 ASSET PASS · wasm={len(raw)} B · nodes={m['counts']['nodes']} · edges={m['counts']['edges']}")
           PY
+      - name: Execute browser Wasm traversal smoke test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert');
+          function fnv1a32(text) {
+            let h = 0x811c9dc5 >>> 0;
+            for (const byte of Buffer.from(text, 'utf8')) {
+              h ^= byte;
+              h = Math.imul(h, 0x01000193) >>> 0;
+            }
+            return h >>> 0;
+          }
+          (async () => {
+            const bytes = Buffer.from(fs.readFileSync('docs/assets/i13_h1_1.wasm.b64', 'utf8').trim(), 'base64');
+            const { instance } = await WebAssembly.instantiate(bytes, {});
+            const e = instance.exports;
+            assert.strictEqual(Number(e.i13_corpus_node_count()), 54);
+            assert.strictEqual(Number(e.i13_corpus_edge_count()), 187);
+
+            const start = fnv1a32('sonia-001');
+            const goal = fnv1a32('fractal-007');
+            let current = start;
+            let hops = 0;
+            while (current !== goal && hops < 54) {
+              const packed = BigInt(e.i13_corpus_walk_next(current, goal, 0, 54));
+              assert.notStrictEqual(packed, 0n, 'full-mesh Sonia -> Fractint walk vetoed');
+              assert.notStrictEqual(packed & (1n << 63n), 0n, 'walk success bit missing');
+              const next = Number(packed & 0xffff_ffffn) >>> 0;
+              assert.notStrictEqual(next, current, 'walker failed to advance');
+              current = next;
+              hops++;
+            }
+            assert.strictEqual(current, goal, 'browser Wasm walker did not reach Fractint');
+
+            const evidenceVeto = BigInt(e.i13_corpus_walk_next(fnv1a32('sonia-003'), goal, 1, 54));
+            assert.strictEqual(evidenceVeto, 0n, 'Vogel goal must be excluded in evidence-only mode');
+
+            const root = fnv1a32('sonia-003');
+            const burrow = BigInt(e.i13_corpus_burrow(root, 81, 81, 1));
+            assert.notStrictEqual(burrow & (1n << 63n), 0n, 'CV burrow success bit missing');
+            assert.strictEqual(Number(burrow & 0xffff_ffffn) >>> 0, root, 'burrow changed OLOGY root');
+            assert.strictEqual(Number((burrow >> 32n) & 0x7fff_ffffn), 81, 'burrow depth mismatch');
+            assert.strictEqual(BigInt(e.i13_corpus_burrow(root, 81, 81, 0)), 0n, 'authority-off burrow must veto');
+            console.log(`BROWSER WASM PASS · Sonia -> Fractint hops=${hops} · z=81 CV PASS · authority VETO PASS`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+      - name: Execute Stage 14.3 JavaScript self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage14-corpus-navigator.js', 'utf8');
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; } },
+            console, Map, Set, Object, Math, JSON, Error, Uint8Array, BigInt, WebAssembly,
+            atob: value => Buffer.from(value, 'base64').toString('binary'),
+            setTimeout, clearTimeout
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const result = sandbox.window.I13CorpusNavigatorStage.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          assert.strictEqual(result.checks.length, 7);
+          console.log(`STAGE 14.3 JS PASS · checks=${result.checks.length}`);
+          NODE
       - name: Commit generated Pages assets
         run: |
           git config user.name "github-actions[bot]"
