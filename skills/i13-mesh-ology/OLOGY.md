@@ -71,6 +71,15 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 > Python-fluency tier (A). One clean language node added; no redundant "beginner tier"
 > duplication. Pairs with E2 (implement DSA in C++) and A (C++ vs Python idioms).
 
+## E4. DATA SCIENCE (topic) — Statistics / R Programming (-ology: statistics & R)
+| Skill | Layer | Status | Tool |
+|---|---|---|---|
+| `beginning-r` | data-science | VERIFIED | `r_explorer.html` |
+
+> **E4 = mesh gap-fill:** the mesh's first *quantitative / statistical-computing*
+> node. Pairs with E2 (DSA) as the "quantitative methods" pair — DSA = algorithm
+> theory, R = applied stats. Contrasts A (Python) as a data-language comparison.
+
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |
 |---|---|---|---|---|
@@ -91,6 +100,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **History of Computing** → E (byte, retro-games, embedded-8051)
 - **Computer Science (algorithms)** → E2 (data-structures-algorithms)
 - **Programming Languages (C++)** → E3 (fundamentals-cpp)
+- **Statistics / R Programming** → E4 (beginning-r)
 - **Late-Antique Greek Rhetoric** → E1 (libanius-1517)
 - **Art History / Satirical Prints** → E1 (works-of-hogarth)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
@@ -105,6 +115,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 5. `cs-foundations` — data-structures-algorithms
 6. `pl-foundations` — fundamentals-cpp
 7. `humanities-classics` — libanius-1517, works-of-hogarth
+8. `data-science` — beginning-r
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.

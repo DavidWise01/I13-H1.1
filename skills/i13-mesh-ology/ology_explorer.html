@@ -2,61 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>I13 Skill Mesh — Topic &amp; Ology Explorer</title>
+<title>I-13 Mesh — Ology Explorer</title>
 <style>
-  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;--err:#ff5b6b;}
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
   header{padding:12px 16px;border-bottom:1px solid #1c2735}
-  h1{font-size:17px;margin:0;color:var(--acc)}
-  h2{font-size:14px;color:var(--amber);margin:16px 0 8px}
+  h1{font-size:16px;margin:0;color:var(--acc)}
   .sub{font-size:11px;color:var(--dim);margin-top:4px}
   main{padding:14px 16px;max-width:1100px}
-  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
-  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
-  button:hover{background:#10231d}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
-  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
-  .card h3{margin:0 0 6px;font-size:13px}
-  .card .meta{font-size:11px;color:var(--dim);margin:4px 0}
-  .pill{display:inline-block;font-size:10px;padding:2px 7px;margin:2px 2px 0 0;border-radius:9px;border:1px solid #1d3b32}
-  .pill.topic{color:var(--acc);background:#10231d}
-  .pill.ology{color:var(--amber);background:#1a160c}
-  .pill.layer{color:#9b8cff;background:#141022;border-color:#2a2350}
-  .pill.status-VERIFIED{color:#27e8a7;background:#10231d;border-color:#1d3b32}
-  .pill.status-CLINICAL{color:#7fd1ff;background:#0c1a22;border-color:#1d3a44}
-  .pill.status-CONTESTED{color:var(--err);background:#220c0e;border-color:#441a1d}
-  .pill.tool{color:#ffd479;background:#1a160c;border-color:#3a3320}
-  .legend{font-size:11px;color:var(--dim);margin-top:10px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:10px}
+  .card h3{margin:0 0 4px;font-size:13px;color:var(--acc)}
+  .card .meta{font-size:11px;color:var(--dim)}
+  .pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:9px;margin-top:4px}
+  .v{background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  .c{background:#2a1410;color:#ff9d6e;border:1px solid #4a2517}
+  .k{background:#2a2614;color:var(--amber);border:1px solid #4a3f1d}
   footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
-  code{color:var(--amber)}
 </style>
 </head>
 <body>
 <header>
-  <h1>&#9783; I13 Skill Mesh — Topic &amp; Ology</h1>
-  <div class="sub">Self-contained map of the flayed archive.org skills. Filter by topic, ology, layer, or epistemic status. No fetch — all data inline, opens via <code>file://</code>.</div>
+  <h1>&#9883; I-13 Mesh — Ology Explorer</h1>
+  <div class="sub">All flayed skills, organized by TOPIC / OLOGY / LAYER / EPISTEMIC STATUS. Interactive filter.</div>
 </header>
 <main>
   <div class="row">
     <input id="q" placeholder="search skill…" style="flex:1;min-width:200px">
-    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="PL Foundations">PL Foundations</option><option value="Humanities / Classics">Humanities / Classics</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
+    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="PL Foundations">PL Foundations</option><option value="Humanities / Classics">Humanities / Classics</option><option value="Data Science">Data Science</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
     <select id="status"><option value="">all statuses</option><option value="VERIFIED">VERIFIED</option><option value="CLINICAL">CLINICAL</option><option value="CONTESTED">CONTESTED</option></select>
   </div>
   <div class="grid" id="grid"></div>
-  <div class="legend">
-    Status: <span class="pill status-VERIFIED">VERIFIED</span> peer-standard ·
-    <span class="pill status-CLINICAL">CLINICAL</span> clinician study ·
-    <span class="pill status-CONTESTED">CONTESTED</span> author-asserted (cite as claim).
-    The Mind/Thought-Control topic holds the contrast pair: <b>rape-of-the-mind</b> (CLINICAL 1956) vs <b>eyes-wide-open</b> (CONTESTED 2020).
-  </div>
 </main>
-<footer>
-  Mesh built from this session's flays. Layers: computational-primitive / tooling-reference / computing-history / cultural-myth. Rule #5: every flay ships a runnable artifact.
-</footer>
+<footer>Generated from the flayed corpus. VERIFIED = published/primary source; CLINICAL = clinical source; CONTESTED = disputed narrative. No external fetch.</footer>
 <script>
-// ---- inline mesh data (all flayed skills this session) ----
 const SKILLS = [
   {n:"think-python-downey", topic:"Python Fluency", ology:"Pedagogy / Andragogy", layer:"beginner tier", status:"VERIFIED", tool:"—", note:"Downey beginner Python (PR #10 open)"},
   {n:"automate-the-boring-stuff-sweigart", topic:"Python Fluency", ology:"Pedagogy / Andragogy", layer:"beginner tier", status:"VERIFIED", tool:"—", note:"Sweigart practical automation (merged #7)"},
@@ -73,7 +55,8 @@ const SKILLS = [
   {n:"fundamentals-cpp", topic:"PL Foundations", ology:"Programming Languages (C++)", layer:"pl-foundations", status:"VERIFIED", tool:"cpp_explorer.html", note:"Halterman Fundamentals of C++ — 22-chapter ref (merged #22)"},
   {n:"programming-8086", topic:"Computing History", ology:"History of Computing", layer:"computing-history", status:"VERIFIED", tool:"8086_explorer.html", note:"Coffron x86 asm (8086/8088, 1983) — 9-chapter ref (merged #24)"},
   {n:"libanius-1517", topic:"Humanities / Classics", ology:"Late-Antique Greek Rhetoric", layer:"humanities-classics", status:"VERIFIED", tool:"libanius_portal.html", note:"Libanius Greek rhetoric, 1517 ed — oldest & 1st non-technical node (merged #27)"},
-  {n:"works-of-hogarth", topic:"Humanities / Classics", ology:"Art History / Satirical Prints", layer:"humanities-classics", status:"VERIFIED", tool:"hogarth_portal.html", note:"Hogarth/Trusler engravings+commentary, 1833 — 1st Art-History node (merged #29)"}
+  {n:"works-of-hogarth", topic:"Humanities / Classics", ology:"Art History / Satirical Prints", layer:"humanities-classics", status:"VERIFIED", tool:"hogarth_portal.html", note:"Hogarth/Trusler engravings+commentary, 1833 — 1st Art-History node (merged #29)"},
+  {n:"beginning-r", topic:"Data Science", ology:"Statistics / R Programming", layer:"data-science", status:"VERIFIED", tool:"r_explorer.html", note:"Gardener Beginning R — 1st data-science/stats node (merged #32)"}
 ];
 function render(){
   const term = document.getElementById("q").value.toLowerCase();
@@ -81,23 +64,13 @@ function render(){
   const status = document.getElementById("status").value;
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  SKILLS.filter(s =>
-    (!term || s.n.toLowerCase().includes(term) || s.note.toLowerCase().includes(term)) &&
-    (!topic || s.topic === topic) &&
-    (!status || s.status === status)
-  ).forEach(s => {
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML =
-      `<h3>${s.n}</h3>` +
-      `<div class="meta">${s.note}</div>` +
-      `<span class="pill topic">${s.topic}</span>` +
-      `<span class="pill ology">${s.ology}</span>` +
-      `<span class="pill layer">${s.layer}</span>` +
-      `<span class="pill status-${s.status}">${s.status}</span>` +
-      (s.tool!=="—" ? `<span class="pill tool">tool: ${s.tool}</span>` : ``);
-    grid.appendChild(el);
-  });
+  SKILLS.filter(s => (!term || s.n.toLowerCase().includes(term) || s.topic.toLowerCase().includes(term) || s.ology.toLowerCase().includes(term)) && (!topic || s.topic===topic) && (!status || s.status===status))
+    .forEach(s => {
+      const el = document.createElement("div"); el.className="card";
+      const st = s.status==="VERIFIED"?"v":s.status==="CONTESTED"?"k":"c";
+      el.innerHTML = `<h3>${s.n}</h3><div class="meta">${s.topic} &middot; ${s.ology}<br>${s.note}</div><span class="pill ${st}">${s.status}</span>`;
+      grid.appendChild(el);
+    });
 }
 document.getElementById("q").oninput = render;
 document.getElementById("topic").onchange = render;

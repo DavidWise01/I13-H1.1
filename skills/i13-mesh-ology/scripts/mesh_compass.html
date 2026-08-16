@@ -34,13 +34,13 @@
 <body>
 <header>
   <h1>&#9883; I-13 Mesh Compass</h1>
-  <div class="sub">Synthesized FROM the gathered corpus — 16 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
+  <div class="sub">Synthesized FROM the gathered corpus — 17 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
 </header>
 <main>
   <div class="stat">
-    <div><b>16</b><br><span class="sub">skills gathered</span></div>
-    <div><b>5</b><br><span class="sub">reading ladders</span></div>
-    <div><b>14</b><br><span class="sub">VERIFIED</span></div>
+    <div><b>17</b><br><span class="sub">skills gathered</span></div>
+    <div><b>6</b><br><span class="sub">reading ladders</span></div>
+    <div><b>15</b><br><span class="sub">VERIFIED</span></div>
     <div><b>1</b><br><span class="sub">CONTESTED</span></div>
     <div><b>1</b><br><span class="sub">CLINICAL</span></div>
   </div>
@@ -48,7 +48,7 @@
   <div class="grid" id="grid"></div>
 </main>
 <footer>
-  Generated 2026-08-16 17:55 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
+  Generated 2026-08-16 18:41 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
 </footer>
 <script>
 const SKILLS = [
@@ -195,6 +195,15 @@ const SKILLS = [
     "status": "VERIFIED",
     "tool": "hogarth_portal.html",
     "note": "Hogarth/Trusler engravings+commentary, 1833 — 1st Art-History node (merged #29)"
+  },
+  {
+    "n": "beginning-r",
+    "topic": "Data Science",
+    "ology": "Statistics / R Programming",
+    "layer": "data-science",
+    "status": "VERIFIED",
+    "tool": "r_explorer.html",
+    "note": "Gardener Beginning R — 1st data-science/stats node (merged #32)"
   }
 ];
 const LADDERS = [
@@ -235,6 +244,15 @@ const LADDERS = [
       "retro-game-books",
       "embedded-8051",
       "programming-8086"
+    ]
+  },
+  {
+    "name": "Data Science Ladder (quantitative)",
+    "blurb": "Algorithms meet applied statistics.",
+    "steps": [
+      "data-structures-algorithms",
+      "beginning-r",
+      "fundamentals-cpp"
     ]
   },
   {
