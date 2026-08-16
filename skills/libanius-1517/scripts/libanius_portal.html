@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Libanius 1517 — Meletai, Logoi, Ekphraseis — Portal</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:900px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--acc)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin:3px}
+  .warn{margin-top:14px;padding:10px 12px;background:#1a1410;border:1px solid #3b2d1d;border-radius:8px;font-size:12px;color:var(--amber)}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Libanius 1517 — Portal</h1>
+  <div class="sub">Libanius (Greek sophist, c. 314–393 CE): <em>Meletai, logoi te kai ekphraseis</em> — 1517 printed edition. Self-contained catalog. No fetch — opens via <code>file://</code>.</div>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="warn">
+    &#9888; OCR note: this 1517 Greek edition is a degraded early-print scan (<code>europeanlibraries</code> / Google Books <code>bub_gb</code>). The archive.org <code>djvu.txt</code> is heavily garbled Greek — usable for provenance/location, not reliable transcription. Treat the PDF as the primary source.
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>Source files (archive.org item <code>bub_gb_dyi8aXtnDvwC</code>)</h3>
+    <p><span class="pill">djvu.txt 728 KB (OCR, degraded)</span> <span class="pill">pdf 28 MB (primary)</span></p>
+    <a class="dl" href="https://archive.org/download/bub_gb_dyi8aXtnDvwC/bub_gb_dyi8aXtnDvwC.pdf" target="_blank" rel="noopener">PDF &#8599;</a>
+    <a class="dl" href="https://archive.org/download/bub_gb_dyi8aXtnDvwC/bub_gb_dyi8aXtnDvwC_djvu.txt" target="_blank" rel="noopener">OCR txt &#8599;</a>
+    <a class="dl" href="https://archive.org/details/bub_gb_dyi8aXtnDvwC" target="_blank" rel="noopener">archive.org page &#8599;</a>
+  </div>
+</main>
+<footer>
+  Humanities / Classics node — the oldest and first non-technical entry in the mesh. VERIFIED-PROVENANCE (title/author/date confirmed via archive.org metadata + Greek markers in OCR), not a technical-flavor text.
+</footer>
+<script>
+// Real metadata facts (from archive.org metadata + OCR Greek markers)
+const FACTS = [
+  {k:"Author", v:"Libanius (Λιβάνιος), Greek sophist & rhetorician, c. 314–393 CE"},
+  {k:"Title", v:"Libaníou sophistoú Meletai, logoi te kai ekphraseis (Exercises, Orations, Ekphraseis)"},
+  {k:"Edition", v:"Printed 1517 (incunabula-era Greek edition)"},
+  {k:"Source", v:"archive.org item bub_gb_dyi8aXtnDvwC (europeanlibraries / Google Books scan)"},
+  {k:"Genre", v:"Late-antique Greek rhetoric & declamation"},
+  {k:"Mesh role", v:"Humanities/Classics — first non-technical node; oldest item in mesh"}
+];
+const grid = document.getElementById("grid");
+FACTS.forEach(f => {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = `<h3>${f.k}</h3><p>${f.v}</p>`;
+  grid.appendChild(el);
+});
+</script>
+</body>
+</html>
