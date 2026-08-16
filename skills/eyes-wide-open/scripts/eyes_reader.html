@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eyes Wide Open — Chapter Reader</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;--err:#ff5b6b;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px;max-width:1000px}
+  .warn{background:#220c0e;border:1px solid #441a1d;color:#ff9aa3;font-size:11px;padding:8px 10px;border-radius:6px;margin-bottom:12px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .topics{margin-top:14px;padding:12px;background:var(--panel);border:1px solid #1c2735;border-radius:8px}
+  .topics h2{margin:0 0 8px;font-size:13px;color:var(--amber)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#10231d;color:var(--acc);border:1px solid #1d3b32}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin-top:6px}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Eyes Wide Open — Chapter Reader</h1>
+  <div class="sub">Fiona Barnett, <i>Eyes Wide Open: 2020 Lockdown Edition</i>. Self-contained; 23-chapter TOC + topic list from the archive.org OCR.</div>
+</header>
+<main>
+  <div class="warn">CONTESTED NARRATIVE — the claims below are the <b>author's assertions</b>, not established fact. Cite as "author alleges…". Paired with <code>rape-of-the-mind</code> (clinical 1956) as the contrast node; do not merge their epistemic status.</div>
+  <div class="row">
+    <input id="q" placeholder="filter chapters…" style="flex:1;min-width:220px">
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="topics">
+    <h2>Self-described TOPICS (OCR front matter)</h2>
+    <span class="pill">CIA coordinated global child trafficking</span>
+    <span class="pill">Project MK-ULTRA in Australia</span>
+    <span class="pill">Project MK-DELTA child soldier program</span>
+    <span class="pill">Occult ritual abuse &amp; mind control</span>
+    <span class="pill">Trauma-based forced dissociation</span>
+    <span class="pill">Trauma-focussed integration treatment</span>
+    <br><a class="dl" href="https://archive.org/download/eyeswideopen-2020-edition/EWO_June2020_LockdownEdition.pdf" target="_blank" rel="noopener">fetch full PDF &#8599;</a>
+  </div>
+</main>
+<footer>
+  Source: archive.org item <code>eyeswideopen-2020-edition</code>. Download filenames are <code>EWO_June2020_*</code> (the URL slug 404s on download). Open via file:// or any static host.
+</footer>
+<script>
+const CH = [
+  {n:1, t:"Watergate was Pedogate"},
+  {n:2, t:"Royal Whitewash"},
+  {n:3, t:"Victorian Pedophile Network"},
+  {n:4, t:"NSW Pedophile Network"},
+  {n:5, t:"Bond University Pedophile Network"},
+  {n:6, t:"Satan's Seat"},
+  {n:7, t:"Witches in the Workplace"},
+  {n:8, t:"Conspiracy Fact"},
+  {n:9, t:"Soviet-Fascist Agenda"},
+  {n:10, t:"Justice Denied"},
+  {n:11, t:"MK-ULTRA & the Occult"},
+  {n:12, t:"MK-ULTRA in Australia"},
+  {n:13, t:"MK-ULTRA in the Military"},
+  {n:14, t:"MK-ULTRA in Hillsong Church"},
+  {n:15, t:"Confessions of a Sydney Satanist"},
+  {n:16, t:"Addicted to the Occult"},
+  {n:17, t:"An 'Ejumacation'"},
+  {n:18, t:"The Family"},
+  {n:19, t:"Ritual Abuse in Australia"},
+  {n:20, t:"Candy Girl Child Prostitute"},
+  {n:21, t:"The Relevance of Intelligence"},
+  {n:22, t:"Personality Assessment System"},
+  {n:23, t:"The Programming Matrix"},
+  {n:24, t:"MK-DELTA Child Soldier"}
+];
+const grid = document.getElementById("grid");
+function render(){
+  const term = document.getElementById("q").value.toLowerCase();
+  grid.innerHTML = "";
+  CH.filter(c => !term || c.t.toLowerCase().includes(term))
+    .forEach(c => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `<h3>Ch ${c.n}. ${c.t}</h3>`;
+      grid.appendChild(el);
+    });
+}
+document.getElementById("q").oninput = render;
+render();
+</script>
+</body>
+</html>
