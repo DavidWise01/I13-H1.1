@@ -92,6 +92,12 @@ jobs:
       - name: Keep deeper stages unmounted
         run: |
           test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 2
-          ! grep -q 'I13Exploded.mount.(.jit' docs/stages/stage4-toolchain.js
-          ! grep -q 'I13Exploded.mount.(.gfx' docs/stages/stage4-toolchain.js
-          ! grep -q 'I13Exploded.mount.(.ology' docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('jit'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('gfx'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage4-toolchain.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage4-toolchain.js
