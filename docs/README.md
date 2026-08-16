@@ -26,3 +26,5 @@ The visible page intentionally contains only the canonical 13 I-13 words.
 - reduced-motion clients receive a static rendered frame.
 
 The WebP files are compact visual fallbacks/reference assets derived from the Icarium forge dashboard concepts.
+
+Production/live surface is published from `main:/docs`.
