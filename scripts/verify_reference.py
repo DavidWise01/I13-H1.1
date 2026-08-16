@@ -68,9 +68,13 @@ def main() -> None:
     words = ["I", "Name", "Constant", "Attribute", "Assign", "Arg", "Return", "Expr", "If", "Compare", "Call", "FunctionDef", "BinOp"]
     assert all(word in i13 for word in words)
 
-    page = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+    # GitHub Pages now uses docs/index.html only as a wrapper. The actual
+    # single-SVG visual source of truth is docs/i13.svg, so parity belongs there.
+    page_wrapper = (ROOT / "docs/index.html").read_text(encoding="utf-8")
+    assert 'data="i13.svg"' in page_wrapper
+    page_svg = (ROOT / "docs/i13.svg").read_text(encoding="utf-8")
     for word in words:
-        assert f">{word}<" in page
+        assert f">{word}<" in page_svg
 
     print("reference parity: PASS")
 
