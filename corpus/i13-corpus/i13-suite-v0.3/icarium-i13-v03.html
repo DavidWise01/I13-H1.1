@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRIDOSPHERE · I-13 Cortex VM v0.3 — live</title>
+<style>
+:root{--bg:#061019;--panel:#0a1721;--line:#1c3342;--ink:#e9f2f7;--mut:#84a0b1;--cyan:#66d8ff;--green:#5ce0ac;--amber:#f2c66d;--red:#ff818b;--purple:#b9a7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 12% -10%,rgba(44,150,205,.16),transparent 34rem),radial-gradient(circle at 95% 0%,rgba(67,210,173,.09),transparent 30rem),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;padding:18px 20px 40px}
+h1{font-size:15px;margin:0 0 2px;font-weight:720}h2{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#6f8c9d;margin:0 0 10px;font-weight:680}
+.sub{font-size:9px;color:var(--mut);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.card{border:1px solid var(--line);border-radius:14px;background:linear-gradient(155deg,rgba(13,28,39,.95),rgba(7,18,27,.96));padding:13px 14px;box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.k{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.09em}.v{font-size:25px;font-weight:740;letter-spacing:-.03em;margin-top:4px}
+.v.ok{color:var(--green)}.v.warn{color:var(--amber)}.v.bad{color:var(--red)}.s{font-size:8px;color:var(--mut);margin-top:3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.ledger{font:9px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;background:#051018;border:1px solid var(--line);border-radius:11px;padding:12px;max-height:360px;overflow:auto;color:#b8cbd6}
+.lit{color:var(--green)}.amber{color:var(--amber)}.wall{color:var(--red)}.dim{color:#5e7b8c}
+.pill{border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:9px;color:var(--mut);display:inline-block;margin:0 6px 8px 0}
+.pill.live{color:var(--green);border-color:#255c47}
+.bar{height:9px;background:#07141c;border:1px solid #1d3949;border-radius:999px;overflow:hidden;margin:6px 0}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#25688b,#52d4ff)}
+.grave{font:9px/1.5 ui-monospace,monospace;color:#9bb0bc;background:#0a0f14;border:1px solid #1c2a33;border-radius:11px;padding:11px}
+.grave b{color:var(--red)}
+button{font:inherit;cursor:pointer;border:1px solid #28627f;border-radius:9px;background:linear-gradient(180deg,#174561,#103449);color:#e7f7ff;padding:8px 13px;font-size:10px;font-weight:680}
+a{color:var(--cyan)}
+.crumbs{font-size:9px;color:var(--mut);margin-top:10px}
+.stamp{font:8.5px/1.4 ui-monospace,monospace;color:#6f8c9d;margin-top:6px}
+</style></head>
+<body>
+<h1>GRIDOSPHERE · I-13 Cortex VM <span style="color:var(--cyan)">v0.3</span></h1>
+<div class="sub">live node backend (:8798) · browser WASM execution · the cube's soul is a deterministic validator</div>
+
+<div class="grid">
+  <div class="card"><div class="k">Backend</div><div id="mBackend" class="v warn">…</div><div class="s">node + real WASM</div></div>
+  <div class="card"><div class="k">Native suite</div><div id="mNative" class="v warn">…</div><div class="s">Func/Call/Ret</div></div>
+  <div class="card"><div class="k">Suite programs</div><div id="mSuite" class="v warn">…</div><div class="s">8 graphical</div></div>
+  <div class="card"><div class="k">WASM module</div><div id="mWasm" class="v warn">…</div><div class="s">bytes + exports</div></div>
+</div>
+
+<div class="row">
+  <div class="card"><h2>Honesty ledger <span class="stamp" id="stamp"></span></h2>
+    <div id="ledger" class="ledger">re-measuring from live WASM…</div>
+    <div style="margin-top:10px">
+      <button id="rerun">Re-measure from live VM</button>
+      <a class="pill live" href="http://127.0.0.1:8798/" target="_blank">open v0.3 suite ↗</a>
+      <a class="pill" href="http://127.0.0.1:8798/i13_cortex_vm_v03.wasm" target="_blank">wasm binary ↗</a>
+    </div>
+  </div>
+  <div class="card"><h2>Sealed test chain</h2>
+    <div id="chain" class="ledger dim">awaiting measurement…</div>
+    <div style="margin-top:10px" class="bar"><i id="barNative" style="width:0%"></i></div>
+    <div class="s">native 8/8</div>
+    <div class="bar"><i id="barSuite" style="width:0%"></i></div>
+    <div class="s">suite 8/8</div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card"><h2>What v0.3 added over v0.2</h2>
+    <div class="ledger">
+<span class="lit">LIT</span> native Func / Call / Ret with independent main+function validation regions
+<span class="lit">LIT</span> tagged NUMBER / FUNCTION values; function aliases; local environments
+<span class="lit">LIT</span> recursion + nested calls; call-frame trace (ENTER/CALL/RET/HALT)
+<span class="lit">LIT</span> runtime arity check; call-depth + step governors (boundary held on purpose)
+<span class="amber">AMBER</span> 6-rule Cortex gate (VETO/DEPTH/CAPABILITY/ROUNDTRIP/ADDRESS/IDEMPOTENCE)
+<span class="amber">AMBER</span> nested FunctionDef / lexical closures still not lowered (documented v0.3 edge)
+    </div>
+  </div>
+  <div class="card"><h2>Graveyard <span class="stamp">honest burial of dead approaches</span></h2>
+    <div class="grave">
+<b>BURIED:</b> 32-bit validator op-count gate on native call depth — replaced by MAX_FRAMES=64 depth governor.<br>
+<b>BURIED:</b> offline "looks like it works" — replaced by this live node re-measurement of the real 8505-byte WASM.<br>
+<b>BURIED:</b> silent static-suite 8/8 claim — the report's headless-screenshot gap is now closed by in-process LIT run.<br>
+<b>BURIED:</b> closure lowering in v0.3 — deferred; compiler throws on nested FunctionDef (boundary preserved).
+    </div>
+  </div>
+</div>
+
+<div class="crumbs">source-of-truth: cubi-agentic/i13-suite-v0.3 · folded verbatim from desktop-attachments · node v22 · <span id="now"></span></div>
+
+<script>
+const NODE = "http://127.0.0.1:8798";
+function set(id,text,cls){const e=document.getElementById(id);e.textContent=text;if(cls)e.className="v "+cls;}
+async function measure(){
+  const stamp=new Date().toISOString().replace('T',' ').slice(0,19)+"Z";
+  document.getElementById("stamp").textContent="stamped "+stamp;
+  document.getElementById("now").textContent=stamp;
+  let nat,sui,health=false,wasm={bytes:0,exports:0};
+  try{const h=await fetch(NODE+"/api/health");health=h.ok;}catch(e){}
+  try{const n=await fetch(NODE+"/api/native");nat=await n.json();}catch(e){nat=null;}
+  try{const s=await fetch(NODE+"/api/suite");sui=await s.json();}catch(e){sui=null;}
+  // wasm bytes from a known good load (node reports it): fall back to native.wasm_bytes
+  if(nat){wasm.bytes=nat.wasm_bytes;wasm.exports=nat.exports.length;}
+
+  set("mBackend", health?"ONLINE":"OFFLINE", health?"ok":"bad");
+  if(nat){set("mNative", nat.passed+"/"+nat.total, nat.pass?"ok":"bad");}
+  else set("mNative","ERR","bad");
+  if(sui){set("mSuite", sui.passed+"/"+sui.total, sui.pass?"ok":"bad");}
+  else set("mSuite","ERR","bad");
+  set("mWasm", wasm.bytes? (wasm.bytes+"B"):"ERR", wasm.bytes?"ok":"bad");
+
+  // honesty ledger (only claims actually observed this turn)
+  let L=`<span class="lit">LIT</span> backend health /api/health -> ${health?"200 ONLINE":"UNREACHABLE"}\n`;
+  if(nat){
+    L+=`<span class="lit">LIT</span> /api/native re-measured: ${nat.pass?"PASS":"FAIL"} ${nat.passed}/${nat.total}\n`;
+    L+=`<span class="dim">    wasm_bytes=${nat.wasm_bytes} exports=${nat.exports.length} measured_at=${nat.measured_at}</span>\n`;
+    nat.tests.forEach(t=>{L+=`  <span class="${t.pass?'lit':'wall'}">${t.pass?'✓':'✗'}</span> ${t.name} — ${t.detail}\n`;});
+  } else L+=`<span class="wall">WALL</span> native endpoint unreachable\n`;
+  if(sui){
+    L+=`<span class="lit">LIT</span> /api/suite re-measured: ${sui.pass?"PASS":"FAIL"} ${sui.passed}/${sui.total}\n`;
+    sui.tests.forEach(t=>{L+=`  <span class="${t.pass?'lit':'wall'}">${t.pass?'✓':'✗'}</span> ${t.name} — ${t.detail}\n`;});
+  } else L+=`<span class="wall">WALL</span> suite endpoint unreachable\n`;
+  L+=`<span class="amber">AMBER</span> visual UI (Execution Map / Cortex rings) rendered in-browser; not DOM-asserted this turn\n`;
+  L+=`<span class="amber">AMBER</span> 1f916 citizen #667 cross-post pending user go\n`;
+  document.getElementById("ledger").innerHTML=L;
+
+  // sealed chain
+  if(nat){document.getElementById("barNative").style.width=(nat.passed/nat.total*100)+"%";}
+  if(sui){document.getElementById("barSuite").style.width=(sui.passed/sui.total*100)+"%";}
+  let C=`measured_at ${stamp}\n`;
+  C+=`native ${nat?nat.passed+"/"+nat.total:"ERR"} · suite ${sui?sui.passed+"/"+sui.total:"ERR"}\n`;
+  C+=`wasm ${wasm.bytes}B / ${wasm.exports} exports\n`;
+  C+=`chain_hash ${await sha(stamp+nat?.wasm_bytes+"/"+sui?.passed)}\n`;
+  C+=`sealed: live measurement, not a static certification`;
+  document.getElementById("chain").textContent=C;
+}
+async function sha(s){const d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,24);}
+document.getElementById("rerun").onclick=measure;
+measure();setInterval(measure,15000);
+</script>
+</body></html>

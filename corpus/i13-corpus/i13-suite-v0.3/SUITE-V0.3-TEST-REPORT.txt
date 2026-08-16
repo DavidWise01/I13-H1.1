@@ -1,0 +1,48 @@
+I-13 SUITE v0.3 — FINAL TEST REPORT
+
+WASM binary .......................... 8505 bytes
+native Func/Call/Ret suite ........... 8/8 PASS
+graphical-suite program suite ........ 8/8 PASS
+dashboard JavaScript syntax .......... PASS
+single-file .pyz HTTP serving ........ PASS
+headless Chromium screenshot ......... UNVERIFIED (container DBus/Chromium timeout; not a runtime test failure)
+
+NATIVE FUNC/CALL/RET TESTS
+PASS  simple call
+      regions=2 calls=1 depth=1 got={"x":5,"add":"<func:add>"}
+PASS  nested calls
+      regions=3 calls=2 depth=2 got={"y":14,"add":"<func:add>","twice":"<func:twice>"}
+PASS  locals + if
+      regions=2 calls=1 depth=1 got={"z":10,"clamp":"<func:clamp>"}
+PASS  recursion
+      regions=2 calls=7 depth=7 got={"s":21,"sumdown":"<func:sumdown>"}
+PASS  function alias
+      regions=2 calls=1 depth=1 got={"f":"<func:inc>","y":10,"inc":"<func:inc>"}
+PASS  arity remains runtime boundary
+      validator=true runtime=ARITY
+PASS  independent validation regions
+      regions=3
+PASS  native call-frame trace
+      8 events
+
+GRAPHICAL SUITE PROGRAMS
+PASS  Arithmetic
+      regions=1 calls=0 expected={"x":14}
+PASS  Osmotic
+      regions=1 calls=0 expected={"x":5}
+PASS  If/Else
+      regions=1 calls=0 expected={"y":1}
+PASS  Function
+      regions=2 calls=1 expected={"x":5}
+PASS  Nested call
+      regions=3 calls=3 expected={"y":9}
+PASS  Recursion
+      regions=2 calls=7 expected={"s":21}
+PASS  Alias
+      regions=2 calls=1 expected={"y":10}
+PASS  Local + branch
+      regions=2 calls=1 expected={"z":10}
+
+SERVING CHECK
+PASS  python i13-suite-v0.3.pyz --port 8798
+      HTTP GET / returned 200 and the suite HTML.

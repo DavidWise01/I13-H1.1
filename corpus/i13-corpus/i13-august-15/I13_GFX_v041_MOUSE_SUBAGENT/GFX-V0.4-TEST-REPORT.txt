@@ -1,0 +1,40 @@
+I-13.GFX SUITE v0.4 — TEST REPORT
+
+WASM binary .......................... 10188 bytes
+native GFX command-plane tests ....... 8/8 PASS
+v0.3 function/recursion regression ... 4/4 PASS
+dashboard JavaScript syntax .......... PASS
+single-file .pyz serving ............. PASS
+headless GPU renderer probe .......... UNVERIFIED (container EGL/ANGLE unavailable)
+
+NATIVE GFX TESTS
+PASS  GFX validates
+      regions=1 ops=67
+PASS  GFX executes
+      steps=67 calls=8
+PASS  gfx_time
+      t=2.5
+PASS  command count
+      7 commands
+PASS  cube
+      {"op":3,"kind":"cube","id":1,"a":-1,"b":0,"c":0,"d":1.5,"e":0,"f":0}
+PASS  sphere
+      {"op":4,"kind":"sphere","id":2,"a":1,"b":0,"c":0,"d":0.800000011920929,"e":0,"f":0}
+PASS  time rotation
+      {"op":6,"kind":"rotate","id":1,"a":0,"b":2.5,"c":0,"d":0,"e":0,"f":0}
+PASS  zero WASM imports
+      0 imports
+
+V0.3 REGRESSION
+PASS  call
+      calls=1 depth=1
+PASS  nested
+      calls=3 depth=2
+PASS  recursion
+      calls=7 depth=7
+PASS  alias
+      calls=1 depth=1
+
+GPU PROBE NOTE
+The container's headless Chromium did not expose/finish a usable GPU context in the probe window.
+The shipped page still contains WebGPU primary and WebGL2 fallback code; run through localhost on the target browser.

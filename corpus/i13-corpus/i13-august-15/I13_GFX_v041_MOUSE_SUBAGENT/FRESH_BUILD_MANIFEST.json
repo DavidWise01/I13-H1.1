@@ -1,0 +1,11 @@
+{
+  "fresh_folder": "/mnt/data/I13_GFX_v04_FRESH",
+  "zip": "/mnt/data/I13_GFX_v04_FRESH_FULL.zip",
+  "zip_bytes": 88057,
+  "sha256": "23588dde5c83420e5d928593e72d6542062ff148c74816a7120bfcd96a8e7a3c",
+  "zip_test": "PASS",
+  "expected_missing": [],
+  "file_count": 21,
+  "zip_entry_count": 20,
+  "manifest_in_zip": true
+}

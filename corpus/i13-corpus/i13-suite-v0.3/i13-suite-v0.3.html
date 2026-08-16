@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>I-13 Suite v0.3 · Browser WASM Runtime</title>
+<style>
+:root{--bg:#061019;--panel:#0a1721;--panel2:#0e1d29;--line:#1c3342;--line2:#28495d;--ink:#e9f2f7;--mut:#84a0b1;--cyan:#66d8ff;--green:#5ce0ac;--amber:#f2c66d;--red:#ff818b;--purple:#b9a7ff;--shadow:0 24px 70px rgba(0,0,0,.32)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 15% -10%,rgba(44,150,205,.14),transparent 35rem),radial-gradient(circle at 94% 0%,rgba(67,210,173,.09),transparent 32rem),var(--bg)}
+button,textarea{font:inherit}.app{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:100vh}
+.sidebar{border-right:1px solid rgba(90,136,159,.19);background:rgba(5,13,20,.68);backdrop-filter:blur(16px);padding:18px 13px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;z-index:10}
+.brand{display:flex;align-items:center;gap:11px;padding:3px 7px 18px}.logo{width:38px;height:38px;border:1px solid #31566c;border-radius:12px;background:linear-gradient(145deg,#153244,#0a1923);display:grid;place-items:center;color:var(--cyan);font:750 13px ui-monospace;box-shadow:0 12px 35px rgba(0,0,0,.25)}.brand h1{font-size:13px;margin:0;font-weight:690}.brand p{font-size:9px;color:var(--mut);margin:3px 0 0}
+.navLabel{font-size:8px;text-transform:uppercase;letter-spacing:.16em;color:#637f91;margin:10px 9px 7px}.nav{display:flex;flex-direction:column;gap:4px}.nav button{border:1px solid transparent;background:transparent;color:#8fa9b8;padding:9px 10px;border-radius:9px;text-align:left;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:space-between}.nav button:hover{background:#0c1b25;color:#dbeaf2}.nav button.active{border-color:#24475b;background:linear-gradient(90deg,#102a39,#0b1d28);color:#e8f5fb}.navIcon{width:19px;color:#5f9fbe;font-family:ui-monospace}
+.sideFoot{margin-top:auto;border-top:1px solid rgba(61,96,116,.2);padding:13px 8px 2px}.online{display:flex;align-items:center;gap:7px;color:var(--mut);font-size:9px}.dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px currentColor}.dot.ok{background:var(--green)}.wasmSize{font-size:9px;color:#577485;margin-top:6px}
+.main{min-width:0}.topbar{height:62px;padding:0 20px;border-bottom:1px solid rgba(86,129,151,.18);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:8;background:rgba(6,16,25,.88);backdrop-filter:blur(15px)}.crumb{font-size:11px;font-weight:640}.subcrumb{font-size:9px;color:var(--mut);margin-top:3px}.topActions{display:flex;gap:8px;align-items:center}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:9px;color:var(--mut);background:rgba(14,28,39,.76)}.runBtn{border:1px solid #28627f;border-radius:9px;background:linear-gradient(180deg,#174561,#103449);color:#e7f7ff;padding:8px 12px;font-size:10px;font-weight:680;cursor:pointer}
+.view{display:none;padding:17px 18px 24px}.view.active{display:block}.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);gap:13px}.gridEqual{display:grid;grid-template-columns:1fr 1fr;gap:13px}.card{border:1px solid var(--line);border-radius:15px;background:linear-gradient(155deg,rgba(13,28,39,.95),rgba(7,18,27,.96));box-shadow:var(--shadow);overflow:hidden}.head{padding:12px 14px;border-bottom:1px solid rgba(76,114,135,.2);display:flex;align-items:center;justify-content:space-between;gap:10px}.title{font-size:10.5px;font-weight:670}.desc{font-size:8.5px;color:var(--mut);margin-top:3px}.badge{font-size:8.5px;padding:5px 7px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}.okText{color:var(--green)}.badText{color:var(--red)}
+.editorWrap{display:grid;grid-template-columns:44px minmax(0,1fr);height:400px;background:#051018}.gutter{padding:12px 8px 12px 0;text-align:right;background:#06131c;border-right:1px solid #17303e;color:#3f6174;font:10.5px/1.55 ui-monospace;user-select:none;overflow:hidden}textarea{width:100%;height:100%;border:0;outline:0;resize:none;background:transparent;color:#cfe3ed;padding:12px 14px;font:10.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;overflow:auto}
+.pipeline{padding:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.stage{padding:9px;min-height:70px;border:1px solid var(--line);border-radius:10px;background:rgba(6,18,27,.68)}.stageK{font-size:7.5px;text-transform:uppercase;letter-spacing:.11em;color:#627f91}.stageV{font-size:11px;font-weight:680;margin-top:7px}.stageD{font-size:8px;color:var(--mut);margin-top:4px;line-height:1.3}
+.metrics{padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:11px;border:1px solid var(--line);border-radius:11px;background:#071720}.metricK{font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}.metricV{font-size:22px;font-weight:720;letter-spacing:-.04em;margin-top:5px}.metricS{font-size:8px;color:#5e7b8c;margin-top:3px}.console{height:202px;overflow:auto;padding:11px;background:#061018}pre{margin:0;white-space:pre-wrap;word-break:break-word;font:9px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#b8cbd6}
+.sectionTitle{font-size:12px;font-weight:690;margin:2px 0 12px}.sectionSub{font-size:9px;color:var(--mut);font-weight:400;margin-left:7px}
+.graphWrap{height:590px;position:relative;background:radial-gradient(circle at center,rgba(76,160,204,.06),transparent 25rem),linear-gradient(rgba(36,71,91,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(36,71,91,.12) 1px,transparent 1px);background-size:auto,28px 28px,28px 28px}svg{width:100%;height:100%}.nodeBox{fill:#0d202c;stroke:#2a536a;stroke-width:1}.nodeBox.main{fill:#102b3a;stroke:#4794b7}.nodeBox.active{stroke:#5ce0ac;stroke-width:2;filter:drop-shadow(0 0 9px rgba(92,224,172,.3))}.nodeTitle{fill:#e5f2f8;font:600 12px Inter,sans-serif}.nodeSub{fill:#7693a4;font:9px Inter,sans-serif}.edge{stroke:#315d74;stroke-width:1.4;fill:none;marker-end:url(#arrow)}.edge.hot{stroke:#5ce0ac;stroke-width:2.4;filter:drop-shadow(0 0 5px rgba(92,224,172,.35))}.edgeLabel{fill:#7797a8;font:8px ui-monospace}
+.timeline{padding:13px;min-height:560px}.traceRow{display:grid;grid-template-columns:72px 75px 1fr;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(56,89,108,.18);font-size:9px}.traceRow:first-child{border-top:0}.depthBars{display:flex;gap:3px}.depthBar{width:8px;height:20px;border-radius:3px;background:#173346;border:1px solid #244b60}.depthBar.hot{background:#174939;border-color:#349b70}.eventTag{font-family:ui-monospace;color:var(--cyan)}.traceText{color:#a9bec9}
+.frameTower{display:flex;align-items:flex-end;gap:10px;padding:18px;min-height:320px;overflow-x:auto}.frameCard{width:155px;min-width:155px;border:1px solid #2a5064;border-radius:12px;background:linear-gradient(180deg,#102633,#0a1923);padding:11px;box-shadow:0 14px 32px rgba(0,0,0,.2)}.frameCard:nth-child(2n){transform:translateY(-18px)}.frameDepth{font-size:8px;color:#68899b;text-transform:uppercase}.frameName{font-size:12px;font-weight:680;margin-top:5px}.frameMeta{font-size:8.5px;color:var(--mut);margin-top:7px;line-height:1.5}
+.memoryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;padding:13px}.memCell{border:1px solid var(--line);border-radius:11px;background:#071720;padding:11px;min-height:92px}.memName{font-size:9px;color:#7794a5}.memVal{font:680 18px ui-monospace;margin-top:8px;color:#d9ecf5}.memType{font-size:8px;color:#557586;margin-top:4px}.barPanel{padding:15px}.barRow{display:grid;grid-template-columns:100px 1fr 52px;gap:9px;align-items:center;margin:10px 0;font-size:8.5px;color:var(--mut)}.barTrack{height:9px;background:#07141c;border:1px solid #1d3949;border-radius:999px;overflow:hidden}.barFill{height:100%;background:linear-gradient(90deg,#25688b,#52d4ff);border-radius:999px}.barFill.green{background:linear-gradient(90deg,#1e6a4e,#55dda9)}.barFill.purple{background:linear-gradient(90deg,#55448a,#b8a7ff)}
+.cortexRing{padding:20px;display:grid;place-items:center}.rings{position:relative;width:410px;height:410px;max-width:100%}.ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid #244659}.r1{width:390px;height:390px}.r2{width:320px;height:320px}.r3{width:250px;height:250px}.r4{width:180px;height:180px;border-color:#2c6a84}.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#1b526a,#0b202b 68%);border:1px solid #377c9d;display:grid;place-items:center;text-align:center;box-shadow:0 0 50px rgba(67,185,232,.11)}.core strong{font-size:20px;color:var(--cyan)}.orbitLabel{position:absolute;padding:5px 7px;border:1px solid var(--line);border-radius:999px;background:#091923;font-size:8px;color:#7e9cac}.orbitLabel.pass{border-color:#28644d;color:var(--green)}.o1{left:15px;top:70px}.o2{right:12px;top:115px}.o3{left:8px;bottom:118px}.o4{right:35px;bottom:54px}.o5{left:150px;top:15px}.o6{left:153px;bottom:15px}
+.ruleList{padding:13px}.ruleRow{display:grid;grid-template-columns:100px 1fr auto;gap:10px;align-items:center;border-top:1px solid rgba(58,91,109,.18);padding:9px 0;font-size:9px}.ruleRow:first-child{border-top:0}.ruleDesc{color:var(--mut)}.rulePass{color:var(--green);font-weight:680}
+.testGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:13px}.testCard{border:1px solid var(--line);border-radius:12px;background:#071720;padding:12px}.testTop{display:flex;justify-content:space-between;gap:8px}.testName{font-size:10px;font-weight:670}.testResult{font-size:8.5px;color:var(--mut);margin-top:8px;line-height:1.45}.passPill,.failPill{font-size:8px;padding:4px 6px;border-radius:999px}.passPill{border:1px solid #255c47;color:var(--green);background:#0c241c}.failPill{border:1px solid #6b353b;color:var(--red);background:#261419}.testActions{padding:12px 13px;border-bottom:1px solid rgba(76,114,135,.2);display:flex;gap:8px}.smallBtn{border:1px solid var(--line2);border-radius:8px;background:#0d2230;color:#d6e9f2;padding:7px 9px;font-size:9px;cursor:pointer}
+@media(max-width:1050px){.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;display:block;border-right:0;border-bottom:1px solid var(--line)}.nav{display:grid;grid-template-columns:repeat(3,1fr)}.sideFoot{display:none}.grid2,.gridEqual{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="logo">13</div><div><h1>I-13 Suite</h1><p>WASM Runtime · v0.3</p></div></div>
+ <div class="navLabel">Suite</div>
+ <div class="nav">
+  <button class="active" data-view="workbench"><span><span class="navIcon">◫</span> Workbench</span><span>01</span></button>
+  <button data-view="graph"><span><span class="navIcon">◇</span> Execution Map</span><span>02</span></button>
+  <button data-view="frames"><span><span class="navIcon">≋</span> Call Frames</span><span>03</span></button>
+  <button data-view="memory"><span><span class="navIcon">▦</span> Memory</span><span>04</span></button>
+  <button data-view="cortex"><span><span class="navIcon">◎</span> Cortex</span><span>05</span></button>
+  <button data-view="tests"><span><span class="navIcon">✓</span> Test Lab</span><span>06</span></button>
+ </div>
+ <div class="sideFoot"><div class="online"><span id="wasmDot" class="dot"></span><span id="wasmState">WASM loading</span></div><div id="wasmSize" class="wasmSize">—</div></div>
+</aside>
+
+<section class="main">
+<header class="topbar"><div><div id="crumb" class="crumb">Workbench</div><div id="subcrumb" class="subcrumb">I-13 source → native WebAssembly execution</div></div><div class="topActions"><span class="chip">Func · Call · Ret native</span><span id="testBadge" class="chip">tests not run</span><button id="globalRun" class="runBtn">Run Program</button></div></header>
+
+<div id="workbench" class="view active">
+ <section class="grid2">
+  <div class="card">
+   <div class="head"><div><div class="title">I-13 Workbench</div><div class="desc">Edit source and execute the lowered program entirely in the browser WASM VM.</div></div><span id="sourceBadge" class="badge">sample loaded</span></div>
+   <div class="editorWrap"><div id="gutter" class="gutter"></div><textarea id="editor" spellcheck="false"></textarea></div>
+   <div class="pipeline">
+    <div class="stage"><div class="stageK">01 · Read</div><div id="stRead" class="stageV">Waiting</div><div id="sdRead" class="stageD">source ingress</div></div>
+    <div class="stage"><div class="stageK">02 · Lower</div><div id="stLower" class="stageV">Waiting</div><div id="sdLower" class="stageD">regions + ops</div></div>
+    <div class="stage"><div class="stageK">03 · Validate</div><div id="stVal" class="stageV">Waiting</div><div id="sdVal" class="stageD">region isolation</div></div>
+    <div class="stage"><div class="stageK">04 · Frames</div><div id="stFrames" class="stageV">Waiting</div><div id="sdFrames" class="stageD">native calls</div></div>
+    <div class="stage"><div class="stageK">05 · Result</div><div id="stResult" class="stageV">Waiting</div><div id="sdResult" class="stageD">WASM globals</div></div>
+   </div>
+  </div>
+  <div>
+   <div class="card"><div class="head"><div><div class="title">Runtime Pulse</div><div class="desc">Direct metrics from the native validator and VM.</div></div><span id="verdictBadge" class="badge">idle</span></div>
+    <div class="metrics">
+     <div class="metric"><div class="metricK">Regions</div><div id="mRegions" class="metricV">0</div><div class="metricS">main + functions</div></div>
+     <div class="metric"><div class="metricK">Instructions</div><div id="mOps" class="metricV">0</div><div class="metricS">24-byte IVM records</div></div>
+     <div class="metric"><div class="metricK">Calls</div><div id="mCalls" class="metricV">0</div><div class="metricS">native call events</div></div>
+     <div class="metric"><div class="metricK">Max frame depth</div><div id="mDepth" class="metricV">0</div><div class="metricS">native recursion depth</div></div>
+     <div class="metric"><div class="metricK">VM steps</div><div id="mSteps" class="metricV">0</div><div class="metricS">WASM execution loop</div></div>
+     <div class="metric"><div class="metricK">Peak operand stack</div><div id="mPeak" class="metricV">0</div><div class="metricS">across all frames</div></div>
+    </div>
+   </div>
+   <div class="card" style="margin-top:13px"><div class="head"><div><div class="title">Execution Console</div><div class="desc">Globals, errors, and current boundary.</div></div></div><div class="console"><pre id="console">WASM runtime initializing…</pre></div></div>
+  </div>
+ </section>
+</div>
+
+<div id="graph" class="view"><div class="sectionTitle">Execution Map <span class="sectionSub">function regions and call edges</span></div><div class="card"><div class="head"><div><div class="title">Region Graph</div><div class="desc">Independent validator regions. Green edges were observed in the last native trace.</div></div><span id="edgeBadge" class="badge">0 edges</span></div><div class="graphWrap"><svg id="graphSvg" viewBox="0 0 1000 590"></svg></div></div></div>
+
+<div id="frames" class="view"><div class="sectionTitle">Call Frames <span class="sectionSub">native function lifecycle</span></div><div class="gridEqual"><div class="card"><div class="head"><div><div class="title">Frame Tower</div><div class="desc">Maximum simultaneous frame depth reconstructed from the WASM trace.</div></div><span id="frameBadge" class="badge">depth 0</span></div><div id="frameTower" class="frameTower"></div></div><div class="card"><div class="head"><div><div class="title">Trace Timeline</div><div class="desc">ENTER / CALL / RET / HALT emitted by WASM.</div></div><span id="traceBadge" class="badge">0 events</span></div><div id="traceTimeline" class="timeline"></div></div></div></div>
+
+<div id="memory" class="view"><div class="sectionTitle">Memory <span class="sectionSub">tagged globals and linear-memory layout</span></div><div class="gridEqual"><div class="card"><div class="head"><div><div class="title">Global Slots</div><div class="desc">Numbers and function references after execution.</div></div><span id="globalBadge" class="badge">0 slots</span></div><div id="memoryGrid" class="memoryGrid"></div></div><div class="card"><div class="head"><div><div class="title">Linear Memory Allocation</div><div class="desc">Transfer buffers inside WASM memory.</div></div></div><div class="barPanel">
+ <div class="barRow"><span>Instruction buffer</span><div class="barTrack"><div id="barInst" class="barFill"></div></div><b id="barInstV">0 B</b></div>
+ <div class="barRow"><span>Function table</span><div class="barTrack"><div id="barFunc" class="barFill green"></div></div><b id="barFuncV">0 B</b></div>
+ <div class="barRow"><span>Global values</span><div class="barTrack"><div id="barGlob" class="barFill purple"></div></div><b id="barGlobV">0 B</b></div>
+ <div class="barRow"><span>WASM module</span><div class="barTrack"><div id="barWasm" class="barFill"></div></div><b id="barWasmV">0 B</b></div>
+ <div class="console" style="height:176px;margin-top:14px"><pre id="memoryInfo">—</pre></div></div></div></div></div>
+
+<div id="cortex" class="view"><div class="sectionTitle">Cortex <span class="sectionSub">six-rule deterministic gate around the native VM</span></div><div class="gridEqual">
+ <div class="card"><div class="head"><div><div class="title">Cortex Field</div><div class="desc">Six rules converge on the current execution identity.</div></div><span id="maskBadge" class="badge">0x00</span></div><div class="cortexRing"><div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div class="core"><div><strong id="coreVerdict">IDLE</strong><div style="font-size:8px;color:#7896a7;margin-top:3px">CORTEX</div></div></div><span id="orbVeto" class="orbitLabel o1">VETO</span><span id="orbDepth" class="orbitLabel o2">DEPTH</span><span id="orbCap" class="orbitLabel o3">CAPABILITY</span><span id="orbRound" class="orbitLabel o4">ROUNDTRIP</span><span id="orbAddr" class="orbitLabel o5">ADDRESS</span><span id="orbIdem" class="orbitLabel o6">IDEMPOTENCE</span></div></div></div>
+ <div class="card"><div class="head"><div><div class="title">Rule Ledger</div><div class="desc">Direct calls into Cortex exports from the same WASM module.</div></div></div><div class="ruleList">
+  <div class="ruleRow"><b>VETO</b><span class="ruleDesc">Parser/lowerer completed.</span><b id="rlVeto" class="rulePass">—</b></div>
+  <div class="ruleRow"><b>DEPTH</b><span class="ruleDesc">AST depth remains under 64.</span><b id="rlDepth" class="rulePass">—</b></div>
+  <div class="ruleRow"><b>CAPABILITY</b><span class="ruleDesc">Native path imports no host capability.</span><b id="rlCap" class="rulePass">—</b></div>
+  <div class="ruleRow"><b>ROUNDTRIP</b><span class="ruleDesc">Direct I-13 canonical identity remains stable.</span><b id="rlRound" class="rulePass">—</b></div>
+  <div class="ruleRow"><b>ADDRESS</b><span class="ruleDesc">Semantic fingerprint yields execution address.</span><b id="rlAddr" class="rulePass">—</b></div>
+  <div class="ruleRow"><b>IDEMPOTENCE</b><span class="ruleDesc">Same identity maps to same native target.</span><b id="rlIdem" class="rulePass">—</b></div>
+  <div class="console" style="height:150px;margin-top:12px"><pre id="cortexInfo">—</pre></div></div></div>
+</div></div>
+
+<div id="tests" class="view"><div class="sectionTitle">Test Lab <span class="sectionSub">browser-native regression suite</span></div><div class="card"><div class="testActions"><button id="runTests" class="smallBtn">Run all tests</button><button id="loadRecursion" class="smallBtn">Load recursion proof</button><span id="labSummary" class="chip">not run</span></div><div id="testGrid" class="testGrid"></div></div></div>
+</section></div>
+<script>
+const IReader = (() => {
+  const VERSION = "i-reader-v0.2";
+  const PROTOCOL = "i13-ingress/0.2";
+  const KEYWORDS = new Set(["def","I","if","else"]);
+  const TWO = new Set(["<-","->","<=",">=","==","!="]);
+  const ONE = new Set(["+","-","*","/","<",">","(",")","{","}",",","."]);
+
+  class ReadError extends Error {
+    constructor(message, line, col, offset) {
+      super(message);
+      this.name = "ReadError";
+      this.line = line;
+      this.col = col;
+      this.offset = offset;
+    }
+  }
+
+  class ParseError extends Error {
+    constructor(message, token) {
+      super(message + (token ? ` at ${token.line}:${token.col}` : ""));
+      this.name = "ParseError";
+      this.token = token || null;
+    }
+  }
+
+  function utf8OffsetMap(source) {
+    const map = new Array(source.length + 1);
+    let bytes = 0;
+    map[0] = 0;
+    for (let i=0;i<source.length;i++) {
+      const cp = source.codePointAt(i);
+      let n;
+      if (cp <= 0x7f) n=1;
+      else if (cp <= 0x7ff) n=2;
+      else if (cp <= 0xffff) n=3;
+      else n=4;
+      bytes += n;
+      map[i+1] = bytes;
+      if (cp > 0xffff) {
+        i++;
+        map[i+1] = bytes;
+      }
+    }
+    return map;
+  }
+
+  function lex(source) {
+    const tokens = [];
+    const byteMap = utf8OffsetMap(source);
+    let i = 0, line = 1, col = 1;
+    const n = source.length;
+
+    const adv = () => {
+      const c = source[i++];
+      if (c === "\n") { line++; col = 1; } else col++;
+      return c;
+    };
+
+    const add = (kind, lexeme, start, end, sl, sc) => {
+      const idx = tokens.length;
+      tokens.push({
+        index:idx, kind, lexeme,
+        start, end,
+        byte_start:byteMap[start],
+        byte_end:byteMap[end],
+        line:sl, col:sc,
+        end_line:sl,
+        end_col:sc + lexeme.length
+      });
+    };
+
+    while (i < n) {
+      const c = source[i];
+
+      if (c === " " || c === "\t" || c === "\r" || c === "\n") {
+        adv(); continue;
+      }
+
+      if (c === "/" && source[i+1] === "/") {
+        while (i < n && source[i] !== "\n") adv();
+        continue;
+      }
+
+      const start = i, sl = line, sc = col;
+      const two = source.slice(i, i+2);
+
+      if (TWO.has(two)) {
+        adv(); adv();
+        add(two === "<-" ? "BIND" : two === "->" ? "RETURN" : "OP",
+            two, start, i, sl, sc);
+        continue;
+      }
+
+      if (/[A-Za-z_]/.test(c)) {
+        let s = "";
+        while (i < n && /[A-Za-z0-9_]/.test(source[i])) s += adv();
+        add(KEYWORDS.has(s) ? "KW" : "IDENT", s, start, i, sl, sc);
+        continue;
+      }
+
+      if (/[0-9]/.test(c) || (c === "." && /[0-9]/.test(source[i+1] || ""))) {
+        let s = "", dots = 0;
+        while (i < n) {
+          const q = source[i];
+          if (/[0-9]/.test(q)) { s += adv(); continue; }
+          if (q === "." && dots === 0) { dots++; s += adv(); continue; }
+          break;
+        }
+        if (s === "." || Number.isNaN(Number(s)))
+          throw new ReadError("invalid numeric constant", sl, sc, start);
+        add("NUMBER", s, start, i, sl, sc);
+        continue;
+      }
+
+      if (ONE.has(c)) {
+        adv(); add("PUNCT", c, start, i, sl, sc); continue;
+      }
+
+      throw new ReadError(`illegal character ${JSON.stringify(c)}`, sl, sc, start);
+    }
+
+    tokens.push({
+      index:tokens.length, kind:"EOF", lexeme:"",
+      start:n,end:n,byte_start:byteMap[n],byte_end:byteMap[n],
+      line,col,end_line:line,end_col:col
+    });
+    return tokens;
+  }
+
+  class Parser {
+    constructor(tokens, source) {
+      this.t=tokens; this.source=source; this.i=0; this.nextNodeId=0;
+    }
+    cur(){ return this.t[this.i]; }
+    at(x){ return this.cur().lexeme===x; }
+    eof(){ return this.cur().kind==="EOF"; }
+    take(){ return this.t[this.i++]; }
+    expectLex(x){
+      if(!this.at(x)) throw new ParseError(`expected ${JSON.stringify(x)}, got ${JSON.stringify(this.cur().lexeme)}`,this.cur());
+      return this.take();
+    }
+    expectKind(k){
+      if(this.cur().kind!==k) throw new ParseError(`expected ${k}, got ${this.cur().kind}`,this.cur());
+      return this.take();
+    }
+
+    loc(startToken, endTokenExclusive, forceProgram=false) {
+      const real = this.t.filter(t=>t.kind!=="EOF");
+      if (forceProgram) {
+        const first = real[0] || this.t[0];
+        const eof = this.t[this.t.length-1];
+        return {
+          token_start: real.length ? 0 : null,
+          token_end: real.length ? real.length : null,
+          char_start:0, char_end:this.source.length,
+          byte_start:0, byte_end:eof.byte_end,
+          line_start:1, col_start:1,
+          line_end:eof.line, col_end:eof.col,
+          source:this.source
+        };
+      }
+
+      if (startToken == null || endTokenExclusive == null || endTokenExclusive <= startToken) {
+        const t=this.t[startToken ?? this.i] || this.t[this.t.length-1];
+        return {
+          token_start:startToken ?? null, token_end:endTokenExclusive ?? null,
+          char_start:t.start, char_end:t.start,
+          byte_start:t.byte_start, byte_end:t.byte_start,
+          line_start:t.line,col_start:t.col,line_end:t.line,col_end:t.col,
+          source:""
+        };
+      }
+
+      const a=this.t[startToken], b=this.t[endTokenExclusive-1];
+      return {
+        token_start:startToken,
+        token_end:endTokenExclusive,
+        char_start:a.start,
+        char_end:b.end,
+        byte_start:a.byte_start,
+        byte_end:b.byte_end,
+        line_start:a.line,
+        col_start:a.col,
+        line_end:b.end_line,
+        col_end:b.end_col,
+        source:this.source.slice(a.start,b.end)
+      };
+    }
+
+    node(type,start,end,fields={}) {
+      return Object.assign({
+        type,
+        node_id:this.nextNodeId++,
+        loc:this.loc(start,end)
+      }, fields);
+    }
+
+    parseProgram(stopOnBrace=false, programStart=0) {
+      const body=[];
+      const start=this.i;
+      while(!this.eof() && !(stopOnBrace && this.at("}"))) body.push(this.parseStmt());
+      if(stopOnBrace) return {type:"ProgramFragment",body,start,end:this.i};
+      return Object.assign({
+        type:"Program",
+        node_id:this.nextNodeId++,
+        loc:this.loc(programStart,this.i,true)
+      },{body});
+    }
+
+    parseStmt(){
+      if(this.at("def")) return this.parseDef();
+      if(this.at("I")) return this.parseDecl();
+      if(this.at("if")) return this.parseIf();
+      if(this.at("->")) return this.parseReturn();
+
+      if(this.cur().kind==="IDENT"){
+        const save=this.i;
+        const target=this.parseTarget();
+        if(this.at("<-")){
+          const start=target.loc.token_start;
+          this.take();
+          const value=this.parseExpr();
+          return this.node("Assign",start,this.i,{target,value,osmotic:target.attr==="p"});
+        }
+        this.i=save;
+      }
+
+      const start=this.i;
+      const value=this.parseExpr();
+      return this.node("Expr",start,this.i,{value});
+    }
+
+    parseBlock(){
+      const start=this.i;
+      this.expectLex("{");
+      const p=this.parseProgram(true,this.i);
+      if(!this.at("}")) throw new ParseError("unclosed block",this.cur());
+      this.take();
+      return this.node("Block",start,this.i,{body:p.body});
+    }
+
+    parseDef(){
+      const start=this.i;
+      this.expectLex("def");
+      const name=this.expectKind("IDENT").lexeme;
+      this.expectLex("(");
+      const params=[];
+      if(!this.at(")")){
+        while(true){
+          this.expectLex("I");
+          params.push(this.expectKind("IDENT").lexeme);
+          if(this.at(",")){this.take();continue;}
+          break;
+        }
+      }
+      this.expectLex(")");
+      const body=this.parseBlock();
+      return this.node("FunctionDef",start,this.i,{name,params,body});
+    }
+
+    parseDecl(){
+      const start=this.i;
+      this.expectLex("I");
+      const name=this.expectKind("IDENT").lexeme;
+      this.expectLex("<-");
+      const value=this.parseExpr();
+      return this.node("Declare",start,this.i,{name,value});
+    }
+
+    parseIf(){
+      const start=this.i;
+      this.expectLex("if");
+      const test=this.parseExpr();
+      const then=this.parseBlock();
+      let otherwise=null;
+      if(this.at("else")){this.take(); otherwise=this.parseBlock();}
+      return this.node("If",start,this.i,{test,then,otherwise});
+    }
+
+    parseReturn(){
+      const start=this.i;
+      this.expectLex("->");
+      const value=this.parseExpr();
+      return this.node("Return",start,this.i,{value});
+    }
+
+    parseTarget(){
+      const start=this.i;
+      const name=this.expectKind("IDENT").lexeme;
+      let attr=null;
+      if(this.at(".")){this.take();attr=this.expectKind("IDENT").lexeme;}
+      return this.node("Target",start,this.i,{name,attr});
+    }
+
+    parseExpr(){ return this.parseCompare(); }
+
+    parseCompare(){
+      let left=this.parseAdd();
+      while(["<",">","<=",">=","==","!="].includes(this.cur().lexeme)){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseAdd();
+        left=this.node("Compare",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseAdd(){
+      let left=this.parseMul();
+      while(this.at("+")||this.at("-")){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseMul();
+        left=this.node("BinOp",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseMul(){
+      let left=this.parseUnary();
+      while(this.at("*")||this.at("/")){
+        const start=left.loc.token_start;
+        const op=this.take().lexeme;
+        const right=this.parseUnary();
+        left=this.node("BinOp",start,this.i,{op,left,right});
+      }
+      return left;
+    }
+
+    parseUnary(){
+      if(this.at("-")){
+        const start=this.i;
+        const op=this.take().lexeme;
+        const value=this.parseUnary();
+        return this.node("Unary",start,this.i,{op,value});
+      }
+      return this.parsePrimary();
+    }
+
+    parsePrimary(){
+      let node;
+      if(this.cur().kind==="NUMBER"){
+        const start=this.i, t=this.take();
+        node=this.node("Constant",start,this.i,{value:Number(t.lexeme),raw:t.lexeme});
+      } else if(this.cur().kind==="IDENT"){
+        const start=this.i, t=this.take();
+        node=this.node("Name",start,this.i,{id:t.lexeme});
+      } else if(this.at("(")){
+        this.take();
+        node=this.parseExpr();
+        this.expectLex(")");
+      } else {
+        throw new ParseError(`expected expression, got ${JSON.stringify(this.cur().lexeme)}`,this.cur());
+      }
+
+      while(true){
+        if(this.at("(")){
+          const start=node.loc.token_start;
+          this.take();
+          const args=[];
+          if(!this.at(")")){
+            while(true){
+              args.push(this.parseExpr());
+              if(this.at(",")){this.take();continue;}
+              break;
+            }
+          }
+          this.expectLex(")");
+          node=this.node("Call",start,this.i,{callee:node,args});
+          continue;
+        }
+        if(this.at(".")){
+          const start=node.loc.token_start;
+          this.take();
+          const attr=this.expectKind("IDENT").lexeme;
+          node=this.node("Attribute",start,this.i,{object:node,attr});
+          continue;
+        }
+        break;
+      }
+      return node;
+    }
+  }
+
+  function parse(tokens,source){
+    const p=new Parser(tokens,source);
+    const ast=p.parseProgram(false,0);
+    if(!p.eof()) throw new ParseError("trailing tokens",p.cur());
+    return ast;
+  }
+
+  function walk(node,f,depth=0){
+    if(!node||typeof node!=="object") return;
+    if(node.type) f(node,depth);
+    for(const [k,v] of Object.entries(node)){
+      if(k==="type"||k==="loc") continue;
+      if(Array.isArray(v)) v.forEach(x=>walk(x,f,depth+1));
+      else if(v&&typeof v==="object") walk(v,f,depth+1);
+    }
+  }
+
+  function measure(source,tokens,ast){
+    const useful=tokens.filter(t=>t.kind!=="EOF");
+    const ids=useful.filter(t=>t.kind==="IDENT").map(t=>t.lexeme);
+    const uniq=[...new Set(ids)];
+    let astNodes=0,maxAstDepth=0,declares=0,funcs=0,calls=0,compares=0,binops=0,returns=0,assigns=0;
+    walk(ast,(n,d)=>{
+      astNodes++; if(d>maxAstDepth)maxAstDepth=d;
+      if(n.type==="Declare")declares++;
+      if(n.type==="FunctionDef")funcs++;
+      if(n.type==="Call")calls++;
+      if(n.type==="Compare")compares++;
+      if(n.type==="BinOp")binops++;
+      if(n.type==="Return")returns++;
+      if(n.type==="Assign")assigns++;
+    });
+    return {
+      lexical:{
+        tokens:useful.length,identifiers:ids.length,distinct_identifiers:uniq.length,
+        numeric_constants:useful.filter(t=>t.kind==="NUMBER").length
+      },
+      structural:{
+        ast_nodes:astNodes,max_ast_depth:maxAstDepth,functions:funcs,calls,compares,binops,
+        returns,assignments:assigns,declarations:declares
+      },
+      transport:{
+        chars:source.length,
+        bytes:new TextEncoder().encode(source).length,
+        lines:source===""?0:source.split(/\n/).length,
+        comments:(source.match(/\/\/[^\n]*/g)||[]).length
+      }
+    };
+  }
+
+  function spanIntegrity(source,tokens){
+    let last=0;
+    for(const t of tokens){
+      if(t.kind==="EOF") continue;
+      if(t.start<last||t.end<t.start) return false;
+      if(source.slice(t.start,t.end)!==t.lexeme) return false;
+      const bytes=new TextEncoder().encode(source.slice(0,t.start)).length;
+      const bytesEnd=new TextEncoder().encode(source.slice(0,t.end)).length;
+      if(bytes!==t.byte_start||bytesEnd!==t.byte_end) return false;
+      last=t.end;
+    }
+    return true;
+  }
+
+  function astSpanIntegrity(ast,source,tokens){
+    const failures=[];
+    let count=0;
+    walk(ast,n=>{
+      count++;
+      const L=n.loc;
+      if(!L){failures.push({node_id:n.node_id,type:n.type,error:"missing loc"});return;}
+      if(L.char_start<0||L.char_end<L.char_start||L.char_end>source.length){
+        failures.push({node_id:n.node_id,type:n.type,error:"char bounds"});return;
+      }
+      if(source.slice(L.char_start,L.char_end)!==L.source){
+        failures.push({node_id:n.node_id,type:n.type,error:"source slice mismatch"});return;
+      }
+      const bs=new TextEncoder().encode(source.slice(0,L.char_start)).length;
+      const be=new TextEncoder().encode(source.slice(0,L.char_end)).length;
+      if(bs!==L.byte_start||be!==L.byte_end){
+        failures.push({node_id:n.node_id,type:n.type,error:"byte bounds mismatch"});return;
+      }
+      if(n.type!=="Program"){
+        if(L.token_start==null||L.token_end==null||L.token_end<=L.token_start){
+          failures.push({node_id:n.node_id,type:n.type,error:"token range"});return;
+        }
+        const a=tokens[L.token_start],b=tokens[L.token_end-1];
+        if(!a||!b||a.kind==="EOF"){
+          failures.push({node_id:n.node_id,type:n.type,error:"token endpoint"});return;
+        }
+        if(a.start!==L.char_start||b.end!==L.char_end){
+          failures.push({node_id:n.node_id,type:n.type,error:"token/char mismatch"});return;
+        }
+      }
+    });
+    return {ok:failures.length===0,count,failures};
+  }
+
+  function tokenSignature(tokens){
+    return tokens.filter(t=>t.kind!=="EOF")
+      .map(t=>`${t.kind}:${t.lexeme}@${t.start}:${t.end}:${t.byte_start}:${t.byte_end}`).join("|");
+  }
+
+  async function sha256(source){
+    const data=new TextEncoder().encode(source);
+    if(typeof crypto!=="undefined"&&crypto.subtle){
+      const digest=await crypto.subtle.digest("SHA-256",data);
+      return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+    if(typeof require!=="undefined"){
+      return require("crypto").createHash("sha256").update(Buffer.from(data)).digest("hex");
+    }
+    throw new Error("SHA-256 unavailable");
+  }
+
+  async function read(source,label="untitled.i13"){
+    const exact=String(source);
+    const tokens=lex(exact);
+    const ast=parse(tokens,exact);
+    const hash=await sha256(exact);
+    const rel=lex(exact);
+    const tokenOK=spanIntegrity(exact,tokens);
+    const astOK=astSpanIntegrity(ast,exact,tokens);
+
+    const manifest={
+      protocol:PROTOCOL,
+      reader:VERSION,
+      label,
+      source_sha256:hash,
+      source_chars:exact.length,
+      source_bytes:new TextEncoder().encode(exact).length,
+      exact_source_preserved:true,
+      token_span_integrity:tokenOK,
+      ast_span_integrity:astOK.ok,
+      ast_nodes_with_spans:astOK.count,
+      deterministic_relex:tokenSignature(tokens)===tokenSignature(rel),
+      measurements:measure(exact,tokens,ast),
+      not_covered:[
+        "target-language translation",
+        "call-arity validation",
+        "types",
+        "termination",
+        "arithmetic semantics"
+      ]
+    };
+
+    return {
+      manifest,
+      source:exact,
+      tokens:tokens.filter(t=>t.kind!=="EOF"),
+      ast,
+      ast_span_failures:astOK.failures
+    };
+  }
+
+  async function selfTest(coreSource,briefSource){
+    const tests=[];
+    async function test(name,fn){
+      try{const detail=await fn();tests.push({name,pass:true,detail:detail??"PASS"});}
+      catch(e){tests.push({name,pass:false,detail:`${e.name}: ${e.message}`});}
+    }
+
+    await test("CORE reads with complete AST spans",async()=>{
+      const h=await read(coreSource,"core.i13");
+      if(!h.manifest.ast_span_integrity) throw new Error(JSON.stringify(h.ast_span_failures.slice(0,3)));
+      return `${h.manifest.ast_nodes_with_spans} AST nodes with spans`;
+    });
+    await test("brief reads with complete AST spans",async()=>{
+      const h=await read(briefSource,"brief.i13");
+      if(!h.manifest.ast_span_integrity) throw new Error("brief span failure");
+      return `${h.manifest.ast_nodes_with_spans} AST nodes with spans`;
+    });
+    await test("exact source preserved",async()=>{
+      const h=await read(coreSource);
+      if(h.source!==coreSource) throw new Error("source mutated");
+      return "unchanged";
+    });
+    await test("token char + UTF-8 byte spans are exact",async()=>{
+      const h=await read(coreSource);
+      if(!h.manifest.token_span_integrity) throw new Error("token span failure");
+      return `${h.tokens.length} tokens`;
+    });
+    await test("AST node source slices are exact",async()=>{
+      const h=await read(coreSource);
+      const x=astSpanIntegrity(h.ast,h.source,h.tokens);
+      if(!x.ok) throw new Error(JSON.stringify(x.failures[0]));
+      return `${x.count}/${x.count}`;
+    });
+    await test("deterministic re-lex",async()=>{
+      const a=await read(coreSource),b=await read(coreSource);
+      if(tokenSignature(a.tokens)!==tokenSignature(b.tokens)) throw new Error("token signatures differ");
+      return "stable";
+    });
+    await test("malformed block rejected",async()=>{
+      let ok=false;try{await read("def f(I x) { I y <- x");}catch(e){ok=e instanceof ParseError;}
+      if(!ok)throw new Error("not rejected");return "rejected";
+    });
+    await test("illegal character rejected",async()=>{
+      let ok=false;try{await read("I x <- 1 @ 2");}catch(e){ok=e instanceof ReadError;}
+      if(!ok)throw new Error("not rejected");return "rejected";
+    });
+    await test("SHA-256 stable",async()=>{
+      const a=await sha256(coreSource),b=await sha256(coreSource);
+      if(a!==b)throw new Error("hash mismatch");return a.slice(0,16)+"…";
+    });
+
+    return {reader:VERSION,protocol:PROTOCOL,pass:tests.every(t=>t.pass),passed:tests.filter(t=>t.pass).length,total:tests.length,tests};
+  }
+
+  return {
+    VERSION,PROTOCOL,ReadError,ParseError,
+    lex,parse,read,selfTest,spanIntegrity,astSpanIntegrity,tokenSignature,walk
+  };
+})();
+
+const I13WasmVM3 = (() => {
+  const VERSION="i13-wasm-vm-bridge-v0.3";
+  const OP={Const:0,Ask:1,Attr:2,Ret:3,Answer:4,Drop:5,Bin:6,Cmp:7,If:8,Call:9,Block:10,Else:11,End:12,Func:13,Halt:14};
+  const BIN={"+":0,"-":1,"*":2,"/":3}, CMP={"<":0,">":1,"<=":2,">=":3,"==":4,"!=":5};
+  const VERR={0:"NONE",1:"UNDERFLOW",2:"ELSE_WITHOUT_IF",3:"END_WITHOUT_OPEN",4:"BLOCK_HEIGHT",5:"IF_HEIGHT",6:"UNCLOSED_CONTROL",7:"FINAL_HEIGHT",8:"CONTROL_OVERFLOW",9:"BAD_OPCODE"};
+  const VMERR={1:"OK","-1":"VALIDATION_FAILED","-2":"STACK_UNDERFLOW","-3":"STACK_OVERFLOW","-4":"UNBOUND_NAME","-5":"ASSIGN_UNDECLARED","-6":"DIV_ZERO","-7":"BAD_BIN","-8":"BAD_CMP","-9":"BAD_JUMP","-10":"UNSUPPORTED_OPCODE","-11":"STEP_LIMIT","-12":"BAD_SLOT","-13":"TYPE_ERROR","-14":"BAD_FUNC","-15":"ARITY","-16":"CALL_DEPTH","-17":"LOCAL_OVERFLOW","-18":"RET_MAIN"};
+  const TRACE={1:"ENTER",2:"CALL",3:"RET",4:"HALT"};
+
+  function collectDecls(body,out=new Set()){
+    for(const s of body||[]){
+      if(s.type==="Declare")out.add(s.name);
+      else if(s.type==="If"){collectDecls(s.then?.body,out);collectDecls(s.otherwise?.body,out)}
+    }
+    return out;
+  }
+
+  function compile(ast){
+    if(!ast||ast.type!=="Program")throw new Error("Program required");
+    const code=[], globals=new Map(), globalNames=[], functions=[], fnByName=new Map();
+    const gslot=n=>{if(!globals.has(n)){globals.set(n,globalNames.length);globalNames.push(n)}return globals.get(n)};
+    collectDecls(ast.body).forEach(gslot);
+    const fnNodes=ast.body.filter(x=>x.type==="FunctionDef");
+    fnNodes.forEach((f,i)=>{fnByName.set(f.name,i);gslot(f.name)});
+
+    const emit=(op,a=0,b=0,imm=0,meta={})=>{const row={op:OP[op],opName:op,a,b,imm,...meta};code.push(row);return code.length-1};
+    const resolve=(name,ctx)=>{
+      if(ctx.locals&&ctx.locals.has(name))return {slot:ctx.locals.get(name),scope:0};
+      if(globals.has(name))return {slot:globals.get(name),scope:1};
+      return {slot:gslot(name),scope:1};
+    };
+    const target=(name,ctx)=>{
+      if(ctx.locals&&ctx.locals.has(name))return {slot:ctx.locals.get(name),scope:0};
+      if(globals.has(name))return {slot:globals.get(name),scope:1};
+      throw new Error("assignment target is undeclared: "+name);
+    };
+    const flags=(scope,assign)=>(scope<<1)|(assign?1:0);
+
+    const compileRegion=(body,ctx)=>{
+      const expr=n=>{
+        switch(n.type){
+          case "Constant":emit("Const",0,0,Number(n.value),{source:n.loc?.source});break;
+          case "Name":{const r=resolve(n.id,ctx);emit("Ask",r.slot,r.scope,0,{name:n.id,source:n.loc?.source});break}
+          case "Attribute":expr(n.object);emit("Attr",0,0,0,{attr:n.attr,source:n.loc?.source});break;
+          case "Unary":
+            if(n.op!=="-")throw new Error("unsupported unary "+n.op);
+            emit("Const",0,0,0);expr(n.value);emit("Bin",BIN["-"]);break;
+          case "BinOp":
+            if(BIN[n.op]===undefined)throw new Error("unsupported BinOp "+n.op);
+            expr(n.left);expr(n.right);emit("Bin",BIN[n.op],0,0,{kind:n.op});break;
+          case "Compare":
+            if(CMP[n.op]===undefined)throw new Error("unsupported Compare "+n.op);
+            expr(n.left);expr(n.right);emit("Cmp",CMP[n.op],0,0,{kind:n.op});break;
+          case "Call":
+            expr(n.callee);n.args.forEach(expr);emit("Call",n.args.length,0,0,{source:n.loc?.source});break;
+          default:throw new Error("unsupported expression "+n.type);
+        }
+      };
+      const block=b=>{emit("Block");for(const s of b?.body||[])stmt(s);emit("End")};
+      const stmt=n=>{
+        switch(n.type){
+          case "FunctionDef":
+            if(ctx.kind!=="main")throw new Error("nested FunctionDef/closure is not covered in v0.3");
+            emit("Func",gslot(n.name),fnByName.get(n.name),0,{name:n.name,source:n.loc?.source});break;
+          case "Declare":{
+            const r=ctx.kind==="main"?{slot:gslot(n.name),scope:1}:{slot:ctx.locals.get(n.name),scope:0};
+            expr(n.value);emit("Answer",r.slot,flags(r.scope,0),0,{name:n.name,mode:"declare"});break;
+          }
+          case "Assign":{
+            if(n.target.attr&&n.target.attr!=="p")throw new Error("unsupported assignment attribute ."+n.target.attr);
+            const r=target(n.target.name,ctx);
+            if(n.target.attr==="p"){
+              emit("Ask",r.slot,r.scope,0,{name:n.target.name});expr(n.value);emit("Bin",BIN["+"]);
+              emit("Answer",r.slot,flags(r.scope,1),0,{name:n.target.name,osmotic:true});
+            }else{
+              expr(n.value);emit("Answer",r.slot,flags(r.scope,1),0,{name:n.target.name});
+            }
+            break;
+          }
+          case "Expr":expr(n.value);emit("Drop");break;
+          case "Return":expr(n.value);emit("Ret",0,0,0,{source:n.loc?.source});break;
+          case "If":{
+            expr(n.test);const ip=emit("If",-1);block(n.then);const ep=emit("Else",-1);
+            const elseStart=code.length;if(n.otherwise)block(n.otherwise);else block({body:[]});
+            const end=emit("End");code[ip].a=elseStart;code[ep].a=end+1;break;
+          }
+          default:throw new Error("unsupported statement "+n.type);
+        }
+      };
+      emit("Block",0,0,0,{role:"region",region:ctx.name});
+      for(const s of body)stmt(s);
+      emit("End",0,0,0,{role:"region",region:ctx.name});
+      emit("Halt",0,0,0,{region:ctx.name});
+    };
+
+    const mainStart=code.length;
+    compileRegion(ast.body,{kind:"main",name:"main",locals:null});
+    const mainCount=code.length-mainStart;
+
+    fnNodes.forEach((f,fid)=>{
+      const locals=new Map(),localNames=[];
+      const add=n=>{if(!locals.has(n)){locals.set(n,localNames.length);localNames.push(n)}};
+      f.params.forEach(add);collectDecls(f.body?.body).forEach(add);
+      const start=code.length;
+      compileRegion(f.body?.body||[],{kind:"function",name:f.name,locals});
+      functions.push({id:fid,name:f.name,start,count:code.length-start,param_count:f.params.length,local_count:localNames.length,localNames});
+    });
+
+    return {version:VERSION,code,globals:Object.fromEntries(globals),globalNames,functions,main:{start:mainStart,count:mainCount}};
+  }
+
+  function instBytes(code){
+    const buf=new ArrayBuffer(code.length*24),dv=new DataView(buf);
+    code.forEach((x,i)=>{const p=i*24;dv.setInt32(p,x.op,true);dv.setInt32(p+4,x.a|0,true);dv.setInt32(p+8,x.b|0,true);dv.setInt32(p+12,0,true);dv.setFloat64(p+16,Number(x.imm||0),true)});
+    return new Uint8Array(buf);
+  }
+  function funcBytes(funcs){
+    const buf=new ArrayBuffer(funcs.length*16),dv=new DataView(buf);
+    funcs.forEach((f,i)=>{const p=i*16;dv.setInt32(p,f.start,true);dv.setInt32(p+4,f.count,true);dv.setInt32(p+8,f.param_count,true);dv.setInt32(p+12,f.local_count,true)});
+    return new Uint8Array(buf);
+  }
+  function install(W,c){
+    const ib=instBytes(c.code),fb=funcBytes(c.functions);
+    let p=16384;
+    const instPtr=p;p+=ib.length;p=(p+7)&~7;
+    const funcsPtr=p;p+=fb.length;p=(p+7)&~7;
+    const gvPtr=p;p+=c.globalNames.length*8;p=(p+7)&~7;
+    const gtPtr=p;p+=c.globalNames.length;p=(p+7)&~7;
+    const gsPtr=p;p+=c.globalNames.length;p=(p+7)&~7;
+    if(W.memory.buffer.byteLength<p)W.memory.grow(Math.ceil((p-W.memory.buffer.byteLength)/65536));
+    new Uint8Array(W.memory.buffer,instPtr,ib.length).set(ib);
+    new Uint8Array(W.memory.buffer,funcsPtr,fb.length).set(fb);
+    new Float64Array(W.memory.buffer,gvPtr,c.globalNames.length).fill(0);
+    new Uint8Array(W.memory.buffer,gtPtr,c.globalNames.length).fill(0);
+    new Uint8Array(W.memory.buffer,gsPtr,c.globalNames.length).fill(0);
+    return {instPtr,funcsPtr,gvPtr,gtPtr,gsPtr,instBytes:ib,funcBytes:fb};
+  }
+  function validate(W,c){
+    const L=install(W,c);
+    const ok=W.i13_validate_program(L.instPtr,c.main.start,c.main.count,L.funcsPtr,c.functions.length)===1;
+    return {ok,peak:W.i13_val_peak(),error_pc:W.i13_val_error_pc(),error_code:W.i13_val_error_code(),error:VERR[W.i13_val_error_code()]||"UNKNOWN",error_region:W.i13_val_error_region(),regions:W.i13_val_regions(),layout:L};
+  }
+  function execute(W,c,stepLimit=1000000,callLimit=48){
+    const L=install(W,c);
+    const rc=W.i13_vm_exec_program(L.instPtr,c.main.start,c.main.count,L.funcsPtr,c.functions.length,L.gvPtr,L.gtPtr,L.gsPtr,c.globalNames.length,stepLimit,callLimit);
+    const vals=new Float64Array(W.memory.buffer,L.gvPtr,c.globalNames.length),tags=new Uint8Array(W.memory.buffer,L.gtPtr,c.globalNames.length),states=new Uint8Array(W.memory.buffer,L.gsPtr,c.globalNames.length);
+    const globals={};
+    c.globalNames.forEach((n,i)=>{if(states[i])globals[n]=tags[i]===2?`<func:${c.functions[Math.trunc(vals[i])]?.name||vals[i]}>`:vals[i]});
+    const trace=[];
+    for(let i=0;i<W.i13_trace_count();i++){
+      const fid=W.i13_trace_func(i);
+      trace.push({event:TRACE[W.i13_trace_event(i)]||W.i13_trace_event(i),depth:W.i13_trace_depth(i),func_id:fid,func:fid>=0?c.functions[fid]?.name:"main",pc:W.i13_trace_pc(i)});
+    }
+    return {ok:rc===1,rc,error:VMERR[String(rc)]||"UNKNOWN",error_pc:W.i13_vm_error_pc(),steps:W.i13_vm_steps(),peak:W.i13_vm_peak(),final_height:W.i13_vm_final_height(),max_call_depth:W.i13_vm_max_call_depth(),calls:W.i13_vm_calls(),last_func:W.i13_vm_last_func(),globals,trace,layout:L};
+  }
+  function callEdges(c){
+    const regionForPc=pc=>c.functions.find(f=>pc>=f.start&&pc<f.start+f.count)?.name||"main";
+    const edges=[];
+    for(let pc=0;pc<c.code.length;pc++){
+      const x=c.code[pc];if(x.opName!=="Call")continue;
+      let callee="dynamic";
+      for(let q=pc-1;q>=Math.max(0,pc-x.a-4);q--){
+        const y=c.code[q];
+        if(y.opName==="Ask"&&y.b===1){
+          const name=c.globalNames[y.a];
+          if(c.functions.some(f=>f.name===name)){callee=name;break}
+        }
+      }
+      edges.push({from:regionForPc(pc),to:callee,pc,argc:x.a});
+    }
+    return edges;
+  }
+  return {VERSION,OP,BIN,CMP,VERR,VMERR,TRACE,compile,validate,execute,callEdges};
+})();
+
+const WASM_B64="AGFzbQEAAAABQQhgAn9/AX9gA39/fwF/YAZ/f39/f38Bf2ABfwF/YAABf2AFf39/f38Bf2AEf39/fwF/YAt/f39/f39/f39/fwF/AyAfAAAAAAAAAQIDBAUGBAQEBAQHBAQEBAQEBAQEAwMDAwQFAXABAQEFBQEBEIACBggBfwFBgIAECwfEBB8GbWVtb3J5AgAKaTEzX2hhc2gzMgAAD2kxM19lZmZlY3RfbmVlZAABDmkxM19lZmZlY3RfbmV0AAIPY29ydGV4X2RlcHRoX29rAAMUY29ydGV4X2NhcGFiaWxpdHlfb2sABBVjb3J0ZXhfaWRlbXBvdGVuY2Vfb2sABRBjb3J0ZXhfYWRkcmVzczMyAAYOY29ydGV4X3ZlcmRpY3QABxVjb3J0ZXhfYWxsX3J1bGVzX3Bhc3MACBRjb3J0ZXhfcnVsZV9hbGxfbWFzawAJFGkxM192YWxpZGF0ZV9wcm9ncmFtAAoMaTEzX3ZhbF9wZWFrAAwQaTEzX3ZhbF9lcnJvcl9wYwANEmkxM192YWxfZXJyb3JfY29kZQAOFGkxM192YWxfZXJyb3JfcmVnaW9uAA8PaTEzX3ZhbF9yZWdpb25zABATaTEzX3ZtX2V4ZWNfcHJvZ3JhbQARDGkxM192bV9zdGVwcwASC2kxM192bV9wZWFrABMPaTEzX3ZtX2Vycm9yX3BjABQRaTEzX3ZtX2Vycm9yX2NvZGUAFRNpMTNfdm1fZmluYWxfaGVpZ2h0ABYVaTEzX3ZtX21heF9jYWxsX2RlcHRoABcMaTEzX3ZtX2NhbGxzABgQaTEzX3ZtX2xhc3RfZnVuYwAZD2kxM190cmFjZV9jb3VudAAaD2kxM190cmFjZV9ldmVudAAbD2kxM190cmFjZV9kZXB0aAAcDmkxM190cmFjZV9mdW5jAB0MaTEzX3RyYWNlX3BjAB4KlDYfzAEBBH8CQCABDQBBxbvyiHgPCyABQQNxIQICQAJAIAFBBE8NAEHFu/KIeCEBQQAhAwwBCyABQXxxIQRBxbvyiHghAUEAIQMDQCABIAAgA2oiBS0AAHNBk4OACGwgBUEBai0AAHNBk4OACGwgBUECai0AAHNBk4OACGwgBUEDai0AAHNBk4OACGwhASAEIANBBGoiA0cNAAsLAkAgAkUNACAAIANqIQUDQCABIAUtAABzQZOD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kICEgAALCwBBACgCgICEgAALCwBBACgClICEgAALCwBBACgChICEgAALCwBBACgCmICEgAAL4yMECX8BfAR/AXwjgICAgABBgBJrIgskgICAgABBfyEMQQAhDUEAQX82AoiAhIAAQQBBfzYCjICEgABBAEF/NgKAgISAAEEAQX82AoSAhIAAQQAgBEEBajYCmICEgABBAEEANgKggISAAEEAQQA2ApyAhIAAQQBBADYCpICEgABBAEEANgKogISAAEEAQQA2AqyAhIAAQQBBADYCsICEgABBAEEANgK0gISAAEEAQQA2ApCAhIAAQQBBADYClICEgAACQAJAAkACQAJAAkACQAJAIAAgASACQQAQi4CAgABFDQAgCkE/IApBP0kbIQ4gAyEKAkADQCAEIA1GDQEgCkEEaiEPIAooAgAhECAKQRBqIQogACAQIA8oAgAgDUEBaiINEIuAgIAADQALIA1Bf2ogBEkNAQtBgH4hCgNAIApBwISEgABqQQA2AgAgCkHAgoSAAGpCADcDACAKQcCGhIAAakEANgIAIApBwIiEgABqQX82AgAgCkHEhISAAGpBADYCACAKQcSGhIAAakEANgIAIApBxIiEgABqQX82AgAgCkEIaiIKDQALQQAgATYCwIKEgABBAEF/NgLAhoSAAEEAIAIgAWoiCjYCwISEgAACQEEAKAK0gISAACINQf8HSg0AQQAgDUEBajYCtICEgAAgDUECdCINQcCojoAAakEANgIAIA1BwIiOgABqQQE2AgAgDUHAyI6AAGpBfzYCACANQcDojoAAaiABNgIACyAKQcCEPWohESALQYACakFwaiESQQAhCgJAA0BBAEEAKAKcgISAACINQQFqNgKcgISAAAJAIA0gCUgNAEEAQXU2AqSAhIAAQQAgCkECdEHAgoSAAGooAgA2AoiAhIAADAgLAkAgCkECdCIPQcCChIAAaiIMKAIAIgEgD0HAhISAAGooAgBIDQACQCAKDQBBACEKQQAoArSAhIAAIg1B/wdKDQlBACEKQQAgDUEBajYCtICEgAAgDUECdCINQcCojoAAakEANgIAIA1BwIiOgABqQQQ2AgAgDUHAyI6AAGpBfzYCACANQcDojoAAaiABNgIADAkLQQAgATYCiICEgABBAEF2NgKkgISAAAwICyAAIAFBGGxqIg0oAgghEyAN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gABBACABNgKIgISAAAwDC0EAIA82AqSAhIAAQQAgATYCiICEgAAMAgtBfSECC0EAIAE2AoiAhIAAQQAgAjYCpICEgAALIApBAnRBwICEgABqKAIAIQoLQQAgCjYCqICEgABBACgCpICEgAAiCkEBIApBAUsbIQwLIAtBgBJqJICAgIAAIAwLCwBBACgCnICEgAALCwBBACgCoICEgAALCwBBACgCiICEgAALCwBBACgCpICEgAALCwBBACgCqICEgAALCwBBACgCrICEgAALCwBBACgCsICEgAALCwBBACgCjICEgAALCwBBACgCtICEgAALMwEBf0EAIQECQCAAQQBIDQBBACgCtICEgAAgAEwNACAAQQJ0QcCIjoAAaigCACEBCyABCzMBAX9BfyEBAkAgAEEASA0AQQAoArSAhIAAIABMDQAgAEECdEHAqI6AAGooAgAhAQsgAQszAQF/QX8hAQJAIABBAEgNAEEAKAK0gISAACAATA0AIABBAnRBwMiOgABqKAIAIQELIAELMwEBf0F/IQECQCAAQQBIDQBBACgCtICEgAAgAEwNACAAQQJ0QcDojoAAaigCACEBCyABCwsYAQBBgIAECxD/////////////////////AO0EBG5hbWUAFxZpMTNfY29ydGV4X3ZtX3YwMy53YXNtAa4EHwAKaTEzX2hhc2gzMgEPaTEzX2VmZmVjdF9uZWVkAg5pMTNfZWZmZWN0X25ldAMPY29ydGV4X2RlcHRoX29rBBRjb3J0ZXhfY2FwYWJpbGl0eV9vawUVY29ydGV4X2lkZW1wb3RlbmNlX29rBhBjb3J0ZXhfYWRkcmVzczMyBw5jb3J0ZXhfdmVyZGljdAgVY29ydGV4X2FsbF9ydWxlc19wYXNzCRRjb3J0ZXhfcnVsZV9hbGxfbWFzawoUaTEzX3ZhbGlkYXRlX3Byb2dyYW0LD3ZhbGlkYXRlX3JlZ2lvbgwMaTEzX3ZhbF9wZWFrDRBpMTNfdmFsX2Vycm9yX3BjDhJpMTNfdmFsX2Vycm9yX2NvZGUPFGkxM192YWxfZXJyb3JfcmVnaW9uEA9pMTNfdmFsX3JlZ2lvbnMRE2kxM192bV9leGVjX3Byb2dyYW0SDGkxM192bV9zdGVwcxMLaTEzX3ZtX3BlYWsUD2kxM192bV9lcnJvcl9wYxURaTEzX3ZtX2Vycm9yX2NvZGUWE2kxM192bV9maW5hbF9oZWlnaHQXFWkxM192bV9tYXhfY2FsbF9kZXB0aBgMaTEzX3ZtX2NhbGxzGRBpMTNfdm1fbGFzdF9mdW5jGg9pMTNfdHJhY2VfY291bnQbD2kxM190cmFjZV9ldmVudBwPaTEzX3RyYWNlX2RlcHRoHQ5pMTNfdHJhY2VfZnVuYx4MaTEzX3RyYWNlX3BjBxIBAA9fX3N0YWNrX3BvaW50ZXIJCAEABS5kYXRhAH8JcHJvZHVjZXJzAQxwcm9jZXNzZWQtYnkBBWNsYW5nXzE3LjAuMCAoaHR0cHM6Ly9naXRodWIuY29tL3N3aWZ0bGFuZy9sbHZtLXByb2plY3QuZ2l0IDEwOTk5YjZkMDM0ZmUzMThmM2Q1NmM4M2JkZGI2NTcyNTkzYThiYjApAEkPdGFyZ2V0X2ZlYXR1cmVzBCsKbXVsdGl2YWx1ZSsPbXV0YWJsZS1nbG9iYWxzKw9yZWZlcmVuY2UtdHlwZXMrCHNpZ24tZXh0";
+const SAMPLE="// I-13 Suite v0.3 \u2014 native WASM calls + recursion\n\ndef inc(I x) {\n    -> x + 1\n}\n\ndef twice(I x) {\n    -> inc(inc(x))\n}\n\ndef sumdown(I n) {\n    if n <= 0 {\n        -> 0\n    }\n    -> n + sumdown(n - 1)\n}\n\nI a <- twice(5)\nI b <- sumdown(5)\nI total <- a + b\n";
+const TESTS=[["Arithmetic", "I x <- 2 + 3 * 4\n", {"x": 14}], ["Osmotic", "I x <- 1\nx.p <- 4\n", {"x": 5}], ["If/Else", "I x <- 7\nif x > 5 { I y <- 1 } else { I y <- 0 }\n", {"y": 1}], ["Function", "def add(I a,I b){ -> a+b }\nI x <- add(2,3)\n", {"x": 5}], ["Nested call", "def inc(I x){ -> x+1 }\ndef twice(I x){ -> inc(inc(x)) }\nI y <- twice(7)\n", {"y": 9}], ["Recursion", "def sumdown(I n){ if n <= 0 { -> 0 } -> n + sumdown(n-1) }\nI s <- sumdown(6)\n", {"s": 21}], ["Alias", "def inc(I x){ -> x+1 }\nI f <- inc\nI y <- f(9)\n", {"y": 10}], ["Local + branch", "def clamp(I x,I lo,I hi){ if x < lo { -> lo } if x > hi { -> hi } I y <- x+0 -> y }\nI z <- clamp(14,0,10)\n", {"z": 10}]];
+const WASM_BYTES=8505;
+const $=id=>document.getElementById(id);
+let W=null,last=null,identityCache=new Map();
+function stable(v){if(v===null||typeof v!=="object")return JSON.stringify(v);if(Array.isArray(v))return "["+v.map(stable).join(",")+"]";const ks=Object.keys(v).sort();return "{"+ks.map(k=>JSON.stringify(k)+":"+stable(v[k])).join(",")+"}"}
+function semantic(v){if(Array.isArray(v))return v.map(semantic);if(v&&typeof v==="object"){const o={};for(const [k,x] of Object.entries(v))if(!["node_id","loc","raw"].includes(k))o[k]=semantic(x);return o}return v}
+function astDepth(v,d=0){if(Array.isArray(v))return Math.max(d,...v.map(x=>astDepth(x,d+1)));if(v&&typeof v==="object")return Math.max(d,...Object.entries(v).filter(([k])=>k!=="loc").map(([,x])=>astDepth(x,d+1)));return d}
+function wasmHash(text){const b=new TextEncoder().encode(text),p=4096;if(W.memory.buffer.byteLength<p+b.length)W.memory.grow(1);new Uint8Array(W.memory.buffer,p,b.length).set(b);return W.i13_hash32(p,b.length)>>>0}
+function hex(n){return "0x"+(n>>>0).toString(16).padStart(8,"0")}function fmtBytes(n){return n<1024?n+" B":(n/1024).toFixed(1)+" KB"}
+function lineNums(){$("gutter").textContent=Array.from({length:$("editor").value.split("\n").length},(_,i)=>i+1).join("\n")}
+function nav(view){document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===view));document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.view===view));const names={workbench:["Workbench","I-13 source → native WebAssembly execution"],graph:["Execution Map","compiled regions + dynamic call edges"],frames:["Call Frames","native frame lifecycle + recursion"],memory:["Memory","tagged globals + WASM linear memory"],cortex:["Cortex","six-rule deterministic gate"],tests:["Test Lab","browser-native regression suite"]};$("crumb").textContent=names[view][0];$("subcrumb").textContent=names[view][1]}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>nav(b.dataset.view));
+function cortexFrom(h){const sem=stable(semantic(h.ast)),fp=wasmHash(sem),depth=astDepth(h.ast),depthOK=W.cortex_depth_ok(depth,64)===1,capOK=W.cortex_capability_ok(0,0)===1,addr=W.cortex_address32(fp,0,wasmHash("i13-wasm-suite-v0.3"))>>>0,existing=identityCache.get(addr)||0,idem=W.cortex_idempotence_ok(existing,fp)===1,mask=W.cortex_verdict(1,depthOK?1:0,capOK?1:0,1,1,idem?1:0)>>>0;identityCache.set(addr,fp);return{fp,depth,addr,mask,idem,pass:W.cortex_all_rules_pass(mask)===1}}
+function updateCortex(cx){for(const [n,b] of [["Veto",1],["Depth",2],["Cap",4],["Round",8],["Addr",16],["Idem",32]]){const pass=!!(cx.mask&b),rl=$("rl"+n),orb=$("orb"+n);rl.textContent=pass?"PASS":"VETO";rl.className=pass?"rulePass":"badText";orb.classList.toggle("pass",pass)}$("maskBadge").textContent=hex(cx.mask);$("coreVerdict").textContent=cx.pass?"PASS":"VETO";$("coreVerdict").style.color=cx.pass?"var(--green)":"var(--red)";$("cortexInfo").textContent=JSON.stringify({mask:hex(cx.mask),semantic_fingerprint32:hex(cx.fp),execution_address32:hex(cx.addr),ast_depth:cx.depth,idempotence:cx.idem},null,2)}
+function renderGraph(c,r){const svg=$("graphSvg"),funcs=[{name:"main",id:-1,start:c.main.start,count:c.main.count,param_count:0},...c.functions],edges=I13WasmVM3.callEdges(c),hotNames=new Set((r?.trace||[]).filter(x=>x.event==="CALL").map(x=>x.func));$("edgeBadge").textContent=edges.length+" call edges";const centers=[],R=205;funcs.forEach((f,i)=>{if(i===0)centers.push({x:500,y:105});else{const a=(i-1)/Math.max(1,funcs.length-1)*Math.PI*2-Math.PI/2;centers.push({x:500+Math.cos(a)*R,y:335+Math.sin(a)*R})}});const idx=Object.fromEntries(funcs.map((f,i)=>[f.name,i]));let out='<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#315d74"/></marker></defs>';for(const e of edges){if(idx[e.from]===undefined||idx[e.to]===undefined)continue;const a=centers[idx[e.from]],b=centers[idx[e.to]],hot=hotNames.has(e.to);out+=`<path class="edge ${hot?"hot":""}" d="M${a.x},${a.y} Q500,295 ${b.x},${b.y}"/><text class="edgeLabel" x="${(a.x+b.x)/2}" y="${(a.y+b.y)/2-7}">${e.argc} arg</text>`}funcs.forEach((f,i)=>{const p=centers[i],active=i===0||hotNames.has(f.name);out+=`<g><rect class="nodeBox ${i===0?"main":""} ${active?"active":""}" x="${p.x-72}" y="${p.y-34}" rx="12" width="144" height="68"/><text class="nodeTitle" x="${p.x}" y="${p.y-5}" text-anchor="middle">${f.name}</text><text class="nodeSub" x="${p.x}" y="${p.y+12}" text-anchor="middle">${f.count} ops · ${f.param_count||0} args</text></g>`});svg.innerHTML=out}
+function renderFrames(r){const depth=r?.max_call_depth||0;$("frameBadge").textContent="depth "+depth;$("traceBadge").textContent=(r?.trace?.length||0)+" events";const deepest=[];for(let d=0;d<=depth;d++){const e=[...(r?.trace||[])].reverse().find(x=>x.event==="ENTER"&&x.depth===d);deepest.push(e||{depth:d,func:d===0?"main":"frame"})}$("frameTower").innerHTML=deepest.map(f=>`<div class="frameCard"><div class="frameDepth">depth ${f.depth}</div><div class="frameName">${f.func}</div><div class="frameMeta">pc ${f.pc??"—"}<br>native frame<br>${f.depth===0?"global region":"local environment"}</div></div>`).join("");$("traceTimeline").innerHTML=(r?.trace||[]).map(t=>`<div class="traceRow"><div class="depthBars">${Array.from({length:t.depth+1},(_,i)=>`<span class="depthBar ${i===t.depth?"hot":""}"></span>`).join("")}</div><div class="eventTag">${t.event}</div><div class="traceText">${t.func} · pc ${t.pc} · depth ${t.depth}</div></div>`).join("")||'<div class="ruleDesc">Run a program to generate frames.</div>'}
+function renderMemory(c,r){const entries=Object.entries(r?.globals||{});$("globalBadge").textContent=entries.length+" bound";$("memoryGrid").innerHTML=entries.map(([k,v])=>`<div class="memCell"><div class="memName">${k}</div><div class="memVal">${typeof v==="number"?v:v.replace("<func:","ƒ ").replace(">","")}</div><div class="memType">${typeof v==="number"?"number / f64":"function reference"}</div></div>`).join("")||'<div class="ruleDesc">No bound globals.</div>';const inst=c.code.length*24,fun=c.functions.length*16,glob=c.globalNames.length*10,max=Math.max(inst,fun,glob,WASM_BYTES);for(const [id,n] of [["barInst",inst],["barFunc",fun],["barGlob",glob],["barWasm",WASM_BYTES]])$(id).style.width=Math.max(3,n/max*100)+"%";$("barInstV").textContent=fmtBytes(inst);$("barFuncV").textContent=fmtBytes(fun);$("barGlobV").textContent=fmtBytes(glob);$("barWasmV").textContent=fmtBytes(WASM_BYTES);$("memoryInfo").textContent=JSON.stringify({wasm_linear_memory_bytes:W.memory.buffer.byteLength,instruction_bytes:inst,function_table_bytes:fun,global_slots:c.globalNames.length,regions:1+c.functions.length},null,2)}
+async function runSource(source,update=true){const h=await IReader.read(source,"suite.i13"),c=I13WasmVM3.compile(h.ast),v=I13WasmVM3.validate(W,c),r=v.ok?I13WasmVM3.execute(W,c):null,cx=cortexFrom(h);if(update)renderAll(h,c,v,r,cx);return{h,c,v,r,cx}}
+function renderAll(h,c,v,r,cx){last={h,c,v,r,cx};$("stRead").textContent="PASS";$("sdRead").textContent=h.tokens.length+" tokens";$("stLower").textContent=c.code.length+" ops";$("sdLower").textContent=c.functions.length+" funcs";$("stVal").textContent=v.ok?"VALID":"INVALID";$("sdVal").textContent=v.regions+" regions";$("stFrames").textContent=r?.calls??0;$("sdFrames").textContent="max depth "+(r?.max_call_depth??0);$("stResult").textContent=r?.ok?"EXECUTED":"VETO";$("sdResult").textContent=r?.ok?Object.keys(r.globals).length+" globals":(r?.error||v.error);$("mRegions").textContent=v.regions;$("mOps").textContent=c.code.length;$("mCalls").textContent=r?.calls??0;$("mDepth").textContent=r?.max_call_depth??0;$("mSteps").textContent=r?.steps??0;$("mPeak").textContent=r?.peak??0;$("verdictBadge").textContent=r?.ok?"native pass":(v.ok?"runtime error":"validator veto");$("verdictBadge").className="badge "+(r?.ok?"okText":"badText");$("console").textContent=JSON.stringify({validation:{ok:v.ok,peak:v.peak,error:v.error,error_region:v.error_region},vm:r?{ok:r.ok,error:r.error,error_pc:r.error_pc,steps:r.steps,calls:r.calls,max_call_depth:r.max_call_depth,globals:r.globals}:null,cortex:{pass:cx.pass,mask:hex(cx.mask),address:hex(cx.addr)}},null,2);renderGraph(c,r);renderFrames(r);renderMemory(c,r);updateCortex(cx)}
+async function runProgram(){try{await runSource($("editor").value,true);$("sourceBadge").textContent="executed"}catch(e){$("console").textContent=e.name+": "+e.message;$("sourceBadge").textContent="error"}}
+async function runTests(){const cards=[];let pass=0;for(const item of TESTS){const name=item[0],source=item[1],expect=item[2];try{const x=await runSource(source,false),ok=x.v.ok&&x.r?.ok&&Object.entries(expect).every(([k,v])=>x.r.globals[k]===v);if(ok)pass++;cards.push({name,ok,detail:ok?`regions ${x.v.regions} · calls ${x.r.calls} · ${JSON.stringify(expect)}`:`got ${JSON.stringify(x.r?.globals)}`})}catch(e){cards.push({name,ok:false,detail:e.message})}}$("testGrid").innerHTML=cards.map(x=>`<div class="testCard"><div class="testTop"><div class="testName">${x.name}</div><span class="${x.ok?"passPill":"failPill"}">${x.ok?"PASS":"FAIL"}</span></div><div class="testResult">${x.detail}</div></div>`).join("");$("labSummary").textContent=`${pass}/${TESTS.length} PASS`;$("testBadge").textContent=`tests ${pass}/${TESTS.length}`;document.documentElement.dataset.selftest=pass===TESTS.length?"pass":"fail";return pass===TESTS.length}
+$("runTests").onclick=runTests;$("loadRecursion").onclick=()=>{$("editor").value=TESTS.find(x=>x[0]==="Recursion")[1];lineNums();nav("workbench")};$("globalRun").onclick=runProgram;$("editor").addEventListener("input",lineNums);$("editor").addEventListener("scroll",()=>{$("gutter").scrollTop=$("editor").scrollTop});
+(async()=>{const bytes=Uint8Array.from(atob(WASM_B64),c=>c.charCodeAt(0));const inst=(await WebAssembly.instantiate(bytes,{})).instance;W=inst.exports;$("wasmDot").className="dot ok";$("wasmState").textContent="WASM VM online";$("wasmSize").textContent=fmtBytes(bytes.length)+" · 0 imports";$("editor").value=SAMPLE;lineNums();await runProgram();await runTests()})();
+</script></body></html>

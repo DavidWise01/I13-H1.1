@@ -1,0 +1,16 @@
+{
+  "javascript_syntax": "PASS",
+  "http_serving": "PASS",
+  "feature_checks": {
+    "pointerdown": true,
+    "right_orbit": true,
+    "middle_shift_pan": true,
+    "wheel_zoom": true,
+    "doubleclick_focus": true,
+    "persistent_overrides": true,
+    "selection_gizmo": true,
+    "subagent": true,
+    "subagent_actions": true
+  },
+  "all_feature_checks": true
+}
