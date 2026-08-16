@@ -218,7 +218,7 @@ mod tests {
 
     #[test]
     fn evidence_mode_rejects_vogel_goal() {
-        let start = fnv1a32(b"sonia-001");
+        let start = fnv1a32(b"sonia-003");
         let vogel_goal = fnv1a32(b"fractal-007");
         assert!(is_evidence(start));
         assert!(!is_evidence(vogel_goal));
