@@ -1,0 +1,25 @@
+NOTICE: Bare Frontend is intended for non-interactive usage of SBTCVM. 
+ please use curses or pygame frontends if you need input!
+Audio Backend: Dummy (no sound)
+NOTICE: PYGAME NOT FOUND. SOUND WILL NOT BE HEARD.
+SBTCVM Generation 2 9-trit VM, v2.1.0.alpha
+
+MEM0: Ram subsystem initializing...
+IO0 subsystem initalizing...
+CPU0 Designation: SBTCVM_G2x_9_r1
+
+MEM1: Ram subsystem initializing...
+IO1 subsystem initalizing...
+CPU1 Designation: SBTCVM_G2x_9_r1
+
+SBTCVM Bare frontend. SBTCVM Gen2-9 v2.1.0 - Running: hello_count
+ready.
+hello from SSTNPL on SBTCVM Gen2-9
+counting 1 to 5:
+
+ispaceispaceispaceispaceispace
+done.
+VMSYSHALT -1: soft stop.
+Approx. Speed: '6.539902730318814' KHz
+Target Speed : '6.5' Khz
+COCPU Was not running.

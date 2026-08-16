@@ -1,0 +1,100 @@
+
+>>>instructions shown in form they appear in CPU_G2x_9.py source code as. key: <<<
+>>>[instruction]: [tasm keyword]: [notes] : [tasm keyword parser class] : [yes/no] (whether instruction is implemented)
+
+>>>most instructions will use the standard 'instruct' keyword parser class. all it needs is a list of keywords, and an opcode.
+
+>>>ensure carryovers from mark2 have identical assembly keywords.<<<
+>>>keywords shown in square brackets are aliases. most of these are for compatibility (where reasonable)<<<
+>>>remember, adding compatibility aliases is quite simple for instructions that function the same!<<< 
+-9841: setreg1 : instruct : yes
+-9840: setreg2 : instruct : yes
+-9839: copy2to1 : instruct : yes
+-9838: copy1to2 : instruct : yes
+-9837: regswap : instruct : yes
+-9836: invert1 : instruct : yes
+-9835: invert2 : instruct : yes
+-9834: abs1: absolute register 1 : instruct : yes
+-9833: abs2: absolute register 2 : instruct : yes
+-9832: nabs1: negative absolute register 1 : instruct : yes
+-9831: nabs2: negative absolute register 2 : instruct : yes
+
+>>>ALU: note the 3 extra instructions per basic 2-operator math function to speed up common basic maths.<<<
+-9800: add: add, put result to 1 : instruct : yes
+-9799: add2: add, but put result to 2. : instruct : yes
+-9798: adddata1: add data to register 1 : instruct : yes
+-9797: adddata2: add data to register 2 : instruct : yes
+
+-9796: sub: subtract, put result to 1 : instruct : yes
+-9795: sub2: subtract, but put result to 2. : instruct : yes
+-9794: subdata1: subtract data from register 1 : instruct : yes
+-9793: subdata2: subtract data from register 2 : instruct : yes
+
+-9792: mul: multiply, put result to 1 : instruct : yes
+-9791: mul2: multiply, but put result to 2. : instruct : yes
+-9790: muldata1: multiply data with register 1 : instruct : yes
+-9789: muldata2: multiply data with register 2 : instruct : yes
+
+
+-9788: div: divide, put result to 1 : instruct : yes
+-9787: div2: divide, but put result to 2. : instruct : yes
+-9786: divdata1: divide register 1 by data : instruct : yes
+-9785: divdata2: divide register 2 by data : instruct : yes
+
+-9784: divmod: divide, put remainder in register 1, put quotient in register 2
+
+>>>GOTOs<<<
+-9600: goto [gotodata]: goto address in data word. : instruct : yes
+-9599: gotoif [gotodataif] goto address if reg1=reg2 : instruct : yes
+-9598: gotoifless: goto address <data> if reg1<reg2 : instruct : yes
+-9597: gotoifmore: [gotoifgreater]: goto address <data> if reg1>reg2 : instruct : yes
+-9596: gotoreg1: goto address <reg1> : instruct : yes
+-9595: gotoreg2: goto address <reg2> : instruct : yes
+
+>>>memory & IO<<<
+-9500: dataread1 [romread1]: read data word of address <data> into reg1 : instruct : yes
+-9499: dataread2 [romread2]: read data word of address <data> into reg2 : instruct : yes
+-9498: instread1           : read instruction word of address <data> into reg1 : instruct : yes
+-9497: instread2           : read instruction word of address <data> into reg2 : instruct : yes
+
+-9496: datawrite1 [setdata]: write reg1 to data word of address : instruct : yes
+-9495: datawrite2          : write reg2 to data word of address : instruct : yes
+-9494: instwrite1 [setinst]: write reg1 to instruction word of address : instruct : yes
+-9493: instwrite2          : write reg2 to instruction word of address <data> : instruct : yes
+
+-9492: iowrite1 [IOwrite1] : write reg1 to IO address <data> : instruct : yes
+-9491: iowrite2 [IOwrite2] : write reg2 to IO address <data> : instruct : yes
+-9490: ioread1 [IOread1]   : read io address <data> into reg1 : instruct : yes
+-9489: ioread2 [IOread2]   : read io address <data> into reg2 : instruct : yes
+
+#fast output ports (FOPs)
+
+-9460: fopwri1   : write data to iopointer addr        : instruct : yes
+-9459: fopset1   : set iopointer addr                  : instruct : yes
+-9458: fopwri2   : write data to iopointer addr        : instruct : yes
+-9457: fopset2   : set iopointer addr                  : instruct : yes
+-9456: fopwri3   : write data to iopointer addr        : instruct : yes
+-9455: fopset3   : set iopointer addr                  : instruct : yes
+
+
+#dual stack multiplexed instruction banks.
+-9100: stack1: multiplexer bank for stack #1 see stack.txt : statinst : yes
+-9101: stack2: multiplexer bank for stack #2 see stack.txt : statinst : yes
+-9102: stack3: multiplexer bank for stack #3 see stack.txt : statinst : yes
+-9103: stack4: multiplexer bank for stack #4 see stack.txt : statinst : yes
+-9104: stack5: multiplexer bank for stack #5 see stack.txt : statinst : yes
+-9105: stack6: multiplexer bank for stack #6 see stack.txt : statinst : yes
+
+-9001: reset: restart CPU.  : instruct : no
+-9000: stop: shutdown VM : instruct : yes
+
+#exceptions
+
+100: excatch: Catch Exception on previous operation.                      : instruct : yes
+101: expass: do not raise ANY catchable exception on previous operation.  : instruct : yes
+102: exreturn: return from an exception routine                           : instruct : yes
+103: exclear: Continue past a jump to an exception routine                : instruct : yes
+104: exceptcode: Get exception code. into reg1                            : instruct : yes
+
+#other
+0: null: blank instruction. does nothing. can be used for adjusting loop speed. : instruct : yes
