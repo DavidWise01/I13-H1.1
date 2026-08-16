@@ -45,15 +45,20 @@ jobs:
         run: node --check docs/stages/stage4-toolchain.js
       - name: Check Stage 7 JavaScript syntax
         run: node --check docs/stages/stage7-jit-shell.js
+      - name: Check Stage 8 JavaScript syntax
+        run: node --check docs/stages/stage8-gfx.js
       - name: Check Stage 6 JavaScript syntax
         run: node --check docs/stages/stage6-ology-live.js
+
       - name: Check Pages wiring
         run: |
           grep -q 'src="exploded-view.js"' docs/index.html
           grep -q 'src="stages/ivm-reader.js"' docs/index.html
           grep -q 'src="stages/stage4-toolchain.js"' docs/index.html
           grep -q 'src="stages/stage7-jit-shell.js"' docs/index.html
+          grep -q 'src="stages/stage8-gfx.js"' docs/index.html
           grep -q 'src="stages/stage6-ology-live.js"' docs/index.html
+
       - name: Check Stage 5 bounded layout contract
         run: |
           grep -q "version: '0.2.0'" docs/exploded-view.js
@@ -64,6 +69,7 @@ jobs:
           grep -q 'expandMachine' docs/exploded-view.js
           grep -q 'collapseMachine' docs/exploded-view.js
           grep -q 'toggleMachine' docs/exploded-view.js
+
       - name: Check Stage 7 JIT mount contract
         run: |
           grep -q "const MODULE_ID = 'jit'" docs/stages/stage7-jit-shell.js
@@ -76,6 +82,7 @@ jobs:
           grep -q "label: 'CACHE'" docs/stages/stage7-jit-shell.js
           grep -q "label: 'CAP ON'" docs/stages/stage7-jit-shell.js
           grep -q '7/7 PASS recorded' docs/stages/stage7-jit-shell.js
+
       - name: Execute Stage 7 JIT reference self-test
         run: |
           node <<'NODE'
@@ -86,10 +93,7 @@ jobs:
           const sandbox = {
             window: {},
             document: { readyState: 'loading', addEventListener() {} },
-            console,
-            Map,
-            Object,
-            Math
+            console, Map, Object, Math
           };
           vm.createContext(sandbox);
           vm.runInContext(source, sandbox);
@@ -102,6 +106,53 @@ jobs:
           assert.strictEqual(checks['address deterministic'], true);
           assert.strictEqual(checks['capability denial vetoes'], true);
           NODE
+
+      - name: Check Stage 8 GFX mount contract
+        run: |
+          grep -q "const MODULE_ID = 'gfx'" docs/stages/stage8-gfx.js
+          grep -q "const RECORD_BYTES = 32" docs/stages/stage8-gfx.js
+          grep -q "title: 'GFX TRUNK v0.3 -> v0.4.1 · EXPLODED'" docs/stages/stage8-gfx.js
+          grep -q "family: 'gpu'" docs/stages/stage8-gfx.js
+          grep -q 'expanded: false' docs/stages/stage8-gfx.js
+          grep -q 'machineExpanded: false' docs/stages/stage8-gfx.js
+          grep -q "label: 'RESET'" docs/stages/stage8-gfx.js
+          grep -q "label: 'STEP CMD'" docs/stages/stage8-gfx.js
+          grep -q "label: 'FRAME'" docs/stages/stage8-gfx.js
+          grep -q "label: 'SELECT'" docs/stages/stage8-gfx.js
+          grep -q "label: 'REPORT'" docs/stages/stage8-gfx.js
+          grep -q 'stage8-gfx-output-clip' docs/stages/stage8-gfx.js
+          grep -q '10188' docs/stages/stage8-gfx.js
+          grep -q "nativeTests: '8/8 PASS'" docs/stages/stage8-gfx.js
+
+      - name: Execute Stage 8 GFX reference self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage8-gfx.js', 'utf8');
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {} },
+            console, Map, Object, Math, JSON, Error
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const result = sandbox.window.I13GfxStage.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          const checks = Object.fromEntries(result.checks.map(c => [c.name, c.pass]));
+          assert.strictEqual(checks['canonical native builtin set'], true);
+          assert.strictEqual(checks['reference command count is 7'], true);
+          assert.strictEqual(checks['record width is 32 bytes'], true);
+          assert.strictEqual(checks['cube report record preserved'], true);
+          assert.strictEqual(checks['sphere report record preserved'], true);
+          assert.strictEqual(checks['rotation report record preserved'], true);
+          assert.strictEqual(checks['reference frame creates two entities'], true);
+          assert.strictEqual(checks['rotation reaches cube state'], true);
+          assert.strictEqual(checks['backend order preserved'], true);
+          assert.strictEqual(checks['reference facts preserved'], true);
+          NODE
+
       - name: Check Stage 6 live observer contract
         run: |
           grep -q "version: '0.1.0'" docs/stages/stage6-ology-live.js
@@ -113,6 +164,7 @@ jobs:
           grep -q 'jumpToLab' docs/stages/stage6-ology-live.js
           grep -q 'window.I13OlogyLive' docs/stages/stage6-ology-live.js
           ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage6-ology-live.js
+
       - name: Check canonical IVM opcode set
         run: |
           node <<'NODE'
@@ -126,6 +178,7 @@ jobs:
           assert.strictEqual(ops.length, 15);
           assert.strictEqual(ops.includes('br'), false);
           NODE
+
       - name: Check Stage 3 mount contract
         run: |
           grep -q "const MODULE_ID = 'reader'" docs/stages/ivm-reader.js
@@ -134,6 +187,7 @@ jobs:
           grep -q "label: 'STEP'" docs/stages/ivm-reader.js
           grep -q "label: 'RUN'" docs/stages/ivm-reader.js
           grep -q "label: 'AUTO'" docs/stages/ivm-reader.js
+
       - name: Check Stage 4 mount contract
         run: |
           node <<'NODE'
@@ -154,14 +208,14 @@ jobs:
           assert(source.includes("label: 'RECEIPT'"));
           assert(source.includes("label: 'CHECK'"));
           NODE
-      - name: Keep deeper stages unmounted
+
+      - name: Keep later deep stages unmounted
         run: |
-          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 4
-          ! grep -Fq "I13Exploded.mount('gfx'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage7-jit-shell.js
-          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage7-jit-shell.js
+          test "$(grep -o 'src="stages/' docs/index.html | wc -l)" -eq 5
+          ! grep -Fq "I13Exploded.mount('child'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('pulse'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('vh1'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('vh2'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('freeze'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage8-gfx.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage8-gfx.js
