@@ -218,7 +218,12 @@ def burrow(index: dict, record_id: str, depth: int) -> dict:
 
 
 def load_stage14_index(input_path: Path) -> dict:
-    from scripts.corpus_stage14 import build_index, load_jsonl
+    try:
+        from scripts.corpus_stage14 import build_index, load_jsonl
+    except ModuleNotFoundError:
+        # Direct execution (`python scripts/corpus_mesh_stage14_1.py`) puts the
+        # scripts directory rather than the repository root on sys.path.
+        from corpus_stage14 import build_index, load_jsonl
 
     records, errors = load_jsonl(input_path)
     if errors:
