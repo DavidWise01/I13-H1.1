@@ -3,20 +3,169 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>I13 · WASM MAIN SUITE</title>
-<style>
-:root{color-scheme:light;background:#f5f8fb}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f8fb}
-#i13-suite-runtime{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#f5f8fb}
-noscript{display:block;padding:16px;font:14px/1.4 monospace}
-</style>
+<meta name="theme-color" content="#05070b">
+<meta name="description" content="Icarium 13 — a 13-word language, bounded runtime, Cortex/OLOGY stack, corpus, and curator.">
+<title>I13 · Icarium 13</title>
+<link rel="stylesheet" href="landing.css">
 </head>
 <body>
-<iframe id="i13-suite-runtime" src="runtime.html" title="I13 H1.1 runtime" loading="eager"></iframe>
-<noscript><a href="runtime.html">Open the I13 runtime</a></noscript>
-<!-- Frozen wrapper reference marker: data="i13.svg" now lives operationally inside runtime.html. -->
-<!-- Runtime compatibility contract. These execute inside runtime.html, not twice here.
+<div class="noise" aria-hidden="true"></div>
+
+<header class="site-nav">
+  <a class="brand" href="#origin" aria-label="I13 origin">
+    <span class="brand-i">I</span>
+    <span class="brand-copy"><strong>I13</strong><small>ICARIUM</small></span>
+  </a>
+  <nav aria-label="Site sections">
+    <a href="#history">HISTORY</a>
+    <a href="#epistemology">EPISTEMOLOGY</a>
+    <a href="#entrance">ENTRANCE</a>
+    <a class="nav-live" href="workbench.html">LIVE STACK ↗</a>
+  </nav>
+</header>
+
+<main>
+<section id="origin" class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-copy reveal">
+    <p class="eyebrow">H1.1 · ARTIFACT / LANGUAGE / MACHINE</p>
+    <h1><span class="hero-i-inline">I</span>carium <span>13</span></h1>
+    <p class="hero-deck">
+      One declaration. Twelve semantic words. A bounded machine that can name,
+      bind, decide, transform, witness, move, execute, remember a receipt,
+      and curate what enters its corpus.
+    </p>
+    <div class="hero-actions">
+      <a class="button primary" href="#entrance">ENTER THE STACK</a>
+      <a class="button ghost" href="#epistemology">HOW DOES IT KNOW?</a>
+    </div>
+    <div class="hero-law">
+      <span>I declares the referent</span>
+      <span>12 words carry semantics</span>
+      <span>15 opcodes execute the machine</span>
+    </div>
+  </div>
+
+  <div class="word-system reveal" data-word-system>
+    <div class="orbit orbit-a" aria-hidden="true"></div>
+    <div class="orbit orbit-b" aria-hidden="true"></div>
+    <div class="orbit orbit-c" aria-hidden="true"></div>
+    <div class="i-core">
+      <span class="i-glow" aria-hidden="true"></span>
+      <span class="i-letter">I</span>
+      <small>DECLARE</small>
+    </div>
+
+    <button class="word" style="--n:0" data-word="Name" data-plane="DESIGNATE" data-note="name a referent">Name</button>
+    <button class="word" style="--n:1" data-word="Constant" data-plane="DESIGNATE" data-note="hold a literal value">Constant</button>
+    <button class="word" style="--n:2" data-word="Attribute" data-plane="DESIGNATE" data-note="address an attribute">Attribute</button>
+
+    <button class="word" style="--n:3" data-word="Assign" data-plane="BIND" data-note="bind a value">Assign</button>
+    <button class="word" style="--n:4" data-word="Arg" data-plane="BIND" data-note="bind an argument">Arg</button>
+    <button class="word" style="--n:5" data-word="Return" data-plane="BIND" data-note="return a result">Return</button>
+
+    <button class="word" style="--n:6" data-word="Expr" data-plane="DECIDE" data-note="evaluate an expression">Expr</button>
+    <button class="word" style="--n:7" data-word="If" data-plane="DECIDE" data-note="gate a branch">If</button>
+    <button class="word" style="--n:8" data-word="Compare" data-plane="DECIDE" data-note="compare state">Compare</button>
+
+    <button class="word" style="--n:9" data-word="Call" data-plane="TRANSFORM" data-note="invoke a transformation">Call</button>
+    <button class="word" style="--n:10" data-word="FunctionDef" data-plane="TRANSFORM" data-note="define a transformation">FunctionDef</button>
+    <button class="word" style="--n:11" data-word="BinOp" data-plane="TRANSFORM" data-note="apply a binary operation">BinOp</button>
+
+    <div class="word-readout" aria-live="polite">
+      <strong data-word-name>I + 12</strong>
+      <span data-word-plane>FOUR PLANES</span>
+      <small data-word-note>hover a word to inspect its role</small>
+    </div>
+  </div>
+</section>
+
+<section class="planes reveal" aria-label="I13 semantic planes">
+  <article><span>01</span><h2>DESIGNATE</h2><p>Name · Constant · Attribute</p></article>
+  <article><span>02</span><h2>BIND</h2><p>Assign · Arg · Return</p></article>
+  <article><span>03</span><h2>DECIDE</h2><p>Expr · If · Compare</p></article>
+  <article><span>04</span><h2>TRANSFORM</h2><p>Call · FunctionDef · BinOp</p></article>
+</section>
+
+<section id="history" class="section history">
+  <header class="section-head reveal">
+    <p class="eyebrow">THE STACK DID NOT ARRIVE ALL AT ONCE</p>
+    <h2>History of the stack</h2>
+    <p>
+      The live H1.1 machine is a sequence of gates layered over a frozen H1.0 baseline.
+      The point of the history is not nostalgia; it shows which ideas became executable
+      and which remain hypotheses or reference material.
+    </p>
+  </header>
+
+  <div class="timeline">
+    <article class="timeline-item reveal"><div class="time-mark">0</div><div><small>LANGUAGE CORE</small><h3>I + twelve semantic words</h3><p>The canonical surface settles on 13 words and a 15-opcode VM. <code>Block</code> remains a container; <code>I</code> remains the declaration keyword.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">H1.0</div><div><small>FREEZE</small><h3>A reference line is drawn</h3><p>H1.0, VH1 and VH2 reference artifacts stop being silently rewritten. New semantics move forward into H1.1.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">3–10</div><div><small>TOOLCHAIN → RUNTIME</small><h3>Read, normalize, translate, run</h3><p>Reader, normalizer, Python ingress, JIT, graphics, Cortex child and Pulse experiments become visible machine stages.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">OLOGY</div><div><small>ADDRESS + LOCAL DEPTH</small><h3>A surface becomes a place</h3><p>A 32-bit root is viewed as <code>&lt;x16,y16&gt;</code>; every root may open inward into local voxel depth <code>z</code>, with Cortex Verifier gating emergence.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">14</div><div><small>CORPUS</small><h3>Knowledge becomes navigable</h3><p>Admission, provenance, OLOGY roots, semantic mesh, Wasm walking, Queen movement, arrival execution and witnessed receipts become one bounded feedback loop.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">14.9.1</div><div><small>CURATOR</small><h3>The front door gets a worker</h3><p>The curator receives source, context and candidate plus bounded skill, persona lenses and occupation. It may propose; it still cannot commit.</p></div></article>
+    <article class="timeline-item reveal"><div class="time-mark">15</div><div><small>WORKBENCH</small><h3>The machine gets a hallway</h3><p>One runtime remains underneath. The user enters through a suite list instead of opening every subsystem at the same time.</p></div></article>
+  </div>
+</section>
+
+<section id="epistemology" class="section epistemology">
+  <header class="section-head reveal">
+    <p class="eyebrow">YES — EPISTEMOLOGY IS A WORD</p>
+    <h2>How I13 decides what it knows</h2>
+    <p>Here “epistemology” means the machine's operational theory of knowledge: what entered, what context existed, what was proposed, what was witnessed, and what a verifier actually allowed to survive.</p>
+  </header>
+  <div class="knowledge-chain reveal" aria-label="I13 knowledge chain"><span>SOURCE</span><b>→</b><span>CONTEXT</span><b>→</b><span>CANDIDATE</span><b>→</b><span>WITNESS</span><b>→</b><span>CV</span><b>→</b><span>RECEIPT</span></div>
+  <div class="epistemic-grid">
+    <article class="glass-card reveal"><small>PROVENANCE</small><h3>Where did it come from?</h3><p>A source can enter the inlet without automatically becoming evidence. Origin and classification remain visible parts of the record.</p></article>
+    <article class="glass-card reveal"><small>CONTEXT</small><h3>What was already known?</h3><p>The current corpus root is part of the curator witness. A candidate is judged against an existing context rather than in a vacuum.</p></article>
+    <article class="glass-card reveal"><small>WITNESS</small><h3>What exactly returned?</h3><p>Bounded child state dies. A deterministic receipt may survive. If the witnessed fields change, the verifier can reject the return.</p></article>
+    <article class="glass-card reveal"><small>AUTHORITY</small><h3>Who is allowed to make it real?</h3><p>Skill, persona and occupation describe competence, lens and job. None of them are commit authority.</p></article>
+  </div>
+  <div class="laws reveal"><p>ADDRESS <b>≠</b> AUTHORITY</p><p>ARRIVAL <b>≠</b> EXECUTION</p><p>EXECUTION <b>≠</b> COMMIT</p><p>PERSONA <b>≠</b> AUTHORITY</p><p>CANDIDATE <b>≠</b> CORPUS RECORD</p></div>
+</section>
+
+<section class="section curator-definition">
+  <header class="section-head reveal"><p class="eyebrow">THE CLOSED CURATOR OBJECT</p><h2>Material + context + proposal + competence + lenses + job</h2></header>
+  <pre class="syntax reveal"><code>[c[v[
+    corpus[
+        curator[
+            [
+                (.),
+                (.),
+                (.),
+                {skill},
+                {personas},
+                {occupation}
+            ]
+        ]
+    ]
+]]cv]</code></pre>
+  <div class="curator-six reveal"><span><b>(.)</b>SOURCE</span><span><b>(.)</b>CONTEXT</span><span><b>(.)</b>CANDIDATE</span><span><b>{ }</b>SKILL</span><span><b>{ }</b>PERSONAS</span><span><b>{ }</b>OCCUPATION</span></div>
+  <p class="curator-law reveal">Effective capability = <strong>skill ∩ occupation</strong>. Persona lenses are bound into the witness but contribute <strong>zero authority</strong>. Outer Cortex/CV still decides whether the proposal survives.</p>
+</section>
+
+<section id="entrance" class="section entrance">
+  <header class="section-head reveal"><p class="eyebrow">ONE MACHINE · MANY DOORS</p><h2>Entrance to the live stack</h2><p>These are not separate layer websites. Every door opens the same live H1.1 workbench with a different suite selected.</p></header>
+  <div class="doors">
+    <a class="door reveal" href="workbench.html" data-suite="READER"><span class="door-number">01</span><small>LANGUAGE</small><h3>I13 Reader / VM</h3><p>Begin at the 13-word surface and canonical opcode machine.</p><b>ENTER →</b></a>
+    <a class="door reveal" href="workbench.html" data-suite="WASM2"><span class="door-number">02</span><small>TRANSLATION</small><h3>Wasm VM</h3><p>Cross from language structure into the browser-native execution core.</p><b>ENTER →</b></a>
+    <a class="door reveal" href="workbench.html" data-suite="GFX"><span class="door-number">03</span><small>OUTPUT</small><h3>GFX</h3><p>Inspect the graphics/runtime surface without opening the rest of the cockpit.</p><b>ENTER →</b></a>
+    <a class="door reveal" href="workbench.html" data-suite="OLOGY"><span class="door-number">04</span><small>PLACE</small><h3>Cortex / OLOGY / Voxel</h3><p>Surface address, Queen motion, local depth and verifier-gated emergence.</p><b>ENTER →</b></a>
+    <a class="door reveal" href="workbench.html" data-suite="CORPUS" data-view="NAV"><span class="door-number">05</span><small>KNOWLEDGE</small><h3>Corpus Navigator</h3><p>Move through the compiled semantic mesh while keeping graph hops distinct from geometric adjacency.</p><b>ENTER →</b></a>
+    <a class="door reveal" href="workbench.html" data-suite="CORPUS" data-view="EXECUTE"><span class="door-number">06</span><small>ACTION</small><h3>Arrival Execution</h3><p>Move, arrive, execute, return, witness and produce a receipt.</p><b>ENTER →</b></a>
+    <a class="door curator-door reveal" href="workbench.html" data-suite="CORPUS" data-view="CURATOR"><span class="door-number">07</span><small>CURATION</small><h3>Corpus Curator</h3><p>Enter material through the bounded curator with skill, personas and occupation.</p><b>ENTER CURATOR →</b></a>
+  </div>
+  <div class="raw-entrance reveal"><a href="workbench.html" class="button primary">OPEN WORKBENCH</a><a href="runtime.html" class="button ghost">RAW MACHINE / DIAGNOSTIC</a></div>
+</section>
+</main>
+
+<footer><div><span class="brand-i">I</span>13 · H1.1</div><p>One live runtime. Bounded layers. Receipts over hidden state.</p><a href="#origin">RETURN TO I ↑</a></footer>
+
+<!-- Frozen reference/runtime compatibility markers.
+     The actual machine is docs/runtime.html; these are non-executing strings
+     retained for the existing parity and Pages contracts.
+     data="i13.svg"
 <script src="exploded-view.js"></script>
 <script src="stages/ivm-reader.js"></script>
 <script src="stages/stage4-toolchain.js"></script>
@@ -26,6 +175,7 @@ noscript{display:block;padding:16px;font:14px/1.4 monospace}
 <script src="stages/stage10-pulse.js"></script>
 <script src="stages/stage6-ology-live.js"></script>
 -->
-<script src='stages/stage15-wasm-main-suite.js'></script>
+
+<script src="landing.js"></script>
 </body>
 </html>

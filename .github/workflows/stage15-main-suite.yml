@@ -1,4 +1,4 @@
-name: Stage 15 WASM main suite
+name: Stage 15 Pages hallway + WASM suite
 
 on:
   push:
@@ -6,15 +6,23 @@ on:
     paths:
       - 'docs/stages/stage15-wasm-main-suite.js'
       - 'docs/index.html'
+      - 'docs/landing.css'
+      - 'docs/landing.js'
+      - 'docs/workbench.html'
       - 'docs/runtime.html'
       - 'spec/STAGE15-WASM-MAIN-SUITE.md'
+      - 'spec/STAGE15.1-PAGES-HALLWAY.md'
       - '.github/workflows/stage15-main-suite.yml'
   pull_request:
     paths:
       - 'docs/stages/stage15-wasm-main-suite.js'
       - 'docs/index.html'
+      - 'docs/landing.css'
+      - 'docs/landing.js'
+      - 'docs/workbench.html'
       - 'docs/runtime.html'
       - 'spec/STAGE15-WASM-MAIN-SUITE.md'
+      - 'spec/STAGE15.1-PAGES-HALLWAY.md'
       - '.github/workflows/stage15-main-suite.yml'
 
 permissions:
@@ -25,41 +33,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-
-      - name: Check Stage 15 JavaScript syntax
-        run: node --check docs/stages/stage15-wasm-main-suite.js
-
-      - name: Execute Stage 15 self-test
+      - name: Check landing and Stage 15 JavaScript syntax
+        run: |
+          node --check docs/landing.js
+          node --check docs/stages/stage15-wasm-main-suite.js
+      - name: Execute Stage 15 suite self-test
         run: |
           node <<'NODE'
           const fs=require('fs'),vm=require('vm'),assert=require('assert');
           const source=fs.readFileSync('docs/stages/stage15-wasm-main-suite.js','utf8');
-          const sandbox={
-            window:{localStorage:{getItem(){return null},setItem(){}}},
-            document:{readyState:'loading',addEventListener(){},getElementById(){return null}},
-            console,JSON,Object,Map,Set,Math,Error,
-            setTimeout(){return 0},clearTimeout(){},setInterval(){return 0},clearInterval(){}
-          };
-          vm.createContext(sandbox);
-          vm.runInContext(source,sandbox);
-          const stage=sandbox.window.I13MainSuite;
-          assert(stage,'Stage 15 export missing');
-          assert.strictEqual(stage.version,'15.0.0');
-          const result=stage.suiteSelfTest();
-          assert.strictEqual(result.pass,true,JSON.stringify(result));
-          assert.strictEqual(result.checks.length,10);
-          console.log(`STAGE 15 PASS · checks=${result.checks.length}`);
+          const sandbox={window:{localStorage:{getItem(){return null},setItem(){}}},document:{readyState:'loading',addEventListener(){},getElementById(){return null}},console,JSON,Object,Map,Set,Math,Error,setTimeout(){return 0},clearTimeout(){},setInterval(){return 0},clearInterval(){}};
+          vm.createContext(sandbox);vm.runInContext(source,sandbox);
+          const stage=sandbox.window.I13MainSuite;assert(stage,'Stage 15 export missing');assert.strictEqual(stage.version,'15.0.0');
+          const result=stage.suiteSelfTest();assert.strictEqual(result.pass,true,JSON.stringify(result));assert.strictEqual(result.checks.length,10);
+          console.log(`STAGE 15 SUITE PASS · checks=${result.checks.length}`);
           NODE
-
-      - name: Check Pages mount
+      - name: Check Stage 15.1 landing contract
         run: |
+          node <<'NODE'
+          const fs=require('fs'),assert=require('assert');
+          const page=fs.readFileSync('docs/index.html','utf8');
+          const words=['Name','Constant','Attribute','Assign','Arg','Return','Expr','If','Compare','Call','FunctionDef','BinOp'];
+          assert(page.includes('class="i-letter">I<'),'I core missing');
+          for(const word of words)assert(page.includes(`data-word="${word}"`),`missing ${word}`);
+          assert(!page.includes('data-word="Block"'),'Block must not be a 14th canonical word');
+          for(const id of ['origin','history','epistemology','entrance'])assert(page.includes(`id="${id}"`),`missing #${id}`);
+          assert(page.includes('landing.css'));assert(page.includes('landing.js'));assert(page.includes('workbench.html'));
+          console.log('STAGE 15.1 LANDING PASS · I + 12 words · history · epistemology · entrance');
+          NODE
+      - name: Check workbench and raw runtime
+        run: |
+          test -f docs/workbench.html
           test -f docs/runtime.html
-          grep -q 'id="i13-suite-runtime"' docs/index.html
-          grep -q 'stage15-wasm-main-suite.js' docs/index.html
+          grep -q 'id="i13-suite-runtime"' docs/workbench.html
+          grep -q 'stage15-wasm-main-suite.js' docs/workbench.html
           grep -q 'src="exploded-view.js"' docs/runtime.html
-          grep -q 'suite list' spec/STAGE15-WASM-MAIN-SUITE.md
+          grep -q 'data="i13.svg"' docs/runtime.html
+          grep -q 'ONE STACK -> MANY ENTRANCES' spec/STAGE15.1-PAGES-HALLWAY.md
           grep -q 'CORPUS / CURATOR' spec/STAGE15-WASM-MAIN-SUITE.md
-
       - name: Check authority isolation
         run: |
           ! grep -q '\.step(' docs/stages/stage15-wasm-main-suite.js
@@ -70,3 +81,5 @@ jobs:
           ! grep -q 'i13_curator_propose' docs/stages/stage15-wasm-main-suite.js
           ! grep -q 'i13_curator_cv' docs/stages/stage15-wasm-main-suite.js
           ! grep -q 'i13_receipt_next' docs/stages/stage15-wasm-main-suite.js
+          ! grep -q 'I13CorpusNavigatorStage' docs/landing.js
+          ! grep -q 'I13CorpusCuratorStage' docs/landing.js

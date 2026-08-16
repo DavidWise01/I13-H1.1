@@ -4,23 +4,96 @@ Last parity pass: 2026-08-16.
 
 ## LIVE H1.1
 
-- I-13 canonical surface documented.
+- I-13 canonical surface: `I` + twelve semantic words.
+- 15 canonical VM opcodes; no `br`.
 - Rust `wasm32-unknown-unknown` core.
 - OLOGY `u32 = x:16 | y:16` reversible address view.
 - 2D Queen movement on user axes: +x up, -x down, +y right, -y left.
 - every OLOGY vector may root a nested local voxel.
 - voxel depth is local state and does not consume OLOGY surface bits.
-- `[c[v[ (), {}, () ]]cv]` current Cortex -> voxel -> Cortex Verifier lifecycle.
+- `[c[v[ (), {}, () ]]cv]` Cortex -> voxel -> Cortex Verifier lifecycle.
 - CV authority, same-root and local-depth gates.
 - generic natural width helper plus frozen VH1 ternary width helper.
 - odd-width quorum law `N=2k+1 -> k | k+1`.
 - bounded ephemeral child lifecycle with receipt-only persistence.
 - Stage 14: 54-record technical corpus admission gate with deterministic 32-bit OLOGY roots.
 - Stage 14.1: traversable semantic corpus mesh, 54 nodes / 187 undirected edges / 9 World-IV overlay steps.
-- Stage 14.2: compile-time CSR corpus mesh baked into Rust/Wasm; direct neighbor, bounded path, evidence and verified-burrow ABI.
-- GitHub Pages source intentionally restricted to Icarium's 13 words.
+- Stage 14.2: compile-time CSR corpus mesh baked into Rust/Wasm.
+- Stage 14.3: browser Cortex navigator.
+- Stage 14.4: OLOGY x16/y16 Queen spatial viewport.
+- Stage 14.5: Wasm-reported Queen local neighborhood / mesh.
+- Stage 14.6: witnessed local intent / edge request.
+- Stage 14.7: bounded arrival execution + receipt.
+- Stage 14.8: receipt context -> read-only next-intent suggestion.
+- Stage 14.9.1: corpus inlet + bounded curator with `{skill}`, `{personas}`, `{occupation}`.
+- Stage 15.0: one-suite-at-a-time Wasm workbench.
+- Stage 15.1: Pages Origin Hallway: landing -> history -> epistemology -> entrance -> one live workbench.
 
-## STAGE 14.2 CONTRACT
+## CURATOR 14.9.1
+
+Canonical scaffold:
+
+```text
+[c[v[
+    corpus[
+        curator[
+            [
+                (.),
+                (.),
+                (.),
+                {skill},
+                {personas},
+                {occupation}
+            ]
+        ]
+    ]
+]]cv]
+```
+
+Working interpretation:
+
+```text
+(.) source
+(.) context
+(.) candidate
+
+{skill}      = bounded competence
+{personas}   = bounded interpretive lenses
+{occupation} = bounded session job
+```
+
+Authority law:
+
+```text
+effective capability = skill ∩ occupation
+
+PERSONA != AUTHORITY
+SKILL != AUTHORITY
+OCCUPATION != AUTHORITY
+CURATOR COMMIT AUTHORITY = 0
+```
+
+Protocol v2 binds skill, personas, occupation, effective mask, proposal status and witness into the outer curator CV. Legacy v1 proposal/CV exports remain for ABI compatibility.
+
+## PAGES 15.1
+
+```text
+index.html
+  ORIGIN / I + 12 words
+  -> HISTORY
+  -> EPISTEMOLOGY
+  -> ENTRANCE
+       -> workbench.html
+            -> Stage 15 suite selector
+                 -> runtime.html
+                      -> one live H1.1 machine
+```
+
+Layers are **not** separate websites. Doors select a view into the same runtime.
+
+The raw `runtime.html` remains available for diagnostics.
+
+## STAGE 14 CORPUS CONTRACT
 
 ```text
 corpus JSONL
@@ -36,10 +109,11 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 
 ## FROZEN / REFERENCE
 
-- I-13 teaching brief rev 2 is authoritative for the historical language surface where copied into this repository.
+- I-13 teaching brief rev 2 remains authoritative where copied into this repository.
+- H1.0 / VH1 / VH2 reference artifacts remain frozen.
 - VH1 freezes base 3, depth 0..4, width 1/3/9/27/81 and factored Hermitian linear algebra.
-- VH2 is a numerical hypothesis test: ternary controller above a `[[5,1,3]]` protected logical qubit; it rejects a ternary quantum basis inside the same rank-2 code space.
-- GFX v0.4/v0.4.1 historical results remain reference artifacts; target-browser GPU rendering was not verified in the original container.
+- VH2 remains a numerical hypothesis test: ternary controller above a `[[5,1,3]]` protected logical qubit.
+- GFX v0.4/v0.4.1 historical results remain reference artifacts.
 - historical `c[subagent()]` is not current H1.1 syntax.
 
 ## OPEN / NOT CLAIMED
@@ -48,14 +122,14 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 - no fault-tolerant hardware claim.
 - no claim that IPv4 itself is an OLOGY coordinate system.
 - no claim that OLOGY corpus adjacency is physical network adjacency.
-- no claim that every 2-erasure partition of the five-qubit code has been independently reconstruction-tested in this repository yet.
 - no lexical-closure implementation yet.
-- Pulse remains experimental; `...` is a proposed hard pulse boundary, not a frozen I-13 token.
-- exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled; the Sonia technical branch and curated overlay are independently correlated.
+- Pulse remains experimental; `...` is proposed notation, not frozen I-13 syntax.
+- exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled.
+- curator proposal is not corpus commit; a future import/commit gate remains separate.
 
 ## BUILD GATE
 
-Required green checks:
+Required green checks include:
 
 ```text
 cargo test --all-targets
@@ -63,4 +137,7 @@ cargo build --release --target wasm32-unknown-unknown
 python scripts/verify_reference.py
 python -m unittest scripts.test_corpus_stage14
 python -m unittest scripts.test_corpus_mesh_stage14_1
+Stage 14.9.1 curator v2 Wasm contract
+Stage 15.1 landing/workbench contract
+GitHub Pages build
 ```
