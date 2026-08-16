@@ -6,12 +6,14 @@ on:
     paths:
       - 'docs/stages/stage15-wasm-main-suite.js'
       - 'docs/index.html'
+      - 'docs/runtime.html'
       - 'spec/STAGE15-WASM-MAIN-SUITE.md'
       - '.github/workflows/stage15-main-suite.yml'
   pull_request:
     paths:
       - 'docs/stages/stage15-wasm-main-suite.js'
       - 'docs/index.html'
+      - 'docs/runtime.html'
       - 'spec/STAGE15-WASM-MAIN-SUITE.md'
       - '.github/workflows/stage15-main-suite.yml'
 
@@ -51,7 +53,10 @@ jobs:
 
       - name: Check Pages mount
         run: |
-          grep -q 'src="stages/stage15-wasm-main-suite.js"' docs/index.html
+          test -f docs/runtime.html
+          grep -q 'id="i13-suite-runtime"' docs/index.html
+          grep -q 'stage15-wasm-main-suite.js' docs/index.html
+          grep -q 'src="exploded-view.js"' docs/runtime.html
           grep -q 'suite list' spec/STAGE15-WASM-MAIN-SUITE.md
           grep -q 'CORPUS / CURATOR' spec/STAGE15-WASM-MAIN-SUITE.md
 
