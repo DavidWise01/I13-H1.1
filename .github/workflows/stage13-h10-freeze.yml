@@ -1,0 +1,104 @@
+name: Stage 13 H1.0 Freeze
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/stages/stage13-h10-freeze.js'
+      - 'docs/STAGE13-H10-FREEZE.md'
+      - 'docs/index.html'
+      - 'spec/H1.0-BOUNDARY.md'
+      - '.github/workflows/stage13-h10-freeze.yml'
+  pull_request:
+    paths:
+      - 'docs/stages/stage13-h10-freeze.js'
+      - 'docs/STAGE13-H10-FREEZE.md'
+      - 'docs/index.html'
+      - 'spec/H1.0-BOUNDARY.md'
+      - '.github/workflows/stage13-h10-freeze.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Stage 13 JavaScript syntax
+        run: node --check docs/stages/stage13-h10-freeze.js
+
+      - name: Check Stage 13 mount contract
+        run: |
+          grep -q "const MODULE_ID = 'freeze'" docs/stages/stage13-h10-freeze.js
+          grep -q "const FREEZE_ID = 'H1.0'" docs/stages/stage13-h10-freeze.js
+          grep -q "title: 'H1.0 FREEZE · IMMUTABLE REFERENCE BOUNDARY · EXPLODED'" docs/stages/stage13-h10-freeze.js
+          grep -q "family: 'freeze'" docs/stages/stage13-h10-freeze.js
+          grep -q 'expanded: false' docs/stages/stage13-h10-freeze.js
+          grep -q 'machineExpanded: false' docs/stages/stage13-h10-freeze.js
+          grep -q "label: 'RESET'" docs/stages/stage13-h10-freeze.js
+          grep -q "label: 'ITEM +'" docs/stages/stage13-h10-freeze.js
+          grep -q "label: 'VERIFY'" docs/stages/stage13-h10-freeze.js
+          grep -q "label: 'BOUNDARY'" docs/stages/stage13-h10-freeze.js
+          grep -q "label: 'RECEIPT'" docs/stages/stage13-h10-freeze.js
+          grep -q 'stage13-h10-freeze-output-clip' docs/stages/stage13-h10-freeze.js
+          grep -q "s3.src = 'stages/stage13-h10-freeze.js'" docs/index.html
+          grep -q 'data-family="freeze"' docs/index.html
+
+      - name: Execute Stage 13 freeze self-test
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const assert = require('assert');
+          const source = fs.readFileSync('docs/stages/stage13-h10-freeze.js', 'utf8');
+          const sandbox = {
+            window: {},
+            document: { readyState: 'loading', addEventListener() {} },
+            console, Object, Math, JSON, Error, Number, Array, Set
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const result = sandbox.window.I13H10FreezeStage.selfTest();
+          assert.strictEqual(result.pass, true, JSON.stringify(result));
+          const checks = Object.fromEntries(result.checks.map(c => [c.name, c.pass]));
+          assert.strictEqual(checks['freeze id is H1.0'], true);
+          assert.strictEqual(checks['eight frozen facts carried forward'], true);
+          assert.strictEqual(checks['frozen keys unique'], true);
+          assert.strictEqual(checks['bounded child preserved'], true);
+          assert.strictEqual(checks['c.n context preserved'], true);
+          assert.strictEqual(checks['natural width resolver preserved'], true);
+          assert.strictEqual(checks['VH1 width profile preserved'], true);
+          assert.strictEqual(checks['VH2 CUBI reference preserved'], true);
+          assert.strictEqual(checks['5 to 2|3 to 1 preserved'], true);
+          assert.strictEqual(checks['odd-width law preserved'], true);
+          assert.strictEqual(checks['GFX v0.4.1 reference preserved'], true);
+          assert.strictEqual(checks['H1.0 mutation denied'], true);
+          assert.strictEqual(checks['semantic changes route to H1.1+'], true);
+          assert.strictEqual(result.frozenCount, 8);
+          NODE
+
+      - name: Verify H1.0 source boundary
+        run: |
+          grep -q '^H1.0 is frozen. H1.1 may reference but must not silently mutate it.$' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- bounded `[c[(...)]]` Cortex child concept;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- `c.n` resolved Cortex context/depth;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- `.()` context-derived natural fractal width;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- VH1 ternary profile `1,3,9,27,81` at depth `0..4`;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- numerical `[[5,1,3]]` CUBI hypothesis reference;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- canonical control block `5 -> (2|3) -> 1`;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- generalized odd-width law `N=2k+1`;' spec/H1.0-BOUNDARY.md
+          grep -Fq -- '- GFX v0.4.1 historical browser/GPU suite.' spec/H1.0-BOUNDARY.md
+          grep -Fq 'must not be presented as an implementation claim about ChatGPT/OpenAI or any other external system' spec/H1.0-BOUNDARY.md
+          grep -Fq 'Any semantic change to frozen H1.0 material belongs in H1.1+.' spec/H1.0-BOUNDARY.md
+
+      - name: Preserve prior stage loader contracts
+        run: |
+          grep -q "s.src = 'stages/stage11-vh1.js'" docs/index.html
+          grep -q "s2.src = 'stages/stage12-vh2-cubi.js'" docs/index.html
+
+      - name: Keep later stages unmounted
+        run: |
+          ! grep -Fq "I13Exploded.mount('corpus'" docs/stages/stage13-h10-freeze.js
+          ! grep -Fq "I13Exploded.mount('ology'" docs/stages/stage13-h10-freeze.js
