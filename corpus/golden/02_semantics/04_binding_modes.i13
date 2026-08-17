@@ -1,0 +1,13 @@
+I RIVER_IN <- 17711
+
+I replace_value <- 10
+replace_value <- 3
+I ASSIGN_OK <- replace_value == 3
+
+I osmotic_value <- 10
+osmotic_value.p <- 3
+I OSMOTIC_OK <- osmotic_value == 13
+
+I BINDING_OK <- ASSIGN_OK * OSMOTIC_OK
+I RIVER_OUT <- RIVER_IN + 10946
+I SEMANTIC_OK <- BINDING_OK
