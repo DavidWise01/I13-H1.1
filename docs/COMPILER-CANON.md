@@ -1,8 +1,8 @@
 # I13 Compiler Canon — Known Good
 
-Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · KNOWN-GOOD THROUGH 29 DIFFERENTIAL ATTACKS · ONE OPEN STEP-BUDGET BREAK**
+Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 CONSTRUCTED**
 
-This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
+This document freezes only compiler architecture and behavior proven by the compiler/conformance path. It does not add language features.
 
 ## Canonical authority chain
 
@@ -102,13 +102,13 @@ Const Ask Attr Ret Answer Drop Bin Cmp If Call Block Else End Func Halt
 
 ## Reference-first law
 
-The reference VM prioritizes correctness and determinism over speed. For every conformance program inside the canonical execution boundary:
+The reference VM prioritizes correctness and determinism over speed. For every semantic conformance program inside the canonical execution boundary:
 
 ```text
 VM(program) == WASM(program)
 ```
 
-A disagreement is a compiler/backend defect until proven otherwise.
+A disagreement is a compiler/backend defect until proven to arise from an explicitly non-semantic runtime policy.
 
 ## Wasm tagged-value law — FROZEN
 
@@ -171,22 +171,6 @@ This is part of I13, not host policy.
 
 The count includes the main/root frame. A `Call` is legal only when pushing the callee keeps active I13 frames at or below `4096`.
 
-```text
-root/main = 1
-
-current_frames < 4096
-        ↓
-      Call
-        ↓
-current_frames += 1
-
-current_frames >= 4096
-        ↓
-      Call
-        ↓
-      VETO
-```
-
 The IVM layer owns `I13_FRAME_LIMIT`. The reference VM cannot raise its execution ceiling above it. Generated Wasm owns a private frame-depth counter, resets it to `1` at each `i13_run`, checks the canonical limit before every `call_indirect`, increments before a legal call, and decrements after a successful return.
 
 The former `I13-WASM-LIMIT-002` disagreement is closed:
@@ -197,14 +181,54 @@ count(4095)  VM VETO  == Wasm TRAP
 count(4096)  VM VETO  == Wasm TRAP
 ```
 
-The frame law is hard-regression-gated in the normal compiler/Wasm CI lane. Discovery and repair evidence remain in `docs/COMPILER-TORTURE-002.md`.
+The frame law is hard-regression-gated in compiler/Wasm CI and in conformance v0.1.
+
+## Deterministic step policy — FROZEN AS RUNTIME POLICY
+
+`I13-RUNTIME-POLICY-001`
+
+The reference VM keeps a deterministic IVM instruction meter:
+
+```text
+1 executed IVM instruction = 1 VM step
+```
+
+The reference VM default remains:
+
+```text
+step_limit = 8,000,000
+```
+
+This is a **reference-runtime safety fuse**, not an I13 language-validity rule.
+
+Measured evidence shows the meter is deterministic but execution-shape sensitive:
+
+```text
+I OUT <- 1 + 2                  → 4 steps, OUT=3
+I a <- 1
+I b <- 2
+I OUT <- a + b                  → 8 steps, OUT=3
+```
+
+Therefore:
+
+```text
+DETERMINISTIC STEP METER   KEEP
+8M REFERENCE SAFETY FUSE   KEEP
+8M LANGUAGE LIMIT          NO
+WASM 8M MATCH REQUIRED     NO
+```
+
+The historical `I13-WASM-STEP-003` observation is reclassified as **policy divergence, not a semantic compiler defect**. Evidence and the locked decision live in `docs/COMPILER-STEP-HYPOTHESIS.md` and `docs/COMPILER-RUNTIME-POLICY.md`.
+
+A future I13 gas model would require its own separately versioned charge schedule before gas could participate in language conformance.
 
 ## Differential hardening — KNOWN GOOD THROUGH ATTACK 29
 
-The measured passing surface now includes:
+The measured passing surface includes:
 
 ```text
-1-8   original arithmetic/control/tagged-value regression set
+1-8   arithmetic/control/tagged-value regression
 9     function used as If condition
 10    rebound function name called
 11    nested calls
@@ -228,39 +252,38 @@ The measured passing surface now includes:
 29    explode(18) · OUT=262144
 ```
 
-## Third differential hardening break — OPEN
+`explode(19)` remains useful as a runtime-policy probe but is no longer an open semantic parity defect.
 
-`I13-WASM-STEP-003`
+## Conformance v0.1 — CANONICAL NEXT COMPONENT
 
-The restress deliberately used shallow exponential recursion to increase executed work without approaching the 4096-frame ceiling:
+`I13-CONFORMANCE-0.1`
 
-```i13
-def explode(I n) {
-    if n <= 0 { -> 1 }
-    -> explode(n - 1) + explode(n - 1)
-}
-
-I OUT <- explode(19)
-```
-
-Observed behavior:
+The formal conformance layer is now separate from torture and policy characterization:
 
 ```text
-Reference VM: E0502 reference VM exceeded 8000000 steps
-Generated Wasm: OUT = 524288, kind = NUMBER
+TORTURE      discovers
+POLICY TEST  characterizes
+CONFORMANCE  locks known good
 ```
 
-The current `8,000,000` step limit is still a reference-VM policy. It has **not** been promoted into the I13 specification, and generated Wasm does not yet enforce an equivalent step counter.
+The manifest is `tests/conformance/manifest.json`.
 
-Therefore:
+The runner is `scripts/compiler_conformance.js`.
+
+The CI gate is `.github/workflows/compiler-conformance.yml`.
+
+v0.1 locks these classes:
 
 ```text
-VALUE IDENTITY   preserved  ✓
-FRAME IDENTITY   preserved  ✓
-STEP BUDGET      backend-dependent  ✗
+execute        check + VM result + Wasm result + repeat determinism
+compile_error  stable compiler diagnostic
+runtime_error  VM diagnostic + Wasm trap
+resource_error canonical I13 resource-law parity
 ```
 
-No repair is frozen for this new seam. Evidence is in `docs/COMPILER-TORTURE-003.md`.
+The first manifest covers arithmetic, nested calls, osmotic bind, recursion, `examples/core.i13`, arity diagnostics, unknown-function diagnostics, lexical rejection, division-by-zero runtime behavior, tagged Function-as-Number rejection, and the canonical 4096-frame ceiling.
+
+The 8M reference-VM safety fuse is explicitly excluded from semantic conformance.
 
 ## Compiler-owned Wasm law
 
@@ -280,9 +303,9 @@ The backend is dependency-free and emits the WebAssembly binary format directly.
 
 IVM division-by-zero behavior is preserved with an explicit Wasm guard rather than accepting native `f64.div` infinity behavior.
 
-## Closed inherited compiler defects
+## Closed inherited/compiler defects
 
-The accepted compiler path closes these inherited defects:
+The accepted compiler path closes these defects:
 
 - `Arg` is a real HIR construct.
 - unsupported `Attribute` use fails explicitly before execution.
@@ -292,6 +315,7 @@ The accepted compiler path closes these inherited defects:
 - source spans and stable diagnostics exist from the front end onward.
 - Wasm preserves Number versus Function identity.
 - VM and Wasm share the canonical I13 4096-frame ceiling.
+- reference step metering is explicitly separated from language semantics.
 
 ## Scope freeze during compiler construction
 
@@ -299,7 +323,7 @@ E1, corpus expansion, UI stages, and new conceptual modules remain **referent-on
 
 They may be referenced for compatibility. They are not active construction targets.
 
-## First acceptance target — PASSED
+## Whole-program acceptance — PASSED
 
 `examples/core.i13` passes:
 
@@ -319,22 +343,24 @@ ROUTES  = 56
 ## Current compiler status
 
 ```text
-SOURCE       COMPLETE
-LEXER        COMPLETE
-PARSER       COMPLETE
-AST          COMPLETE
-HIR          COMPLETE
-SEMANTIC     COMPLETE
-IVM          COMPLETE
-VALIDATOR    COMPLETE
-REFERENCE VM COMPLETE
-CLI CHECK    COMPLETE
-CLI RUN      COMPLETE
-WASM CODEGEN COMPLETE · TAGGED VALUE MODEL
-FRAME LAW    COMPLETE · I13_FRAME_LIMIT=4096 · VM=WASM
-VM = WASM    KNOWN-GOOD THROUGH ATTACK 29
-OPEN BREAK   I13-WASM-STEP-003 @ explode(19)
-CLI BUILD    COMPLETE
+SOURCE          COMPLETE
+LEXER           COMPLETE
+PARSER          COMPLETE
+AST             COMPLETE
+HIR             COMPLETE
+SEMANTIC        COMPLETE
+IVM             COMPLETE
+VALIDATOR       COMPLETE
+REFERENCE VM    COMPLETE
+CLI CHECK       COMPLETE
+CLI RUN         COMPLETE
+WASM CODEGEN    COMPLETE · TAGGED VALUE MODEL
+FRAME LAW       COMPLETE · I13_FRAME_LIMIT=4096 · VM=WASM
+STEP METER      COMPLETE · deterministic
+8M STEP FUSE    LOCKED RUNTIME POLICY · non-semantic
+VM = WASM       KNOWN-GOOD SEMANTIC SURFACE
+CLI BUILD       COMPLETE
+CONFORMANCE     v0.1 CONSTRUCTED · CI-GATED
 ```
 
-This does **not** mean the language is feature-complete. It means the source-to-executable compiler path has a measured semantic/resource boundary, two differential defects have been repaired and locked, and the next independent hardening seam is explicit rather than hidden.
+This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, and a formal conformance gate that can protect the known-good core while the compiler grows.
