@@ -48,7 +48,11 @@ pub struct Debugger {
     breakpoints: BTreeSet<usize>,
     mode: RunMode,
     first_pause: bool,
-    suppress_break_line: Option<usize>,
+    /// A breakpoint is suppressed only in the frame that triggered it. Deeper
+    /// calls may execute arbitrary source lines without clearing the caller's
+    /// suppression. It clears once that same-or-shallower frame advances to a
+    /// different source line.
+    suppress_breakpoint: Option<(usize, usize)>,
     last_reason: Option<PauseReason>,
 }
 
@@ -64,7 +68,7 @@ impl Debugger {
             breakpoints: BTreeSet::new(),
             mode: RunMode::Step,
             first_pause: true,
-            suppress_break_line: None,
+            suppress_breakpoint: None,
             last_reason: None,
         }
     }
@@ -75,15 +79,24 @@ impl Debugger {
 
     pub fn should_pause(&mut self, snapshot: &DebugSnapshot) -> Option<PauseReason> {
         let line = snapshot.event.span.line;
+        let depth = snapshot.event.frame_depth;
 
-        if self.suppress_break_line.is_some_and(|suppressed| suppressed != line) {
-            self.suppress_break_line = None;
+        if let Some((suppressed_line, suppressed_depth)) = self.suppress_breakpoint {
+            if depth <= suppressed_depth && line != suppressed_line {
+                self.suppress_breakpoint = None;
+            }
         }
+
+        let breakpoint_suppressed = self
+            .suppress_breakpoint
+            .is_some_and(|(suppressed_line, suppressed_depth)| {
+                suppressed_line == line && suppressed_depth == depth
+            });
 
         let reason = if self.first_pause {
             self.first_pause = false;
             Some(PauseReason::Entry)
-        } else if self.breakpoints.contains(&line) && self.suppress_break_line != Some(line) {
+        } else if self.breakpoints.contains(&line) && !breakpoint_suppressed {
             Some(PauseReason::Breakpoint(line))
         } else {
             match self.mode {
@@ -183,7 +196,7 @@ impl Debugger {
 
     fn prepare_resume(&mut self, snapshot: &DebugSnapshot) {
         if matches!(self.last_reason, Some(PauseReason::Breakpoint(_))) {
-            self.suppress_break_line = Some(snapshot.event.span.line);
+            self.suppress_breakpoint = Some((snapshot.event.span.line, snapshot.event.frame_depth));
         }
         self.last_reason = None;
     }
