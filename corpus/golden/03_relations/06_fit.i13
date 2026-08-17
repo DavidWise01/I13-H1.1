@@ -1,0 +1,23 @@
+// 03 RELATIONS · ROCK 06 · FIT MASK
+I RIVER_IN <- 3524578
+
+def fit_bit(I chunk, I slot, I bit) {
+    if chunk == slot { -> bit }
+    -> 0
+}
+
+def flay_mask(I chunk, I up, I down, I left, I right) {
+    I mask <- 0
+    mask.p <- fit_bit(chunk, up, 1)
+    mask.p <- fit_bit(chunk, down, 2)
+    mask.p <- fit_bit(chunk, left, 4)
+    mask.p <- fit_bit(chunk, right, 8)
+    -> mask
+}
+
+I FIT_UP <- flay_mask(7, 7, -1, -2, -3)
+I FIT_DOWN_RIGHT <- flay_mask(7, -1, 7, -2, 7)
+I FIT_NONE <- flay_mask(7, -1, -2, -3, -4)
+I FIT_OK <- (FIT_UP == 1) * (FIT_DOWN_RIGHT == 10) * (FIT_NONE == 0)
+I RELATION_OK <- FIT_OK
+I RIVER_OUT <- RIVER_IN + 2178309
