@@ -1,5 +1,11 @@
 use super::source::Span;
 
+/// Canonical I13 execution-frame ceiling.
+///
+/// The count includes the main/root frame. Every backend must reject a Call
+/// that would raise the active I13 frame count above this value.
+pub const I13_FRAME_LIMIT: usize = 4096;
+
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Op {
