@@ -1,0 +1,13 @@
+def choose(I x) {
+    if x == 1 {
+        -> 7
+    }
+    -> 9
+}
+
+I RIVER_IN <- 28657
+I TAKEN_RETURN_OK <- choose(1) == 7
+I FALLBACK_RETURN_OK <- choose(0) == 9
+I RETURN_OK <- TAKEN_RETURN_OK * FALLBACK_RETURN_OK
+I RIVER_OUT <- RIVER_IN + 17711
+I SEMANTIC_OK <- RETURN_OK
