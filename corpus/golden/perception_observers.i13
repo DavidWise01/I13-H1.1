@@ -1,0 +1,61 @@
+// I13 PERCEPTION OBSERVER LENS · NON-RIVER
+// Historical distillation only: Empedoclean correspondence + observed observer.
+// This file does not add I13 syntax or claim that observation equals truth.
+
+def like_by_like(I perceived_form, I perceiver_form) {
+    if perceived_form == perceiver_form { -> 1 }
+    -> 0
+}
+
+def observe_subject(I subject_visible, I observer_active) {
+    if subject_visible == 1 {
+        if observer_active == 1 { -> 1 }
+    }
+    -> 0
+}
+
+def observe_observer(I observer_report, I witness_active) {
+    if observer_report == 1 {
+        if witness_active == 1 { -> 1 }
+    }
+    -> 0
+}
+
+def observer_chain(I perceived_form, I perceiver_form, I subject_visible, I observer_active, I witness_active) {
+    I correspondence <- like_by_like(perceived_form, perceiver_form)
+    I observer_report <- observe_subject(subject_visible, observer_active)
+    I witness_report <- observe_observer(observer_report, witness_active)
+    if correspondence == 1 {
+        if observer_report == 1 {
+            if witness_report == 1 { -> 1 }
+        }
+    }
+    -> 0
+}
+
+// Empedoclean distillation: relevant form corresponds across perceived/perceiver.
+I PERCEIVED_FORM <- 13
+I PERCEIVER_FORM <- 13
+I LIKE_BY_LIKE_OK <- like_by_like(PERCEIVED_FORM, PERCEIVER_FORM)
+
+// Panoptic asymmetry distilled: subject may be visible to Observer 1.
+I SUBJECT_VISIBLE <- 1
+I OBSERVER1_ACTIVE <- 1
+I OBSERVER1_REPORT <- observe_subject(SUBJECT_VISIBLE, OBSERVER1_ACTIVE)
+
+// Added observer: Observer 1's act/report becomes observable to Observer 2.
+I OBSERVER2_ACTIVE <- 1
+I OBSERVER2_REPORT <- observe_observer(OBSERVER1_REPORT, OBSERVER2_ACTIVE)
+
+// Observer 2 witnesses Observer 1. It is not credited with direct source perception.
+I OBSERVER2_DIRECT_SOURCE <- 0
+
+I OBSERVER_CHAIN_OK <- observer_chain(
+    PERCEIVED_FORM,
+    PERCEIVER_FORM,
+    SUBJECT_VISIBLE,
+    OBSERVER1_ACTIVE,
+    OBSERVER2_ACTIVE
+)
+
+I PERCEPTION_OBSERVER_OK <- LIKE_BY_LIKE_OK * OBSERVER1_REPORT * OBSERVER2_REPORT * (OBSERVER2_DIRECT_SOURCE == 0) * OBSERVER_CHAIN_OK
