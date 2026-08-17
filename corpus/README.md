@@ -38,6 +38,8 @@ corpus/golden/
 02_semantics
     ↓
 03_relations
+    ↓
+04_analysis
 ```
 
 The golden river does not restart between folders.
@@ -57,6 +59,10 @@ The golden river does not restart between folders.
                                                                     v
 03 RELATIONS / FLAY
 196418 |s| 317811 |s| 514229 |s| 832040 |s| 1346269 |s| 2178309 |s| 3524578 |s| 5702887 |s| 9227465 |s| 14930352
+                                                                    |
+                                                                    v
+04 ANALYSIS
+14930352 |s| 24157817 |s| 39088169 |s| 63245986 |s| 102334155 |s| 165580141 |s| 267914296 |s| 433494437 |s| 701408733 |s| 1134903170
 ```
 
 `|s|` is corpus documentation notation for stream handoff, not I13 syntax.
@@ -68,6 +74,7 @@ Layer roles:
 01_syntax     legal source arrangements of those pieces
 02_semantics  meaning of accepted arrangements
 03_relations  explicit fit relationships + FLAY methodology
+04_analysis   FLAY-gated measurements over admitted relations
 ```
 
 `02_semantics` carries HIR checkpoints, VM/Wasm meaning parity, semantic rejection witnesses, and the executable `ada_lens.i13` model. Its documentary mathematical-poetry emblem is:
@@ -76,7 +83,7 @@ Layer roles:
 [ | ( ada ) | ]
 ```
 
-`03_relations` makes the downstream method explicit:
+The lower stack is now explicit:
 
 ```text
 semantics
@@ -84,6 +91,7 @@ semantics
 relations
    ↓
 <flay>
+══════════════════ admission wall
    ↓
 analysis
    ↓
@@ -103,7 +111,19 @@ FLAY is a deterministic five-point local relation method:
 
 The five unique points are origin plus the four cardinal neighbors. Returning to origin closes the set; it is not a sixth unique point. FLAY may recurse when a new chunk fits, or when an old chunk becomes valid somewhere newly exposed. Downstream stays blocked until the methodology is satisfied.
 
-`[ | ( ada ) | ]`, `<flay>`, coordinate diagrams, `~>` and `|s|` are documentary notation, not I13 grammar.
+Analysis cannot open its own gate. It carries admission separately from measurement:
+
+```text
+[ admitted | value ]
+
+[0|0] closed witness
+[1|0] valid zero measurement
+[1|x] valid nonzero measurement
+```
+
+The first analysis reach measures admission, interval, signed direction, rhythm, rate, cardinal coverage, recursive accumulation, closure and a deterministic composed profile. `analysis.i13` also proves the admitted input is unchanged (`13 -> 13`).
+
+`[ | ( ada ) | ]`, `<flay>`, `[ admitted | value ]`, coordinate diagrams, `~>` and `|s|` are documentary notation, not I13 grammar.
 
 Every accepted golden rock is independently compilable and VM/Wasm verified. Every downstream reach must inherit the upstream composition final exactly. Each reach contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata.
 
@@ -120,6 +140,9 @@ docs/semantics.html
 corpus/golden/03_relations/README.md
 docs/CORPUS-RELATIONS.md
 docs/relations.html
+corpus/golden/04_analysis/README.md
+docs/CORPUS-ANALYSIS.md
+docs/analysis.html
 ```
 
 ## Stage 14 — admission gate
