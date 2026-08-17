@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · FROZEN KNOWN-GOOD WITH ONE OPEN DIFFERENTIAL BREAK**
+Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · TAGGED WASM VALUE MODEL FROZEN KNOWN-GOOD**
 
 This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
 
@@ -110,44 +110,112 @@ VM(program) == WASM(program)
 
 A disagreement is a compiler/backend defect until proven otherwise.
 
-## First differential hardening break — OPEN
+## Wasm tagged-value law — FROZEN
 
-`I13-WASM-TYPE-001` is the first reproduced VM/Wasm semantic disagreement discovered by the ordered torture harness.
-
-The first four attacks passed:
+`I13-WASM-VALUE-001`
 
 ```text
-arithmetic precedence
-false-path control flow
-recursion depth 256
-division-by-zero runtime parity
+A VALUE SHALL RETAIN
+ITS KIND AND PAYLOAD
+THROUGH LOWERING.
+
+LOWERING MAY CHANGE
+REPRESENTATION.
+
+LOWERING MAY NOT
+ERASE VALUE IDENTITY.
 ```
 
-The fifth attack broke parity:
+The reference VM distinguishes:
+
+```text
+Value::Number(f64)
+Value::Function(function_id)
+```
+
+Generated Wasm now preserves that distinction as a tagged pair:
+
+```text
+[ kind:i32 | payload:f64 ]
+
+NUMBER   = [0 | numeric f64]
+FUNCTION = [1 | function/table id]
+```
+
+Storage adds declaration state as a separate third fact:
+
+```text
+[ kind | payload | bound ]
+```
+
+The three facts are never intentionally conflated.
+
+Generated modules expose:
+
+```text
+i13_run
+
+i13.global.<name>   payload
+i13.kind.<name>     value kind
+i13.state.<name>    bound/unbound state
+```
+
+Tagged values are preserved through:
+
+```text
+Ask
+Answer
+function arguments
+function returns
+local storage
+global storage
+```
+
+Operation boundaries enforce IVM value law:
+
+```text
+Bin / Cmp / If  require NUMBER
+Call            requires FUNCTION
+```
+
+User functions accept and return tagged value pairs. IVM `Call` lowers through a Wasm table and `call_indirect`, preserving recursion without Rust host recursion.
+
+## First differential hardening break — CLOSED
+
+`I13-WASM-TYPE-001` was the first reproduced VM/Wasm semantic disagreement.
+
+Original failing source:
 
 ```i13
 def f() { -> 7 }
 I OUT <- f + 1
 ```
 
-Reference VM:
+Original behavior:
 
 ```text
-E0501 Bin requires numeric operands
+Reference VM: E0501 Bin requires numeric operands
+Generated Wasm: OUT = 1
 ```
 
-Generated Wasm:
+Cause: the first Wasm backend flattened `Function(0)` into numeric `0.0` and lost the IVM value-kind distinction.
+
+Repair: the Wasm backend now carries tagged `[kind | payload]` values end-to-end and stores `[kind | payload | bound]` separately.
+
+Regression proof now passes all eight ordered attacks:
 
 ```text
-i13.global.f   = 0
-i13.global.OUT = 1
+1. arithmetic precedence                 PASS
+2. false-path control flow               PASS
+3. recursion depth 256                   PASS
+4. division-by-zero runtime parity       PASS
+5. function used as number               PASS · VM error = Wasm trap
+6. function kind through argument        PASS · VM error = Wasm trap
+7. function kind through return/global   PASS · VM error = Wasm trap
+8. function used as compare operand      PASS · VM error = Wasm trap
 ```
 
-Cause: the VM preserves `Number` versus `Function` as distinct runtime value kinds, while the current Wasm global payload plane stores both as `f64` and therefore loses the function-value tag before numeric operations.
-
-Known-good Wasm parity is therefore bounded to the tested numeric/control/call subset and does **not** claim parity for function-valued names flowing into numeric operators.
-
-Evidence and attack order are recorded in `docs/COMPILER-TORTURE-001.md`. The defect is intentionally not repaired in the discovery pass.
+The original discovery evidence remains in `docs/COMPILER-TORTURE-001.md`; the defect is now regression-locked by `scripts/compiler_torture.sh`.
 
 ## Compiler-owned Wasm law
 
@@ -163,24 +231,13 @@ WebAssembly binary
 
 The backend is dependency-free and emits the WebAssembly binary format directly.
 
-Generated modules currently expose:
-
-```text
-i13_run
-
-i13.global.<name>
-i13.state.<name>
-```
-
 `i13_run` resets program globals before execution so repeated calls represent fresh deterministic executions.
-
-I13 function handles lower to Wasm table indices. IVM `Call` lowers through `call_indirect`, allowing recursive generated Wasm without Rust host recursion.
 
 IVM division-by-zero behavior is preserved with an explicit Wasm guard rather than accepting native `f64.div` infinity behavior.
 
 ## Closed inherited compiler defects
 
-The first vertical slice closes these inherited defects on the accepted compiler path:
+The accepted compiler path now closes these inherited defects:
 
 - `Arg` is a real HIR construct.
 - unsupported `Attribute` use fails explicitly before execution.
@@ -188,6 +245,7 @@ The first vertical slice closes these inherited defects on the accepted compiler
 - reference-VM recursion uses explicit VM frames, not Rust recursion.
 - stack/control effects have one IVM authority.
 - source spans and stable diagnostics exist from the front end onward.
+- Wasm preserves Number versus Function value identity.
 
 ## Scope freeze during compiler construction
 
@@ -199,7 +257,7 @@ They may be referenced for compatibility. They are not active construction targe
 
 `examples/core.i13` is the first whole-program acceptance target because it exercises declarations, functions, arguments, calls, conditions, comparisons, arithmetic, returns, recursion, and the existing `.p` spelling.
 
-The same source now passes:
+The same source passes:
 
 ```text
 i13 check examples/core.i13
@@ -230,9 +288,9 @@ VALIDATOR    COMPLETE
 REFERENCE VM COMPLETE
 CLI CHECK    COMPLETE
 CLI RUN      COMPLETE
-WASM CODEGEN COMPLETE · FIRST ACCEPTANCE SLICE
-VM = WASM    BOUNDED KNOWN-GOOD · I13-WASM-TYPE-001 OPEN
+WASM CODEGEN COMPLETE · TAGGED VALUE MODEL
+VM = WASM    KNOWN-GOOD THROUGH TORTURE-001 REGRESSION SET
 CLI BUILD    COMPLETE
 ```
 
-This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good inside its tested semantic boundary, and the first differential failure now marks the next hardening seam.
+This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good inside its tested semantic boundary, including preservation of the current IVM runtime value kinds.
