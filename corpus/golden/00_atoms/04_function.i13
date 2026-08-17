@@ -1,0 +1,11 @@
+// ROCK 04 · FUNCTION PASSAGE
+// river: 3 |s| 5
+// adds: minimal executable FunctionDef + Return + Call
+
+I RIVER_IN <- 3
+
+def carry() {
+    -> RIVER_IN + 2
+}
+
+I RIVER_OUT <- carry()
