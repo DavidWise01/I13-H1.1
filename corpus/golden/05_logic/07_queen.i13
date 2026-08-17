@@ -1,0 +1,37 @@
+// 05 LOGIC · ROCK 07 · Q Queen rider
+// Documentary backpack [(/2^2\)]^n is represented executably by bounded local state plus recursion.
+
+def queen_coverage2d(I up, I down, I left, I right) {
+    I rays <- 0
+    rays.p <- up
+    rays.p <- down
+    rays.p <- left
+    rays.p <- right
+    -> rays / 4
+}
+
+def queen_step(I state) {
+    if state == 0 { -> 1 }
+    if state == 1 { -> 2 }
+    if state == 2 { -> 3 }
+    -> 0
+}
+
+def queen_traverse(I state, I depth) {
+    if depth == 0 { -> state }
+    -> queen_traverse(queen_step(state), depth - 1)
+}
+
+def queen_phase4d(I t) {
+    -> t + 0.0001
+}
+
+I RIVER_IN <- 32951280099
+I QUEEN_COVERAGE <- queen_coverage2d(1, 1, 1, 1)
+I QUEEN_SWEEP <- 360
+I QUEEN_PATH <- queen_traverse(0, 6)
+I QUEEN_T0 <- 1
+I QUEEN_T1 <- queen_phase4d(QUEEN_T0)
+I QUEEN_OK <- (QUEEN_COVERAGE == 1) * (QUEEN_SWEEP == 360) * (QUEEN_PATH == 2) * (QUEEN_T1 > QUEEN_T0)
+I LOGIC_OK <- QUEEN_OK
+I RIVER_OUT <- 53316291173
