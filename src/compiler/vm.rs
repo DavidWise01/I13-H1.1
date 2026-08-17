@@ -44,13 +44,43 @@ impl VmResult {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct DebugFrameSnapshot {
+    pub scope: TraceScope,
+    pub pc: usize,
+    pub stack: Vec<Value>,
+    pub locals: Vec<Option<Value>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct DebugSnapshot {
+    pub event: TraceEvent,
+    pub globals: Vec<Option<Value>>,
+    pub frames: Vec<DebugFrameSnapshot>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DebugControl {
+    Continue,
+    Quit,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DebugRunResult {
+    Completed(VmResult),
+    Quit,
+}
+
 /// Deterministic reference execution for canonical IVM-13.
 ///
 /// Calls use an explicit frame vector. I13 recursion therefore does not recurse
 /// through the Rust host stack. The canonical active-frame ceiling is owned by
 /// I13/IVM and is shared with generated backends.
 pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnostic> {
-    run_inner(program, config, None)
+    match run_inner(program, config, None)? {
+        RunOutcome::Completed(result) => Ok(result),
+        RunOutcome::Quit => unreachable!("unobserved VM execution cannot request debugger quit"),
+    }
 }
 
 /// Execute the same reference VM while emitting read-only observations before
@@ -60,14 +90,40 @@ pub fn run_observed(
     config: VmConfig,
     observer: &mut dyn FnMut(&TraceEvent),
 ) -> Result<VmResult, Diagnostic> {
-    run_inner(program, config, Some(observer))
+    match run_inner(program, config, Some(Observer::Trace(observer)))? {
+        RunOutcome::Completed(result) => Ok(result),
+        RunOutcome::Quit => unreachable!("trace observers cannot request debugger quit"),
+    }
+}
+
+/// Execute the same reference VM while exposing immutable debugger snapshots.
+/// The debugger may continue or abort the session, but cannot mutate VM state.
+pub fn run_debugged(
+    program: &IvmProgram,
+    config: VmConfig,
+    observer: &mut dyn FnMut(&DebugSnapshot) -> DebugControl,
+) -> Result<DebugRunResult, Diagnostic> {
+    match run_inner(program, config, Some(Observer::Debug(observer)))? {
+        RunOutcome::Completed(result) => Ok(DebugRunResult::Completed(result)),
+        RunOutcome::Quit => Ok(DebugRunResult::Quit),
+    }
+}
+
+enum Observer<'a> {
+    Trace(&'a mut dyn FnMut(&TraceEvent)),
+    Debug(&'a mut dyn FnMut(&DebugSnapshot) -> DebugControl),
+}
+
+enum RunOutcome {
+    Completed(VmResult),
+    Quit,
 }
 
 fn run_inner(
     program: &IvmProgram,
     config: VmConfig,
-    mut observer: Option<&mut dyn FnMut(&TraceEvent)>,
-) -> Result<VmResult, Diagnostic> {
+    mut observer: Option<Observer<'_>>,
+) -> Result<RunOutcome, Diagnostic> {
     if let Err(mut errors) = validator::validate(program) {
         return Err(errors.remove(0));
     }
@@ -115,7 +171,7 @@ fn run_inner(
         }
 
         let inst = code[pc].clone();
-        if let Some(sink) = observer.as_deref_mut() {
+        if observer.is_some() {
             let event = make_trace_event(
                 program,
                 &globals,
@@ -126,7 +182,15 @@ fn run_inner(
                 steps,
                 &inst,
             );
-            sink(&event);
+            match observer.as_mut().expect("observer checked above") {
+                Observer::Trace(sink) => sink(&event),
+                Observer::Debug(sink) => {
+                    let snapshot = make_debug_snapshot(event, &globals, &frames);
+                    if sink(&snapshot) == DebugControl::Quit {
+                        return Ok(RunOutcome::Quit);
+                    }
+                }
+            }
         }
 
         match inst.op {
@@ -287,7 +351,7 @@ fn run_inner(
         }
     }
 
-    Ok(VmResult { globals, steps, peak_stack, max_call_depth })
+    Ok(RunOutcome::Completed(VmResult { globals, steps, peak_stack, max_call_depth }))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -332,16 +396,36 @@ fn make_trace_event(
     TraceEvent {
         step,
         frame_depth,
-        scope: match scope {
-            FrameScope::Main => TraceScope::Main,
-            FrameScope::Function(fid) => TraceScope::Function(fid),
-        },
+        scope: trace_scope(scope),
         pc,
         op: inst.op,
         stack_height: frame.stack.len(),
         effect: inst.effect(),
         span: inst.span.clone(),
         detail: trace_detail(program, globals, frame, inst),
+    }
+}
+
+fn make_debug_snapshot(event: TraceEvent, globals: &[Option<Value>], frames: &[Frame]) -> DebugSnapshot {
+    DebugSnapshot {
+        event,
+        globals: globals.to_vec(),
+        frames: frames
+            .iter()
+            .map(|frame| DebugFrameSnapshot {
+                scope: trace_scope(frame.scope),
+                pc: frame.pc,
+                stack: frame.stack.clone(),
+                locals: frame.locals.clone(),
+            })
+            .collect(),
+    }
+}
+
+fn trace_scope(scope: FrameScope) -> TraceScope {
+    match scope {
+        FrameScope::Main => TraceScope::Main,
+        FrameScope::Function(fid) => TraceScope::Function(fid),
     }
 }
 
