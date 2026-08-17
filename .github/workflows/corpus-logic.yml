@@ -22,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Publish pending Logic canon status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/logic-canon',description:'05 Logic proof running'})
       - uses: dtolnay/rust-toolchain@stable
       - name: Build I13 compiler CLI
         run: cargo build --bin i13
@@ -116,11 +122,10 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: 'success',
-              context: 'i13/logic-canon',
-              description: '05 Logic HIR/VM/Wasm/river verified'
-            })
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'i13/logic-canon',description:'05 Logic HIR/VM/Wasm/river verified'})
+      - name: Publish failed Logic canon status
+        if: ${{ failure() && github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'failure',context:'i13/logic-canon',description:'05 Logic proof failed'})
