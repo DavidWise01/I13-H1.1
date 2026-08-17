@@ -1,0 +1,53 @@
+// I13 GOLDEN CORPUS · 02 SEMANTICS · ADA LENS
+// [ | ( ada ) | ] is documentary mathematical poetry, not I13 syntax.
+// semantics -> analysis/music/reason -> relations -> boolean
+
+def analysis_relation(I a, I b) {
+    if a < b { -> 1 }
+    -> 0
+}
+
+def music_rhythm(I beat, I pulse) {
+    if beat == pulse { -> 1 }
+    -> 0
+}
+
+def music_tempo(I before, I after) {
+    if before < after { -> 1 }
+    -> 0
+}
+
+def music_pace(I distance, I time) {
+    if time > 0 { -> distance / time }
+    -> 0
+}
+
+def music_timing(I event, I expected) {
+    if event == expected { -> 1 }
+    -> 0
+}
+
+def reason_four(I analysis, I rhythm, I tempo, I timing) {
+    if analysis == 1 {
+        if rhythm == 1 {
+            if tempo == 1 {
+                if timing == 1 { -> 1 }
+            }
+        }
+    }
+    -> 0
+}
+
+def boolean_gate(I value) {
+    if value != 0 { -> 1 }
+    -> 0
+}
+
+I ADA_ANALYSIS <- analysis_relation(3, 5)
+I ADA_RHYTHM <- music_rhythm(4, 4)
+I ADA_TEMPO <- music_tempo(90, 120)
+I ADA_PACE <- music_pace(12, 3)
+I ADA_TIMING <- music_timing(8, 8)
+I ADA_REASON <- reason_four(ADA_ANALYSIS, ADA_RHYTHM, ADA_TEMPO, ADA_TIMING)
+I ADA_BOOLEAN <- boolean_gate(ADA_REASON)
+I ADA_LENS_OK <- ADA_BOOLEAN * (ADA_PACE == 4)
