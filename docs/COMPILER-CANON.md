@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · TAGGED WASM VALUE MODEL FROZEN · KNOWN-GOOD THROUGH 24 DIFFERENTIAL ATTACKS · ONE OPEN RESOURCE BREAK**
+Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · KNOWN-GOOD THROUGH 29 DIFFERENTIAL ATTACKS · ONE OPEN STEP-BUDGET BREAK**
 
 This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
 
@@ -102,7 +102,7 @@ Const Ask Attr Ret Answer Drop Bin Cmp If Call Block Else End Func Halt
 
 ## Reference-first law
 
-The reference VM prioritizes correctness and determinism over speed. For every conformance program:
+The reference VM prioritizes correctness and determinism over speed. For every conformance program inside the canonical execution boundary:
 
 ```text
 VM(program) == WASM(program)
@@ -133,7 +133,7 @@ Value::Number(f64)
 Value::Function(function_id)
 ```
 
-Generated Wasm preserves that distinction as a tagged pair:
+Generated Wasm preserves that distinction as:
 
 ```text
 [ kind:i32 | payload:f64 ]
@@ -142,153 +142,125 @@ NUMBER   = [0 | numeric f64]
 FUNCTION = [1 | function/table id]
 ```
 
-Storage adds declaration state as a separate third fact:
+Stored bindings retain three independent facts:
 
 ```text
 [ kind | payload | bound ]
 ```
 
-The three facts are never intentionally conflated.
+Tagged values are preserved through `Ask`, `Answer`, arguments, returns, local storage, and global storage.
 
-Generated modules expose:
-
-```text
-i13_run
-
-i13.global.<name>   payload
-i13.kind.<name>     value kind
-i13.state.<name>    bound/unbound state
-```
-
-Tagged values are preserved through:
-
-```text
-Ask
-Answer
-function arguments
-function returns
-local storage
-global storage
-```
-
-Operation boundaries enforce IVM value law:
+Operation boundaries enforce:
 
 ```text
 Bin / Cmp / If  require NUMBER
 Call            requires FUNCTION
 ```
 
-User functions accept and return tagged value pairs. IVM `Call` lowers through a Wasm table and `call_indirect`, preserving recursive execution without Rust host recursion.
+`I13-WASM-TYPE-001` is closed and regression-locked. Original evidence remains in `docs/COMPILER-TORTURE-001.md`.
 
-## First differential hardening break — CLOSED
+## Canonical frame law — FROZEN
 
-`I13-WASM-TYPE-001` was the first reproduced VM/Wasm semantic disagreement.
+`I13-EXEC-LIMIT-001`
 
-Original failing source:
+```text
+I13_FRAME_LIMIT = 4096
+```
+
+This is part of I13, not host policy.
+
+The count includes the main/root frame. A `Call` is legal only when pushing the callee keeps active I13 frames at or below `4096`.
+
+```text
+root/main = 1
+
+current_frames < 4096
+        ↓
+      Call
+        ↓
+current_frames += 1
+
+current_frames >= 4096
+        ↓
+      Call
+        ↓
+      VETO
+```
+
+The IVM layer owns `I13_FRAME_LIMIT`. The reference VM cannot raise its execution ceiling above it. Generated Wasm owns a private frame-depth counter, resets it to `1` at each `i13_run`, checks the canonical limit before every `call_indirect`, increments before a legal call, and decrements after a successful return.
+
+The former `I13-WASM-LIMIT-002` disagreement is closed:
+
+```text
+count(4094)  VM PASS  == Wasm PASS
+count(4095)  VM VETO  == Wasm TRAP
+count(4096)  VM VETO  == Wasm TRAP
+```
+
+The frame law is hard-regression-gated in the normal compiler/Wasm CI lane. Discovery and repair evidence remain in `docs/COMPILER-TORTURE-002.md`.
+
+## Differential hardening — KNOWN GOOD THROUGH ATTACK 29
+
+The measured passing surface now includes:
+
+```text
+1-8   original arithmetic/control/tagged-value regression set
+9     function used as If condition
+10    rebound function name called
+11    nested calls
+12    global assignment before declaration
+13    local assignment before declaration
+14    function fallthrough
+15    nested early return
+16    arity-16 tagged ABI
+17    recursion 512
+18    recursion 1024
+19    recursion 1536
+20    recursion 2048
+21    recursion 2560
+22    recursion 3072
+23    recursion 3584
+24    recursion 4094
+25    recursion 4095 · VM VETO = Wasm TRAP
+26    recursion 4096 · VM VETO = Wasm TRAP
+27    explode(16) · OUT=65536
+28    explode(17) · OUT=131072
+29    explode(18) · OUT=262144
+```
+
+## Third differential hardening break — OPEN
+
+`I13-WASM-STEP-003`
+
+The restress deliberately used shallow exponential recursion to increase executed work without approaching the 4096-frame ceiling:
 
 ```i13
-def f() { -> 7 }
-I OUT <- f + 1
-```
-
-Original behavior:
-
-```text
-Reference VM: E0501 Bin requires numeric operands
-Generated Wasm: OUT = 1
-```
-
-Cause: the first Wasm backend flattened `Function(0)` into numeric `0.0` and lost the IVM value-kind distinction.
-
-Repair: the Wasm backend now carries tagged `[kind | payload]` values end-to-end and stores `[kind | payload | bound]` separately.
-
-Regression proof passes all eight ordered attacks:
-
-```text
-1. arithmetic precedence                 PASS
-2. false-path control flow               PASS
-3. recursion depth 256                   PASS
-4. division-by-zero runtime parity       PASS
-5. function used as number               PASS · VM error = Wasm trap
-6. function kind through argument        PASS · VM error = Wasm trap
-7. function kind through return/global   PASS · VM error = Wasm trap
-8. function used as compare operand      PASS · VM error = Wasm trap
-```
-
-The original discovery evidence remains in `docs/COMPILER-TORTURE-001.md`; the defect is regression-locked by `scripts/compiler_torture.sh`.
-
-## Differential hardening expansion — KNOWN GOOD THROUGH ATTACK 24
-
-The second attack sequence added these passing cases:
-
-```text
-9.  function used as If condition          PASS · VM error = Wasm trap
-10. rebound function name called           PASS · VM error = Wasm trap
-11. nested calls                           PASS · OUT=14
-12. global assign before declaration       PASS · VM error = Wasm trap
-13. local assign before declaration        PASS · VM error = Wasm trap
-14. function fallthrough                   PASS · VM error = Wasm trap
-15. nested early return                    PASS · OUT=42
-16. arity-16 tagged ABI                    PASS · OUT=16
-17. recursion 512                          PASS
-18. recursion 1024                         PASS
-19. recursion 1536                         PASS
-20. recursion 2048                         PASS
-21. recursion 2560                         PASS
-22. recursion 3072                         PASS
-23. recursion 3584                         PASS
-24. recursion 4094                         PASS
-```
-
-The last measured successful recursion parity point is therefore:
-
-```text
-count(4094)  VM PASS == Wasm PASS
-```
-
-## Second differential hardening break — OPEN
-
-`I13-WASM-LIMIT-002` is the first new disagreement after the 24 passing attacks.
-
-Failing source:
-
-```i13
-def count(I n) {
-    if n <= 0 { -> 0 }
-    -> 1 + count(n - 1)
+def explode(I n) {
+    if n <= 0 { -> 1 }
+    -> explode(n - 1) + explode(n - 1)
 }
 
-I OUT <- count(4095)
+I OUT <- explode(19)
 ```
 
 Observed behavior:
 
 ```text
-Reference VM: E0503 reference VM exceeded 4096 frames
-Generated Wasm: OUT = 4095, kind = NUMBER
+Reference VM: E0502 reference VM exceeded 8000000 steps
+Generated Wasm: OUT = 524288, kind = NUMBER
 ```
 
-The reference VM default configuration owns:
+The current `8,000,000` step limit is still a reference-VM policy. It has **not** been promoted into the I13 specification, and generated Wasm does not yet enforce an equivalent step counter.
+
+Therefore:
 
 ```text
-step_limit  = 8,000,000
-frame_limit = 4096
+VALUE IDENTITY   preserved  ✓
+FRAME IDENTITY   preserved  ✓
+STEP BUDGET      backend-dependent  ✗
 ```
 
-The reference VM counts its explicit main frame and refuses a recursive push beyond the configured frame boundary. The current Wasm backend preserves IVM values but does not emit an equivalent I13 frame counter; host Wasm recursion therefore continues at a point where the default reference VM has already vetoed execution.
-
-Measured boundary:
-
-```text
-count(4094)  VM PASS   == Wasm PASS
-count(4095)  VM E0503  != Wasm PASS
-```
-
-This is an executable resource-contract mismatch, not a value-tagging defect.
-
-Evidence is frozen in `docs/COMPILER-TORTURE-002.md`; discovery code is in `scripts/compiler_torture_003.sh`.
-
-Until this break is repaired, VM/Wasm parity is claimed only through the measured attack-24 boundary, including recursion through 4094.
+No repair is frozen for this new seam. Evidence is in `docs/COMPILER-TORTURE-003.md`.
 
 ## Compiler-owned Wasm law
 
@@ -304,13 +276,13 @@ WebAssembly binary
 
 The backend is dependency-free and emits the WebAssembly binary format directly.
 
-`i13_run` resets program globals before execution so repeated calls represent fresh deterministic executions.
+`i13_run` resets program globals and private execution-frame depth before execution so repeated calls represent fresh deterministic executions.
 
 IVM division-by-zero behavior is preserved with an explicit Wasm guard rather than accepting native `f64.div` infinity behavior.
 
 ## Closed inherited compiler defects
 
-The accepted compiler path now closes these inherited defects:
+The accepted compiler path closes these inherited defects:
 
 - `Arg` is a real HIR construct.
 - unsupported `Attribute` use fails explicitly before execution.
@@ -318,7 +290,8 @@ The accepted compiler path now closes these inherited defects:
 - reference-VM recursion uses explicit VM frames, not Rust recursion.
 - stack/control effects have one IVM authority.
 - source spans and stable diagnostics exist from the front end onward.
-- Wasm preserves Number versus Function value identity.
+- Wasm preserves Number versus Function identity.
+- VM and Wasm share the canonical I13 4096-frame ceiling.
 
 ## Scope freeze during compiler construction
 
@@ -328,9 +301,7 @@ They may be referenced for compatibility. They are not active construction targe
 
 ## First acceptance target — PASSED
 
-`examples/core.i13` is the first whole-program acceptance target because it exercises declarations, functions, arguments, calls, conditions, comparisons, arithmetic, returns, recursion, and the existing `.p` spelling.
-
-The same source passes:
+`examples/core.i13` passes:
 
 ```text
 i13 check examples/core.i13
@@ -338,14 +309,12 @@ i13 run examples/core.i13
 i13 build examples/core.i13 -o core.wasm
 ```
 
-The generated Wasm module is validated and instantiated by Node's WebAssembly engine, executes `i13_run`, and matches the reference VM acceptance values:
+The generated Wasm validates and instantiates in Node and matches the reference VM:
 
 ```text
 CORE_OK = 1
 ROUTES  = 56
 ```
-
-The parity test executes the same generated module twice and requires the same values on both runs.
 
 ## Current compiler status
 
@@ -362,9 +331,10 @@ REFERENCE VM COMPLETE
 CLI CHECK    COMPLETE
 CLI RUN      COMPLETE
 WASM CODEGEN COMPLETE · TAGGED VALUE MODEL
-VM = WASM    KNOWN-GOOD THROUGH ATTACK 24 / RECURSION 4094
-OPEN BREAK   I13-WASM-LIMIT-002 @ RECURSION 4095
+FRAME LAW    COMPLETE · I13_FRAME_LIMIT=4096 · VM=WASM
+VM = WASM    KNOWN-GOOD THROUGH ATTACK 29
+OPEN BREAK   I13-WASM-STEP-003 @ explode(19)
 CLI BUILD    COMPLETE
 ```
 
-This does **not** mean the language is feature-complete. It means the source-to-executable compiler path is known-good inside a now-measured semantic and resource boundary, and the next hardening seam is explicitly identified rather than hidden.
+This does **not** mean the language is feature-complete. It means the source-to-executable compiler path has a measured semantic/resource boundary, two differential defects have been repaired and locked, and the next independent hardening seam is explicit rather than hidden.
