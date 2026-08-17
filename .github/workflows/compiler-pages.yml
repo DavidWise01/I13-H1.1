@@ -7,22 +7,32 @@ on:
       - 'docs/compiler.html'
       - 'docs/compiler.css'
       - 'docs/compiler.js'
+      - 'docs/corpus.html'
       - 'docs/landing.js'
       - 'docs/workbench.html'
       - 'docs/COMPILER-*.md'
+      - 'docs/CORPUS-*.md'
       - 'examples/compiler_bootstrap.i13'
+      - 'corpus/golden/00_atoms/**'
+      - 'scripts/corpus_atoms.js'
       - '.github/workflows/compiler-bootstrap.yml'
+      - '.github/workflows/corpus-atoms.yml'
       - '.github/workflows/compiler-pages.yml'
   pull_request:
     paths:
       - 'docs/compiler.html'
       - 'docs/compiler.css'
       - 'docs/compiler.js'
+      - 'docs/corpus.html'
       - 'docs/landing.js'
       - 'docs/workbench.html'
       - 'docs/COMPILER-*.md'
+      - 'docs/CORPUS-*.md'
       - 'examples/compiler_bootstrap.i13'
+      - 'corpus/golden/00_atoms/**'
+      - 'scripts/corpus_atoms.js'
       - '.github/workflows/compiler-bootstrap.yml'
+      - '.github/workflows/corpus-atoms.yml'
       - '.github/workflows/compiler-pages.yml'
 
 permissions:
@@ -34,7 +44,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Check observatory JavaScript syntax
-        run: node --check docs/compiler.js
+        run: |
+          node --check docs/compiler.js
+          node --check docs/landing.js
       - name: Check compiler observatory contract
         run: |
           test -s docs/compiler.html
@@ -62,6 +74,21 @@ jobs:
           grep -Fq 'def stack_need' examples/compiler_bootstrap.i13
           grep -Fq 'def stack_net' examples/compiler_bootstrap.i13
           grep -Fq 'def frame_admit_call' examples/compiler_bootstrap.i13
+      - name: Check golden corpus river visual contract
+        run: |
+          test -s docs/corpus.html
+          test -s docs/CORPUS-ATOMS.md
+          test -s corpus/golden/00_atoms/manifest.json
+          test -s corpus/golden/00_atoms/river.i13
+          grep -Fq 'I13 GOLDEN CORPUS · 00 ATOMS · RIVER v0.1' docs/corpus.html
+          grep -Fq '9 / 9 ROCKS · PASS' docs/corpus.html
+          grep -Fq 'RIVER_FINAL = 34' docs/corpus.html
+          grep -Fq '0 <span class="s">|s|</span> 1' docs/corpus.html
+          grep -Fq 'I13-GOLDEN-00-ATOMS-RIVER-0.1' docs/CORPUS-ATOMS.md
+          grep -Fq 'RIVER_OK <- river_selftest()' corpus/golden/00_atoms/river.i13
+          grep -Fq '"final":34' corpus/golden/00_atoms/manifest.json
+          grep -Fq "link.href='corpus.html'" docs/landing.js
+          grep -Fq 'OPEN CORPUS RIVER' docs/landing.js
       - name: Check landing and workbench discovery
         run: |
           grep -Fq "link.href='compiler.html'" docs/landing.js
