@@ -6,11 +6,11 @@
     {"id":"C003","class":"execute","file":"tests/conformance/execute/osmotic_bind.i13","globals":{"OUT":5}},
     {"id":"C004","class":"execute","file":"tests/conformance/execute/recursion_256.i13","globals":{"OUT":256}},
     {"id":"C005","class":"execute","file":"examples/core.i13","globals":{"CORE_OK":1,"ROUTES":56}},
-    {"id":"C006","class":"compile_error","file":"tests/conformance/reject/arity_mismatch.i13","code":"E0203"},
-    {"id":"C007","class":"compile_error","file":"tests/conformance/reject/unknown_function.i13","code":"E0202"},
-    {"id":"C008","class":"compile_error","file":"tests/conformance/reject/unexpected_character.i13","code":"E0001"},
-    {"id":"C009","class":"runtime_error","file":"tests/conformance/runtime/division_zero.i13","code":"E0501","wasm":"trap"},
-    {"id":"C010","class":"runtime_error","file":"tests/conformance/runtime/function_as_number.i13","code":"E0501","wasm":"trap"},
-    {"id":"C011","class":"resource_error","file":"tests/conformance/resource/frame_limit_4095.i13","code":"E0503","wasm":"trap"}
+    {"id":"C006","class":"compile_error","file":"tests/conformance/reject/arity_mismatch.i13","code":"E0203","phase":"semantic","category":"semantics","line":2,"source":"I OUT <- f(1, 2)"},
+    {"id":"C007","class":"compile_error","file":"tests/conformance/reject/unknown_function.i13","code":"E0202","phase":"semantic","category":"semantics","line":1,"source":"I OUT <- nope(1)"},
+    {"id":"C008","class":"compile_error","file":"tests/conformance/reject/unexpected_character.i13","code":"E0001","phase":"lex","category":"syntax","line":1,"source":"I OUT <- @"},
+    {"id":"C009","class":"runtime_error","file":"tests/conformance/runtime/division_zero.i13","code":"E0501","phase":"runtime","category":"execution","line":1,"source":"I OUT <- 1 / 0","wasm":"trap"},
+    {"id":"C010","class":"runtime_error","file":"tests/conformance/runtime/function_as_number.i13","code":"E0501","phase":"runtime","category":"execution","line":2,"source":"I OUT <- f + 1","wasm":"trap"},
+    {"id":"C011","class":"resource_error","file":"tests/conformance/resource/frame_limit_4095.i13","code":"E0503","phase":"runtime","category":"resource","line":3,"source":"    -> 1 + count(n - 1)","wasm":"trap"}
   ]
 }
