@@ -7,6 +7,7 @@
 pub mod ast;
 pub mod diagnostic;
 pub mod hir;
+pub mod introspect;
 pub mod ivm;
 pub mod lexer;
 pub mod lower_ivm;
@@ -20,6 +21,7 @@ pub mod wasm;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use hir::HirProgram;
+pub use introspect::{dump as dump_compiler, DumpKind};
 pub use parser::parse;
 pub use semantic::check;
 pub use source::{SourceFile, Span};
