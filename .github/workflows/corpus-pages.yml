@@ -9,14 +9,19 @@ on:
       - 'docs/relations.html'
       - 'docs/analysis.html'
       - 'docs/logic.html'
+      - 'docs/base11.html'
+      - 'docs/current.html'
+      - 'docs/compiler.html'
       - 'docs/keystone.html'
       - 'docs/KEYSTONE-PLATO.md'
+      - 'docs/BASE11-FLAY-R0.md'
       - 'docs/LOGIC-*.md'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
       - 'corpus/README.md'
       - '.github/workflows/corpus-*.yml'
+      - '.github/workflows/base11-flay-r0.yml'
       - '.github/workflows/keystone-plato.yml'
   pull_request:
     paths:
@@ -25,14 +30,19 @@ on:
       - 'docs/relations.html'
       - 'docs/analysis.html'
       - 'docs/logic.html'
+      - 'docs/base11.html'
+      - 'docs/current.html'
+      - 'docs/compiler.html'
       - 'docs/keystone.html'
       - 'docs/KEYSTONE-PLATO.md'
+      - 'docs/BASE11-FLAY-R0.md'
       - 'docs/LOGIC-*.md'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
       - 'corpus/README.md'
       - '.github/workflows/corpus-*.yml'
+      - '.github/workflows/base11-flay-r0.yml'
       - '.github/workflows/keystone-plato.yml'
 
 permissions:
@@ -49,7 +59,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/pages-river',description:'six-reach Pages proof running'})
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/pages-river',description:'current six-reach Pages proof running'})
       - name: Check landing JavaScript
         run: node --check docs/landing.js
       - name: Check six-reach continuity
@@ -115,6 +125,29 @@ jobs:
           grep -Fq 'I13-LOGIC-001' corpus/golden/05_logic/README.md
           grep -Fq 'OPPOSITION ALONE DOES NOT CREATE TRUTH.' corpus/golden/05_logic/README.md
           grep -Fq 'BOOLEAN IS DOWNSTREAM.' corpus/golden/05_logic/README.md
+      - name: Check Base 11 r0 traversal surface
+        run: |
+          test -s docs/base11.html
+          test -s docs/BASE11-FLAY-R0.md
+          test -s corpus/golden/base11_flay_r0.i13
+          grep -Fq '5 out · r0 · 5 back' docs/base11.html
+          grep -Fq 'Vector[voxel[r0]]' docs/base11.html
+          grep -Fq '5000' docs/base11.html
+          grep -Fq 'NON-RIVER TRAVERSAL PRIMITIVE' docs/BASE11-FLAY-R0.md
+          grep -Fq 'BASE11_ARM_DEPTH <- 1000' corpus/golden/base11_flay_r0.i13
+          grep -Fq 'BASE11_OK <-' corpus/golden/base11_flay_r0.i13
+      - name: Check current work and compiler capability surface
+        run: |
+          test -s docs/current.html
+          test -s docs/compiler.html
+          grep -Fq '54 FROZEN RIVER ROCKS' docs/current.html
+          grep -Fq 'Vector[voxel[r0]]' docs/current.html
+          grep -Fq 'Bootstrap v0.1' docs/current.html
+          grep -Fq '4096 frames' docs/current.html
+          grep -Fq '11/11' docs/current.html
+          grep -Fq '29 attacks' docs/current.html
+          grep -Fq 'not self-hosted' docs/current.html
+          grep -Fq 'I13 COMPILER OBSERVATORY · KNOWN-GOOD EXECUTABLE SLICE' docs/compiler.html
       - name: Check executable lenses and Logic handoff
         run: |
           grep -Fq 'I ADA_LENS_OK <-' corpus/golden/02_semantics/ada_lens.i13
@@ -128,23 +161,26 @@ jobs:
           grep -Fq 'LOGIC_EVIDENCE_AFTER == LOGIC_EVIDENCE_INPUT' corpus/golden/05_logic/logic.i13
       - name: Check discovery
         run: |
+          grep -Fq "link.href='current.html'" docs/landing.js
+          grep -Fq "link.href='compiler.html'" docs/landing.js
           grep -Fq "link.href='semantics.html'" docs/landing.js
           grep -Fq "link.href='relations.html'" docs/landing.js
           grep -Fq "link.href='analysis.html'" docs/landing.js
           grep -Fq "link.href='logic.html'" docs/landing.js
+          grep -Fq "link.href='base11.html'" docs/landing.js
           grep -Fq "link.href='keystone.html'" docs/landing.js
-          grep -Fq 'PLATO KEYSTONE' docs/landing.js
           grep -Fq 'Fifty-four curated I13 rocks' docs/landing.js
-          grep -Fq 'OPEN LOGIC' docs/landing.js
+          grep -Fq 'Base 11 is project traversal notation' docs/landing.js
+          grep -Fq 'strings/text' docs/landing.js
       - name: Publish green Pages river status
         if: ${{ success() && github.event_name == 'push' }}
         uses: actions/github-script@v8
         with:
           script: |
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'i13/pages-river',description:'six-reach river observatories verified'})
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'i13/pages-river',description:'current six-reach + Base 11 Pages verified'})
       - name: Publish failed Pages river status
         if: ${{ failure() && github.event_name == 'push' }}
         uses: actions/github-script@v8
         with:
           script: |
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'failure',context:'i13/pages-river',description:'six-reach Pages proof failed'})
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'failure',context:'i13/pages-river',description:'current Pages proof failed'})
