@@ -39,6 +39,38 @@ function expectStatus(result, ok, label) {
   }
 }
 
+function expectDiagnostic(result, caseDef, label) {
+  const text = combined(result);
+  if (!text.includes(caseDef.code)) {
+    fail(`${label} expected diagnostic ${caseDef.code}`, text);
+  }
+
+  if (caseDef.phase && caseDef.category) {
+    const header = `error[${caseDef.code}] ${caseDef.phase}/${caseDef.category}:`;
+    if (!text.includes(header)) {
+      fail(`${label} expected diagnostic header ${header}`, text);
+    }
+  }
+
+  if (caseDef.line) {
+    const location = new RegExp(`\\s-->\\s.*:${caseDef.line}:\\d+`);
+    if (!location.test(text)) {
+      fail(`${label} expected source location on line ${caseDef.line}`, text);
+    }
+  }
+
+  if (caseDef.source) {
+    const sourceLine = `${caseDef.line} | ${caseDef.source}`;
+    if (!text.includes(sourceLine)) {
+      fail(`${label} expected source excerpt ${sourceLine}`, text);
+    }
+  }
+
+  if (!text.includes('^')) {
+    fail(`${label} expected marked source span`, text);
+  }
+}
+
 function parseNumericGlobals(stdout) {
   const globals = new Map();
   for (const line of stdout.split(/\r?\n/)) {
@@ -97,9 +129,7 @@ for (const caseDef of manifest.cases) {
   if (caseDef.class === 'compile_error') {
     const check = cli(['check', sourcePath]);
     expectStatus(check, false, `${caseDef.id} check`);
-    if (!combined(check).includes(caseDef.code)) {
-      fail(`${caseDef.id} expected diagnostic ${caseDef.code}`, combined(check));
-    }
+    expectDiagnostic(check, caseDef, `${caseDef.id} check`);
   } else if (caseDef.class === 'execute') {
     const check = cli(['check', sourcePath]);
     expectStatus(check, true, `${caseDef.id} check`);
@@ -119,9 +149,7 @@ for (const caseDef of manifest.cases) {
 
     const run = cli(['run', sourcePath]);
     expectStatus(run, false, `${caseDef.id} reference VM`);
-    if (!combined(run).includes(caseDef.code)) {
-      fail(`${caseDef.id} expected runtime diagnostic ${caseDef.code}`, combined(run));
-    }
+    expectDiagnostic(run, caseDef, `${caseDef.id} reference VM`);
 
     const instance = buildWasm(caseDef, sourcePath);
     expectWasmTrap(instance, `${caseDef.id} Wasm`);
