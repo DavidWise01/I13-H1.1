@@ -1,0 +1,41 @@
+// 03 RELATIONS · ROCK 07 · OLD CHUNK / NEW PLACE
+I RIVER_IN <- 5702887
+
+def fit_bit(I chunk, I slot, I bit) {
+    if chunk == slot { -> bit }
+    -> 0
+}
+
+def relation_mask(I chunk, I up, I down, I left, I right) {
+    I mask <- 0
+    mask.p <- fit_bit(chunk, up, 1)
+    mask.p <- fit_bit(chunk, down, 2)
+    mask.p <- fit_bit(chunk, left, 4)
+    mask.p <- fit_bit(chunk, right, 8)
+    -> mask
+}
+
+def reuse_chunk(I chunk, I depth) {
+    if depth == 0 { -> 1 }
+    if depth == 4 {
+        if relation_mask(chunk, chunk, -100, -200, -300) == 1 { -> reuse_chunk(chunk, 3) }
+        -> 0
+    }
+    if depth == 3 {
+        if relation_mask(chunk, -100, chunk, -200, -300) == 2 { -> reuse_chunk(chunk, 2) }
+        -> 0
+    }
+    if depth == 2 {
+        if relation_mask(chunk, -100, -200, chunk, -300) == 4 { -> reuse_chunk(chunk, 1) }
+        -> 0
+    }
+    if depth == 1 {
+        if relation_mask(chunk, -100, -200, -300, chunk) == 8 { -> reuse_chunk(chunk, 0) }
+        -> 0
+    }
+    -> 0
+}
+
+I OLD_RECUR_OK <- reuse_chunk(13, 4)
+I RELATION_OK <- OLD_RECUR_OK
+I RIVER_OUT <- RIVER_IN + 3524578
