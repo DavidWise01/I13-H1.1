@@ -1,26 +1,20 @@
 # I13 Golden Corpus · 02 Semantics
 
-Status: **RIVER v0.1 · CURATED · PROGRESSIVE**
+Status: **RIVER v0.1 · FROZEN KNOWN GOOD · PROGRESSIVE**
 
 `02_semantics` inherits the final handoff from `01_syntax` and changes the question from **what can be written?** to **what does an accepted program mean?**
 
 ```text
-00 ATOMS        01 SYNTAX        02 SEMANTICS
-pieces          arrangement      meaning
-rocks           riverbed         current
-   \               |               /
-            SAME RIVER
+00 ATOMS        01 SYNTAX        02 SEMANTICS        03 RELATIONS
+pieces          arrangement      meaning             explicit fit/method
+rocks           riverbed         current             FLAY downstream
+   \               |               |                    /
+                    SAME RIVER
 ```
 
-The first semantic rock begins with:
-
-```text
-RIVER_IN = 2584
-```
+The first semantic rock begins with `RIVER_IN = 2584`; the final semantic handoff is `196418`, now inherited exactly by `03_relations`.
 
 ## Semantic authority
-
-For I13, semantic authority remains:
 
 ```text
 SPEC
@@ -36,8 +30,6 @@ The corpus observes and tests this authority; it does not replace it.
 
 ## Ada lens · mathematical poetry
 
-This reach also carries a human-readable design lens:
-
 ```text
 [ | ( ada ) | ]
 
@@ -48,25 +40,29 @@ semantics {
     reason
   )
 }
-        ~>
-relations
-        ~>
-boolean
 ```
 
-`[ | ( ada ) | ]` and `~>` are **documentary mathematical-poetry notation**, not I13 syntax. The name `ada_lens` is a design homage to Ada Lovelace's distinction between machinery, representation and what symbols may stand for; it is not a claim that she authored this modern semantic stack.
+`[ | ( ada ) | ]` is documentary mathematical poetry, not I13 syntax. The executable companion `ada_lens.i13` models the lens with current I13 numbers, comparisons, functions and control.
 
-The executable companion `ada_lens.i13` models the compression path using current I13 numbers, comparisons, functions and control:
+The name `ada_lens` is a design homage to Ada Lovelace's representational insight; it is not a historical claim that she authored this modern stack.
+
+## Downstream methodology
+
+The methodology boundary now belongs to `03_relations`:
 
 ```text
-meaning / pattern
-      ↓
-analysis + timing relations
-      ↓
-reason / decision
-      ↓
-0 or 1
+semantics
+   ↓ 196418
+relations
+   ↓
+<flay>
+   ↓
+analysis
+   ↓
+logic / boolean
 ```
+
+`<flay>` is a deterministic local fitting discipline defined downstream: `(0,0) -> UP -> DOWN -> LEFT -> RIGHT -> (0,0) CLOSE`, recursive for new chunks or old chunks that fit somewhere newly exposed, and blocked until satisfied.
 
 ## Semantic rocks
 
@@ -82,8 +78,6 @@ reason / decision
 | 07 | `07_named_call.i13` | known function names resolve; unknown names are rejected | 75025 | 121393 |
 | 08 | `08_equivalence.i13` | different legal source shapes may preserve one result | 121393 | 196418 |
 
-The Fibonacci-like current therefore continues:
-
 ```text
 2584 |s| 4181 |s| 6765 |s| 10946 |s| 17711 |s| 28657
      |s| 46368 |s| 75025 |s| 121393 |s| 196418
@@ -91,29 +85,17 @@ The Fibonacci-like current therefore continues:
 
 ## Attached veto witnesses
 
-Meaning includes rejection boundaries. These are attached to a rock rather than inserted into the numeric current because a rejected program cannot emit a handoff:
-
 ```text
 00_representation_veto.i13  -> E0501 runtime kind veto
 06_arity_veto.i13           -> E0203 semantic arity veto
 07_unknown_veto.i13         -> E0202 semantic unknown-function veto
 ```
 
-These are **bank witnesses**: they constrain the same river without pretending failure is a successful handoff.
-
-## Layer law
-
-```text
-ATOMS      = what pieces exist
-SYNTAX     = how accepted pieces may be arranged
-SEMANTICS  = which distinctions still matter after source shape is accepted
-```
-
-A semantic rock may inspect HIR/IVM and execute VM/Wasm, but its new delta is a **meaning assertion** rather than a new spelling.
+These are bank witnesses: they constrain the same river without pretending failure is a successful handoff.
 
 ## Composition witness
 
-`river.i13` composes all nine semantic rocks and must export:
+`river.i13` exports:
 
 ```text
 RIVER_START = 2584
@@ -121,4 +103,4 @@ RIVER_OK    = 1
 RIVER_FINAL = 196418
 ```
 
-`|s|`, `[ | ( ada ) | ]`, and `~>` remain documentary notation only.
+`|s|`, `[ | ( ada ) | ]`, `<flay>`, and `~>` remain documentary notation only.
