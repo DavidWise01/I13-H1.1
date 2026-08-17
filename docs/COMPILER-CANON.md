@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · FROZEN KNOWN-GOOD**
+Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · FROZEN KNOWN-GOOD WITH ONE OPEN DIFFERENTIAL BREAK**
 
 This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
 
@@ -110,6 +110,45 @@ VM(program) == WASM(program)
 
 A disagreement is a compiler/backend defect until proven otherwise.
 
+## First differential hardening break — OPEN
+
+`I13-WASM-TYPE-001` is the first reproduced VM/Wasm semantic disagreement discovered by the ordered torture harness.
+
+The first four attacks passed:
+
+```text
+arithmetic precedence
+false-path control flow
+recursion depth 256
+division-by-zero runtime parity
+```
+
+The fifth attack broke parity:
+
+```i13
+def f() { -> 7 }
+I OUT <- f + 1
+```
+
+Reference VM:
+
+```text
+E0501 Bin requires numeric operands
+```
+
+Generated Wasm:
+
+```text
+i13.global.f   = 0
+i13.global.OUT = 1
+```
+
+Cause: the VM preserves `Number` versus `Function` as distinct runtime value kinds, while the current Wasm global payload plane stores both as `f64` and therefore loses the function-value tag before numeric operations.
+
+Known-good Wasm parity is therefore bounded to the tested numeric/control/call subset and does **not** claim parity for function-valued names flowing into numeric operators.
+
+Evidence and attack order are recorded in `docs/COMPILER-TORTURE-001.md`. The defect is intentionally not repaired in the discovery pass.
+
 ## Compiler-owned Wasm law
 
 The production backend consumes **validated IVM**, not HIR and not AST.
@@ -192,8 +231,8 @@ REFERENCE VM COMPLETE
 CLI CHECK    COMPLETE
 CLI RUN      COMPLETE
 WASM CODEGEN COMPLETE · FIRST ACCEPTANCE SLICE
-VM = WASM    COMPLETE · FIRST ACCEPTANCE SLICE
+VM = WASM    BOUNDED KNOWN-GOOD · I13-WASM-TYPE-001 OPEN
 CLI BUILD    COMPLETE
 ```
 
-This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good and may now serve as the reference base for the next compiler-hardening stage.
+This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good inside its tested semantic boundary, and the first differential failure now marks the next hardening seam.
