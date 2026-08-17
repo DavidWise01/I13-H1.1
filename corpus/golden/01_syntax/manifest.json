@@ -1,0 +1,22 @@
+{
+  "id": "I13-GOLDEN-01-SYNTAX",
+  "version": "0.1",
+  "inherits": {
+    "layer": "00_atoms",
+    "handoff": 34
+  },
+  "stream_notation": "|s|",
+  "stream_notation_is_i13_syntax": false,
+  "rocks": [
+    {"index":0,"file":"00_whitespace_comments.i13","adds":"whitespace + blank lines + comments","in":34,"out":55},
+    {"index":1,"file":"01_grouping.i13","adds":"parenthesized expression","in":55,"out":89},
+    {"index":2,"file":"02_multiline_call.i13","adds":"multiline call arguments","in":89,"out":144},
+    {"index":3,"file":"03_multiline_params.i13","adds":"multiline function parameters","in":144,"out":233},
+    {"index":4,"file":"04_nested_blocks.i13","adds":"nested block shape","in":233,"out":377},
+    {"index":5,"file":"05_prefix_minus.i13","adds":"prefix minus syntax","in":377,"out":610},
+    {"index":6,"file":"06_nested_calls.i13","adds":"nested call expression","in":610,"out":987},
+    {"index":7,"file":"07_decimal_literal.i13","adds":"decimal numeric spelling","in":987,"out":1597},
+    {"index":8,"file":"08_identifier_shape.i13","adds":"underscore/digit identifier spelling","in":1597,"out":2584}
+  ],
+  "composition": {"file":"river.i13","start":34,"ok":1,"final":2584}
+}
