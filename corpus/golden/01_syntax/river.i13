@@ -1,0 +1,96 @@
+// I13 GOLDEN CORPUS · 01 SYNTAX · RIVER WITNESS
+// inherits 00_atoms final handoff: 34
+// 34 |s| 55 |s| 89 |s| 144 |s| 233 |s| 377 |s| 610 |s| 987 |s| 1597 |s| 2584
+// `|s|` is documentation-only stream notation, not I13 syntax.
+
+I RIVER_START <- 34
+
+// syntax rock 00 · whitespace / comments
+I R0_IN <- RIVER_START
+I    syntax_delta_00    <-    21
+I R0_OUT <- R0_IN + syntax_delta_00
+
+// syntax rock 01 · grouping
+I R1_IN <- R0_OUT
+I R1_OUT <- R1_IN + (13 + 21)
+
+// syntax rock 02 · multiline call
+def syntax_add_02(I x, I y) {
+    -> x + y
+}
+I R2_IN <- R1_OUT
+I R2_OUT <- syntax_add_02(
+    R2_IN,
+    55
+)
+
+// syntax rock 03 · multiline parameters
+def syntax_add_03(
+    I x,
+    I y
+)
+{
+    -> x + y
+}
+I R3_IN <- R2_OUT
+I R3_OUT <- syntax_add_03(R3_IN, 89)
+
+// syntax rock 04 · nested blocks
+def syntax_step_04(I x) {
+    if x == 233 {
+        if x == 233 {
+            -> x + 144
+        }
+    }
+    -> 0
+}
+I R4_IN <- R3_OUT
+I R4_OUT <- syntax_step_04(R4_IN)
+
+// syntax rock 05 · prefix minus
+I R5_IN <- R4_OUT
+I syntax_delta_05 <- -233
+I R5_OUT <- R5_IN - syntax_delta_05
+
+// syntax rock 06 · nested calls
+def syntax_add_06(I x, I y) {
+    -> x + y
+}
+I R6_IN <- R5_OUT
+I R6_OUT <- syntax_add_06(R6_IN, syntax_add_06(144, 233))
+
+// syntax rock 07 · decimal spelling of existing Number
+I R7_IN <- R6_OUT
+I syntax_delta_07 <- 610.0
+I R7_OUT <- R7_IN + syntax_delta_07
+
+// syntax rock 08 · underscore / digit identifier spelling
+I R8_IN <- R7_OUT
+I river_delta_01 <- 987
+I R8_OUT <- R8_IN + river_delta_01
+
+def syntax_river_selftest() {
+    if RIVER_START != 34 { -> 0 }
+    if R0_IN != RIVER_START { -> 0 }
+    if R0_OUT != 55 { -> 0 }
+    if R1_IN != R0_OUT { -> 0 }
+    if R1_OUT != 89 { -> 0 }
+    if R2_IN != R1_OUT { -> 0 }
+    if R2_OUT != 144 { -> 0 }
+    if R3_IN != R2_OUT { -> 0 }
+    if R3_OUT != 233 { -> 0 }
+    if R4_IN != R3_OUT { -> 0 }
+    if R4_OUT != 377 { -> 0 }
+    if R5_IN != R4_OUT { -> 0 }
+    if R5_OUT != 610 { -> 0 }
+    if R6_IN != R5_OUT { -> 0 }
+    if R6_OUT != 987 { -> 0 }
+    if R7_IN != R6_OUT { -> 0 }
+    if R7_OUT != 1597 { -> 0 }
+    if R8_IN != R7_OUT { -> 0 }
+    if R8_OUT != 2584 { -> 0 }
+    -> 1
+}
+
+I RIVER_OK <- syntax_river_selftest()
+I RIVER_FINAL <- R8_OUT
