@@ -1,0 +1,25 @@
+name: I13 compiler differential torture 003
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - 'scripts/compiler_torture.sh'
+      - 'scripts/compiler_torture_002.sh'
+      - 'scripts/compiler_torture_003.sh'
+      - '.github/workflows/compiler-torture-003.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  attack-resource-boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Attack frame and step limits until first break
+        run: bash scripts/compiler_torture_003.sh
