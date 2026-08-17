@@ -1,6 +1,6 @@
 # I13 Compiler Introspection v0.1
 
-Status: **CONSTRUCTED · CI-GATED PENDING FINAL FREEZE**
+Status: **FROZEN KNOWN GOOD · COMPILER TESTED · CI-GATED**
 
 Component ID: `I13-INTROSPECTION-0.1`
 
@@ -29,7 +29,7 @@ i13 dump file.i13 --hir
 i13 dump file.i13 --ivm
 ```
 
-## Authority rule
+## Authority rule — FROZEN
 
 Introspection is read-only.
 
@@ -39,6 +39,11 @@ DUMP                    observation
 ```
 
 A dump is never accepted back into the compiler as source, HIR, or IVM. The dump format therefore cannot become a shadow serialization format or a fourth authority.
+
+```text
+INTROSPECTION MAY REVEAL AUTHORITY.
+INTROSPECTION MAY NOT DEFINE AUTHORITY.
+```
 
 ## Layer gates
 
@@ -155,6 +160,8 @@ dump(source, layer) == dump(source, layer)
 byte-for-byte across repeated runs.
 
 `tests/compiler_introspection.rs` regression-locks all four layers, semantic gating, symbolic IVM output, and the real CLI command.
+
+The first full compiler/Wasm CI gate after construction passed all compiler tests, Wasm build/parity, and the canonical 4096-frame regression unchanged.
 
 ## Non-goals for v0.1
 
