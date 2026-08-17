@@ -24,6 +24,28 @@ VS     = explicit comparison/contrast
 
 `h1.1-corpus.jsonl` stores metadata, provenance URLs, classifications and short notes. It does not redistribute full copyrighted books or software packages.
 
+## Golden I13 river
+
+The compiler-facing golden corpus is intentionally separate from the older technical/research corpus.
+
+```text
+corpus/golden/
+    ↓
+00_atoms
+    ↓
+future progressive language layers
+```
+
+`00_atoms` is a hand-curated progressive stream:
+
+```text
+0 |s| 1 |s| 1 |s| 2 |s| 3 |s| 5 |s| 8 |s| 13 |s| 21 |s| 34
+```
+
+`|s|` is corpus documentation notation for stream handoff, not I13 syntax. Every rock is independently compilable, its `RIVER_IN` equals the previous rock's `RIVER_OUT`, and `corpus/golden/00_atoms/river.i13` composes the current inside I13 itself.
+
+See `corpus/golden/00_atoms/README.md` and `docs/CORPUS-ATOMS.md`.
+
 ## Stage 14 — admission gate
 
 ```text
