@@ -1,8 +1,8 @@
 # I13 Compiler Canon — Known Good
 
-Status: **FROZEN FOR COMPILER CONSTRUCTION**
+Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · FROZEN KNOWN-GOOD**
 
-This document freezes only the compiler architecture already established as known-good. It does not add language features.
+This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
 
 ## Canonical authority chain
 
@@ -94,6 +94,12 @@ The parser does not define language semantics. The Wasm backend does not define 
 
 Opcode stack/control effects have one definition. Validator, reference VM, and Wasm lowering consume the same IVM law rather than re-deriving it independently.
 
+The frozen IVM opcode surface remains exactly:
+
+```text
+Const Ask Attr Ret Answer Drop Bin Cmp If Call Block Else End Func Halt
+```
+
 ## Reference-first law
 
 The reference VM prioritizes correctness and determinism over speed. For every conformance program:
@@ -104,26 +110,57 @@ VM(program) == WASM(program)
 
 A disagreement is a compiler/backend defect until proven otherwise.
 
-## Known inherited defects to close before alpha
+## Compiler-owned Wasm law
 
-- `Arg` must become a real semantic construct rather than only a string stored inside `FunctionDef`.
-- `Attribute` must have defined executable semantics or fail explicitly before execution.
-- Function call arity must fail in semantic checking, not at runtime.
-- I13 recursion must use an explicit VM call stack rather than host-language recursion.
-- Stack/control effects must have one authority.
-- Source spans and diagnostics are required from the beginning.
+The production backend consumes **validated IVM**, not HIR and not AST.
+
+```text
+validated IVM
+      ↓
+compiler/wasm.rs
+      ↓
+WebAssembly binary
+```
+
+The backend is dependency-free and emits the WebAssembly binary format directly.
+
+Generated modules currently expose:
+
+```text
+i13_run
+
+i13.global.<name>
+i13.state.<name>
+```
+
+`i13_run` resets program globals before execution so repeated calls represent fresh deterministic executions.
+
+I13 function handles lower to Wasm table indices. IVM `Call` lowers through `call_indirect`, allowing recursive generated Wasm without Rust host recursion.
+
+IVM division-by-zero behavior is preserved with an explicit Wasm guard rather than accepting native `f64.div` infinity behavior.
+
+## Closed inherited compiler defects
+
+The first vertical slice closes these inherited defects on the accepted compiler path:
+
+- `Arg` is a real HIR construct.
+- unsupported `Attribute` use fails explicitly before execution.
+- call arity fails during semantic checking.
+- reference-VM recursion uses explicit VM frames, not Rust recursion.
+- stack/control effects have one IVM authority.
+- source spans and stable diagnostics exist from the front end onward.
 
 ## Scope freeze during compiler construction
 
-E1, corpus expansion, UI stages, and new conceptual modules are **referent-only** until the compiler reaches the usable vertical-slice milestone.
+E1, corpus expansion, UI stages, and new conceptual modules remain **referent-only** until the compiler usable-core work is deliberately released.
 
 They may be referenced for compatibility. They are not active construction targets.
 
-## First acceptance target
+## First acceptance target — PASSED
 
 `examples/core.i13` is the first whole-program acceptance target because it exercises declarations, functions, arguments, calls, conditions, comparisons, arithmetic, returns, recursion, and the existing `.p` spelling.
 
-The compiler milestone is reached when the same source passes:
+The same source now passes:
 
 ```text
 i13 check examples/core.i13
@@ -131,4 +168,32 @@ i13 run examples/core.i13
 i13 build examples/core.i13 -o core.wasm
 ```
 
-with reference-VM and Wasm results equivalent.
+The generated Wasm module is validated and instantiated by Node's WebAssembly engine, executes `i13_run`, and matches the reference VM acceptance values:
+
+```text
+CORE_OK = 1
+ROUTES  = 56
+```
+
+The parity test executes the same generated module twice and requires the same values on both runs.
+
+## Current compiler status
+
+```text
+SOURCE       COMPLETE
+LEXER        COMPLETE
+PARSER       COMPLETE
+AST          COMPLETE
+HIR          COMPLETE
+SEMANTIC     COMPLETE
+IVM          COMPLETE
+VALIDATOR    COMPLETE
+REFERENCE VM COMPLETE
+CLI CHECK    COMPLETE
+CLI RUN      COMPLETE
+WASM CODEGEN COMPLETE · FIRST ACCEPTANCE SLICE
+VM = WASM    COMPLETE · FIRST ACCEPTANCE SLICE
+CLI BUILD    COMPLETE
+```
+
+This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good and may now serve as the reference base for the next compiler-hardening stage.
