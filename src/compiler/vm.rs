@@ -1,6 +1,6 @@
 use super::{
     diagnostic::{Diagnostic, DiagnosticCode},
-    ivm::{answer, bin, cmp, Inst, IvmProgram, Op},
+    ivm::{answer, bin, cmp, Inst, IvmProgram, Op, I13_FRAME_LIMIT},
     source::Span,
     validator,
 };
@@ -14,12 +14,14 @@ pub enum Value {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct VmConfig {
     pub step_limit: u64,
+    /// Optional stricter execution ceiling for tests/hosts. The canonical I13
+    /// ceiling can never be raised above I13_FRAME_LIMIT.
     pub frame_limit: usize,
 }
 
 impl Default for VmConfig {
     fn default() -> Self {
-        Self { step_limit: 8_000_000, frame_limit: 4096 }
+        Self { step_limit: 8_000_000, frame_limit: I13_FRAME_LIMIT }
     }
 }
 
@@ -44,7 +46,8 @@ impl VmResult {
 /// Deterministic reference execution for canonical IVM-13.
 ///
 /// Calls use an explicit frame vector. I13 recursion therefore does not recurse
-/// through the Rust host stack.
+/// through the Rust host stack. The canonical active-frame ceiling is owned by
+/// I13/IVM and is shared with generated backends.
 pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnostic> {
     if let Err(mut errors) = validator::validate(program) {
         return Err(errors.remove(0));
@@ -56,6 +59,7 @@ pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnosti
             Span::new(0, 0, 1, 1),
         ));
     }
+    let frame_limit = config.frame_limit.min(I13_FRAME_LIMIT);
 
     let mut globals = vec![None; program.globals.len()];
     let mut frames = vec![Frame::main()];
@@ -206,10 +210,10 @@ pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnosti
                         inst.span,
                     ));
                 }
-                if frames.len() >= config.frame_limit {
+                if frames.len() >= frame_limit {
                     return Err(Diagnostic::new(
                         DiagnosticCode::VmCallLimit,
-                        format!("reference VM exceeded {} frames", config.frame_limit),
+                        format!("I13 execution exceeded {frame_limit} frames"),
                         inst.span,
                     ));
                 }
