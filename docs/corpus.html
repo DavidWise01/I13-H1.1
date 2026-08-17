@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#04070b">
+<meta name="description" content="I13 Golden Corpus River: progressive 00 atoms from declaration to osmotic bind, verified on reference VM and Wasm.">
+<title>I13 · Golden Corpus River</title>
+<link rel="stylesheet" href="compiler.css">
+<style>
+.river-shell{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(9,16,25,.96),rgba(5,10,16,.9));padding:26px;box-shadow:var(--shadow);overflow:hidden}.river-current{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:12px 2px 18px;scrollbar-width:thin}.rock{min-width:128px;border:1px solid #23435d;border-radius:48% 52% 44% 56%/55% 44% 56% 45%;background:radial-gradient(circle at 35% 28%,#162b3b,#08111a 68%);padding:18px 14px;text-align:center;box-shadow:inset 0 0 24px rgba(66,232,255,.035),0 12px 34px rgba(0,0,0,.25)}.rock strong{display:block;color:var(--cyan);font:900 20px/1 "Cascadia Code",monospace}.rock span{display:block;color:var(--text);font-size:11px;font-weight:800;margin-top:8px}.rock small{display:block;color:var(--muted);font:9px/1.35 "Cascadia Code",monospace;margin-top:5px}.stream{flex:0 0 auto;color:var(--green);font:900 12px/1 "Cascadia Code",monospace;letter-spacing:.08em;text-shadow:0 0 16px rgba(125,255,165,.35)}.river-values{font:900 clamp(18px,3vw,32px)/1.5 "Cascadia Code",monospace;color:var(--cyan);word-spacing:.12em;text-align:center}.river-values .s{color:var(--green);font-size:.55em}.flow-law{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.flow-law>div{border:1px solid var(--line);border-radius:13px;padding:16px;background:#08111a}.flow-law b{display:block;color:var(--green);font:800 11px/1.4 "Cascadia Code",monospace}.flow-law span{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:7px}.next-river{border-style:dashed;opacity:.82}@media(max-width:800px){.flow-law{grid-template-columns:1fr}.river-current{padding-bottom:24px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-i">I</span><span>I13 / CORPUS</span></a>
+  <nav aria-label="Golden corpus navigation">
+    <a href="#river" class="active">RIVER</a>
+    <a href="#rocks">ROCKS</a>
+    <a href="#law">LAW</a>
+    <a href="compiler.html">COMPILER</a>
+    <a href="workbench.html">WORKBENCH</a>
+    <a href="index.html">ORIGIN</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">I13 GOLDEN CORPUS · 00 ATOMS · RIVER v0.1</p>
+      <h1>One river. <span>Nine rocks.</span></h1>
+      <p class="lead">The smallest curated I13 programs are arranged as one progressive current. Every rock receives the previous handoff, adds one new executable behavior, and passes a new value downstream.</p>
+      <div class="badge-row">
+        <span class="pill good">9 / 9 ROCKS · PASS</span>
+        <span class="pill good">VM = WASM</span>
+        <span class="pill info">RIVER_FINAL = 34</span>
+        <span class="pill info">I13 COMPOSITION WITNESS</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="#river">ENTER THE CURRENT</a>
+        <a class="button ghost" href="CORPUS-ATOMS.md">READ RIVER CONTRACT</a>
+        <a class="button ghost" href="compiler.html">COMPILER OBSERVATORY</a>
+      </div>
+    </div>
+    <aside class="hero-status">
+      <div class="status-head"><span class="status-led">RIVER GREEN</span><span class="commit">first gate 0d00e99</span></div>
+      <div class="metrics">
+        <div class="metric"><strong>9</strong><span>PROGRESSIVE ROCKS</span></div>
+        <div class="metric"><strong>34</strong><span>FINAL HANDOFF</span></div>
+        <div class="metric"><strong>2</strong><span>EXECUTION AUTHORITIES</span></div>
+        <div class="metric"><strong>1</strong><span>COMPOSED .i13 RIVER</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="section" id="river">
+    <div class="section-head"><div><p class="eyebrow">STREAM HANDOFF</p><h2>The current.</h2></div><p><code>|s|</code> is documentation-only stream notation. It is deliberately not a new I13 operator.</p></div>
+    <div class="river-shell">
+      <div class="river-values">0 <span class="s">|s|</span> 1 <span class="s">|s|</span> 1 <span class="s">|s|</span> 2 <span class="s">|s|</span> 3 <span class="s">|s|</span> 5 <span class="s">|s|</span> 8 <span class="s">|s|</span> 13 <span class="s">|s|</span> 21 <span class="s">|s|</span> 34</div>
+      <div class="authority-key"><span><b>RIVER_IN</b> · inherited handoff</span><span><b>ROCK</b> · one new behavior</span><span><b>RIVER_OUT</b> · next handoff</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="rocks">
+    <div class="section-head"><div><p class="eyebrow">00 ATOMS</p><h2>Each piece is a rock.</h2></div><p>The individual files stay independently compilable, but their values and feature progression make them one corpus stream rather than unrelated examples.</p></div>
+    <div class="river-shell">
+      <div class="river-current" aria-label="Nine corpus rocks in stream order">
+        <div class="rock"><strong>00</strong><span>SEED</span><small>0 → 1<br>I + constant</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>01</strong><span>NAME</span><small>1 → 1<br>binding read</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>02</strong><span>BINOP</span><small>1 → 2<br>arithmetic</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>03</strong><span>ASSIGN</span><small>2 → 3<br>rebind</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>04</strong><span>FUNCTION</span><small>3 → 5<br>def/ret/call</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>05</strong><span>ARG</span><small>5 → 8<br>arguments</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>06</strong><span>COMPARE</span><small>8 → 13<br>comparison</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>07</strong><span>IF</span><small>13 → 21<br>control</small></div><div class="stream">|s|</div>
+        <div class="rock"><strong>08</strong><span>OSMOTIC</span><small>21 → 34<br>.p bind</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="law">
+    <div class="section-head"><div><p class="eyebrow">GOLDEN CORPUS LAW</p><h2>Flow, don't pile.</h2></div><p>The corpus grows downstream. A later layer should consume the shape established upstream instead of becoming another disconnected bucket.</p></div>
+    <div class="flow-law">
+      <div><b>1 · CONTINUITY</b><span><code>ROCK[n].RIVER_IN == ROCK[n-1].RIVER_OUT</code>. A broken handoff is a corpus failure.</span></div>
+      <div><b>2 · ONE DELTA</b><span>Each rock introduces the smallest useful new executable behavior. Compound passages are allowed only when the behaviors cannot execute independently.</span></div>
+      <div><b>3 · TWO PROOFS</b><span>Every rock must agree on the reference VM and generated Wasm, then the composed <code>river.i13</code> must traverse the current inside I13 itself.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><div><p class="eyebrow">COMPOSITION WITNESS</p><h2>The rocks become one program.</h2></div><p><code>corpus/golden/00_atoms/river.i13</code> carries every handoff in one executable I13 source and self-tests all joins.</p></div>
+    <div class="geometry-grid">
+      <article class="geometry"><h3>Individual proof</h3><div class="type-route"><div class="route-card"><strong>ROCK .i13</strong><span>check + run + build</span></div><span class="route-arrow">⇄</span><div class="route-card"><strong>VM / WASM</strong><span>same in/out</span></div></div><p>Each stone can be isolated when a future compiler change breaks a specific capability.</p></article>
+      <article class="geometry"><h3>River proof</h3><div class="type-route"><div class="route-card"><strong>river.i13</strong><span>all nine joins</span></div><span class="route-arrow">→</span><div class="route-card"><strong>RIVER_OK = 1</strong><span>RIVER_FINAL = 34</span></div></div><p>The composition witness proves the pieces still form a current rather than merely passing alone.</p></article>
+    </div>
+  </section>
+
+  <section class="section next-river">
+    <div class="section-head"><div><p class="eyebrow">DOWNSTREAM</p><h2>01 should inherit this water.</h2></div><p>The next corpus layer should start from the 00-atoms vocabulary and flow into richer syntax/text cases. It should not restart at zero as an unrelated test collection.</p></div>
+    <div class="pipeline-shell"><div class="authority-key"><span><b>00 ATOMS</b> · current source primitives</span><span>→</span><span><b>01 SYNTAX</b> · richer arrangements of the same primitives</span><span>→</span><span><b>02 SEMANTICS</b> · larger meaning-preserving compositions</span></div></div>
+  </section>
+</main>
+
+<footer class="footer"><span>I13 Golden Corpus · rocks in one river</span><span><a href="index.html">ORIGIN</a> · <a href="compiler.html">COMPILER</a> · <a href="workbench.html">WORKBENCH</a></span></footer>
+</body>
+</html>
