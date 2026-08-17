@@ -199,7 +199,7 @@ impl Parser {
     }
 
     fn infix_info(&self) -> Option<(u8, Option<BinaryOp>, Option<CompareOp>)> {
-        match self.peek().kind {
+        match &self.peek().kind {
             TokenKind::EqEq => Some((1, None, Some(CompareOp::Eq))),
             TokenKind::NotEq => Some((1, None, Some(CompareOp::Ne))),
             TokenKind::Lt => Some((1, None, Some(CompareOp::Lt))),
@@ -215,7 +215,7 @@ impl Parser {
     }
 
     fn looks_like_assignment(&self) -> bool {
-        if !matches!(self.peek().kind, TokenKind::Ident(_)) { return false; }
+        if !matches!(&self.peek().kind, TokenKind::Ident(_)) { return false; }
         match self.tokens.get(self.pos + 1).map(|t| &t.kind) {
             Some(TokenKind::Bind) => true,
             Some(TokenKind::Dot) => matches!(
@@ -228,13 +228,13 @@ impl Parser {
 
     fn synchronize(&mut self) {
         while !self.at_eof() {
-            if matches!(self.peek().kind, TokenKind::Newline | TokenKind::RBrace) { break; }
+            if matches!(&self.peek().kind, TokenKind::Newline | TokenKind::RBrace) { break; }
             self.advance();
         }
     }
 
     fn skip_newlines(&mut self) { while self.matches(|k| matches!(k, TokenKind::Newline)) {} }
-    fn at_eof(&self) -> bool { matches!(self.peek().kind, TokenKind::Eof) }
+    fn at_eof(&self) -> bool { matches!(&self.peek().kind, TokenKind::Eof) }
     fn peek(&self) -> &Token { &self.tokens[self.pos] }
     fn previous(&self) -> &Token { &self.tokens[self.pos - 1] }
     fn advance(&mut self) -> &Token { if !self.at_eof() { self.pos += 1; } &self.tokens[self.pos.saturating_sub(1)] }
