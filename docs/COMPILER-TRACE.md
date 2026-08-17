@@ -1,6 +1,6 @@
 # I13 Compiler Execution Tracing v0.1
 
-Status: **CONSTRUCTED · CI-GATED PENDING FINAL FREEZE**
+Status: **FROZEN KNOWN GOOD · COMPILER TESTED · CI-GATED**
 
 Component ID: `I13-TRACE-0.1`
 
@@ -24,7 +24,7 @@ The command surface is:
 i13 trace file.i13
 ```
 
-## Authority rule
+## Authority rule — FROZEN
 
 Tracing is an observer of the reference VM.
 
@@ -41,7 +41,7 @@ TRACE MAY NOT DEFINE EXECUTION.
 
 There is no trace interpreter and no path that replays trace text as executable I13.
 
-## Single-VM law
+## Single-VM law — FROZEN
 
 `vm::run` and `vm::run_observed` enter the same execution loop.
 
@@ -154,7 +154,7 @@ The diagnostic remains authoritative for the error code, category, source excerp
 
 Tracing does not replace or redefine `I13-DIAGNOSTICS-0.1`.
 
-## Determinism law
+## Determinism law — FROZEN
 
 For a fixed source, compiler version, and VM configuration:
 
@@ -185,6 +185,8 @@ runtime fault preserves the exact VM diagnostic
 last fault trace event is the real failing instruction
 real `i13 trace` CLI command streams and completes
 ```
+
+The first code-bearing full compiler/Wasm CI gate after construction passed all Rust/compiler tests, normal Wasm build/parity, and the canonical 4096-frame regression unchanged. The existing conformance gate also remained green after the CLI trace command was introduced.
 
 ## Relationship to Wasm
 
