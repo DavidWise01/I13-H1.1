@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 05 Logic
 
-Status: **CANON CANDIDATE · ANALYSIS-GATED · FOUR-STATE DECISION · BOOLEAN-DOWNSTREAM**
+Status: **FROZEN KNOWN GOOD · UPSTREAM-ANALYSIS-GATED · HIR/VM/WASM VERIFIED · BOOLEAN-DOWNSTREAM**
 
 ID: `I13-GOLDEN-05-LOGIC-0.1`
 
@@ -187,7 +187,7 @@ Documentary state:
 [ 1 |  3 ]  valid OO
 ```
 
-The canonical composed witness currently yields:
+The canonical composed witness yields:
 
 ```text
 LOGIC_VALID    = 1
@@ -223,6 +223,6 @@ River:
            |s| 32951280099 |s| 53316291173 |s| 86267571272
 ```
 
-Current handoff candidate: `86267571272`.
+Frozen current handoff: `86267571272`.
 
-The reach becomes **FROZEN KNOWN GOOD** only after HIR / VM / Wasm CI proves every rock, the composed method, upstream Analysis inheritance, evidence preservation, Queen recursion and the complete river.
+The `i13/logic-canon` CI status is published only after upstream Analysis inheritance, every rock, HIR checkpoints, VM execution, Wasm parity, repeated Wasm execution, Queen recursion, tagged decision, evidence preservation and composed river continuity all pass.
