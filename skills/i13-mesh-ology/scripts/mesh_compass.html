@@ -34,13 +34,13 @@
 <body>
 <header>
   <h1>&#9883; I-13 Mesh Compass</h1>
-  <div class="sub">Synthesized FROM the gathered corpus — 18 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
+  <div class="sub">Synthesized FROM the gathered corpus — 20 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
 </header>
 <main>
   <div class="stat">
-    <div><b>18</b><br><span class="sub">skills gathered</span></div>
-    <div><b>7</b><br><span class="sub">reading ladders</span></div>
-    <div><b>16</b><br><span class="sub">VERIFIED</span></div>
+    <div><b>20</b><br><span class="sub">skills gathered</span></div>
+    <div><b>8</b><br><span class="sub">reading ladders</span></div>
+    <div><b>18</b><br><span class="sub">VERIFIED</span></div>
     <div><b>1</b><br><span class="sub">CONTESTED</span></div>
     <div><b>1</b><br><span class="sub">CLINICAL</span></div>
   </div>
@@ -48,7 +48,7 @@
   <div class="grid" id="grid"></div>
 </main>
 <footer>
-  Generated 2026-08-17 00:17 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
+  Generated 2026-08-17 01:36 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
 </footer>
 <script>
 const SKILLS = [
@@ -213,6 +213,24 @@ const SKILLS = [
     "status": "VERIFIED",
     "tool": "ars_moriendi_explorer.html",
     "note": "Ars Moriendi (Art of Dying), c.1415/1450 — 1st occult/obscure node (merged #34)"
+  },
+  {
+    "n": "brainfuck",
+    "topic": "Esoteric Language",
+    "ology": "Esoteric Programming Languages",
+    "layer": "esoteric-language",
+    "status": "VERIFIED",
+    "tool": "brainfuck_explorer.html",
+    "note": "Brainfuck (Urban Müller 1993) — 1st esoteric-language node (merged #36)"
+  },
+  {
+    "n": "malbolge",
+    "topic": "Esoteric Language",
+    "ology": "Esoteric Programming Languages",
+    "layer": "esoteric-language",
+    "status": "VERIFIED",
+    "tool": "malbolge_explorer.html",
+    "note": "Malbolge (Olmstead 1998) — 2nd esoteric-language node; reference-only (merged #37)"
   }
 ];
 const LADDERS = [
@@ -271,6 +289,15 @@ const LADDERS = [
       "ars-moriendi",
       "rape-of-the-mind",
       "eyes-wide-open"
+    ]
+  },
+  {
+    "name": "Esolang Spectrum (minimal → hostile)",
+    "blurb": "Brainfuck (minimal) vs Malbolge (hostile) — language design extremes.",
+    "steps": [
+      "brainfuck",
+      "malbolge",
+      "fundamentals-cpp"
     ]
   },
   {

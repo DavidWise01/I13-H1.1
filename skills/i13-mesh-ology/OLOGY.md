@@ -92,6 +92,19 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 > occult-death tradition*. Pairs with F (MIND) as the *belief-and-influence*
 > contrast — medieval manual for the soul's final temptation vs modern mind-control.
 
+## E6. ESOTERIC LANGUAGE (topic) — Esoteric Programming Languages (-ology: esolangs / language design)
+| Skill | Layer | Status | Tool |
+|---|---|---|---|
+| `brainfuck` | esoteric-language | VERIFIED | `brainfuck_explorer.html` |
+| `malbolge` | esoteric-language | VERIFIED | `malbolge_explorer.html` |
+
+> **E6 = the esolang branch:** the user's "this one lol" pivot (Brainfuck) then
+> Malbolge. Brainfuck ships a *runnable* interpreter (minimal, faithful); Malbolge
+> ships a *reference* only (its self-modifying ternary VM is non-trivial — a wrong
+> runner was attempted and graveyarded; the reference is real spec data). Together
+> they bracket the language-design spectrum: minimal-by-design vs hostile-by-design.
+> Pairs with `pl-foundations` (C++) and `computational-primitive` (sbtcvm).
+
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |
 |---|---|---|---|---|
@@ -114,6 +127,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **Programming Languages (C++)** → E3 (fundamentals-cpp)
 - **Statistics / R Programming** → E4 (beginning-r)
 - **Deathbed Literature / Memento Mori** → E5 (ars-moriendi)
+- **Esoteric Programming Languages** → E6 (brainfuck, malbolge)
 - **Late-Antique Greek Rhetoric** → E1 (libanius-1517)
 - **Art History / Satirical Prints** → E1 (works-of-hogarth)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
@@ -130,6 +144,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 7. `humanities-classics` — libanius-1517, works-of-hogarth
 8. `data-science` — beginning-r
 9. `occult-obscure` — ars-moriendi
+10. `esoteric-language` — brainfuck, malbolge
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.
