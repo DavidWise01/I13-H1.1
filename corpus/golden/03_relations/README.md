@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 03 Relations · FLAY
 
-Status: **CONSTRUCTED · GATE PENDING**
+Status: **FROZEN KNOWN GOOD · HIR/VM/WASM CI-GATED**
 
 ID: `I13-GOLDEN-03-RELATIONS-FLAY-0.1`
 
@@ -183,3 +183,7 @@ The Ada lens remains an interpretive design lens upstream. FLAY is the methodolo
 ```
 
 The historical Ada references remain an homage to representational and relational thinking; FLAY itself is an I13 project methodology, not a historical claim about Ada Lovelace.
+
+## CI evidence
+
+First full gate: GitHub Actions run `32063203999`, conclusion **success**. It verified all nine rocks, the executable methodology witness, recursive reuse, recursive new chunks, origin closure, HIR checkpoints, reference VM execution, generated Wasm parity, repeat determinism and cross-reach continuity from `02_semantics`.
