@@ -40,7 +40,7 @@ mod tests {
             HirStmtKind::Assign { declare, target, value, .. } => {
                 assert!(*declare);
                 assert_eq!(target, "x");
-                assert!(matches!(value.kind, HirExprKind::Constant(v) if v == 4.0));
+                assert!(matches!(&value.kind, HirExprKind::Constant(v) if *v == 4.0));
             }
             other => panic!("unexpected HIR: {other:?}"),
         }
