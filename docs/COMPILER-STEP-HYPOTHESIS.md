@@ -1,8 +1,10 @@
 # I13 Compiler Step-Budget Hypothesis
 
-Status: **TESTED · DETERMINISTIC METER CONFIRMED · NOT CANONIZED AS LANGUAGE LAW**
+Status: **TESTED · DECISION LOCKED · DETERMINISTIC METER KEPT · 8M IS RUNTIME POLICY, NOT LANGUAGE LAW**
 
-Related open break: `I13-WASM-STEP-003`
+Historical break ID: `I13-WASM-STEP-003`
+
+Resolution: **RECLASSIFIED AS POLICY DIVERGENCE · NOT A SEMANTIC COMPILER DEFECT**
 
 Purpose: determine whether the reference VM default `8,000,000` step cutoff behaves like a stable I13 semantic law or like an implementation/resource meter.
 
@@ -75,7 +77,7 @@ steps = 8
 
 Thus step count is deterministic but intentionally sensitive to execution/lowering shape. It is not a property of the final semantic result alone.
 
-## Current VM/Wasm mismatch is deterministic
+## VM/Wasm difference is deterministic
 
 `explode(19)` was repeated three times through the CLI/reference VM. Every run produced the same `E0502` step-limit veto at the configured `8,000,000` ceiling.
 
@@ -86,33 +88,49 @@ OUT = 524288
 kind = NUMBER
 ```
 
-So the open break remains reproducible:
+Therefore the observed difference is:
 
 ```text
-reference VM: deterministic resource veto
-Wasm:         deterministic completion
+reference VM: deterministic runtime-policy veto
+Wasm:         deterministic semantic completion
 ```
 
-## Interpretation
+It is no longer classified as a required VM/Wasm semantic-parity failure because the `8,000,000` fuse is explicitly outside I13 language validity.
 
-The test supports two distinct facts:
+## Locked decision
+
+`I13-RUNTIME-POLICY-001`
 
 ```text
-DETERMINISTIC METER     YES
-SEMANTIC RESULT LAW     NO
+DETERMINISTIC STEP METER   KEEP
+1 IVM instruction = 1 step KEEP
+8,000,000 DEFAULT FUSE     KEEP
+8M AS I13 LANGUAGE LIMIT   NO
+WASM 8M MATCH REQUIRED     NO
 ```
 
-A fixed step budget can become an I13-owned law only if I13 deliberately adopts a gas/execution-cost model and freezes what is charged. Otherwise compiler transformations that change IVM instruction count could change whether a program is permitted to complete even when its observable semantics are preserved.
+The reference VM keeps `8_000_000` as its default safety fuse.
 
-The measured evidence therefore supports keeping `8,000,000` as a reference/runtime safety policy for now, while treating deterministic IVM-step metering as a reusable mechanism that could later be standardized independently.
+A host or test may use another step budget without changing I13 program meaning.
 
-No language-law change was made by this test.
+Semantic conformance must not reject a program merely because one implementation's safety fuse is lower than the work required by that program.
 
-## Persistent test assets
+The canonical 4096-frame law remains separate and mandatory across every backend.
+
+## Future gas model
+
+A fixed step budget can become an I13-owned law only if I13 deliberately adopts a versioned gas/execution-cost model and freezes what is charged.
+
+Without such a schedule, compiler transformations that change IVM instruction count could change whether a program is permitted to complete even when observable semantics are preserved.
+
+No gas law is adopted by this decision.
+
+## Persistent test and policy assets
 
 ```text
 tests/compiler_step_semantics.rs
 .github/workflows/compiler-step-hypothesis.yml
+docs/COMPILER-RUNTIME-POLICY.md
 ```
 
-The workflow is expected to keep proving both the VM meter's determinism and the current open Wasm mismatch until the step-budget policy is deliberately resolved.
+The workflow remains useful as a regression probe for deterministic metering and for proving that the reference-runtime fuse remains policy rather than hidden language semantics.
