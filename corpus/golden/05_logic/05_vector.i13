@@ -1,0 +1,15 @@
+// 05 LOGIC · ROCK 05 · vector transition direction
+
+def vector_direction(I current, I next) {
+    if current < next { -> 1 }
+    if current > next { -> -1 }
+    -> 0
+}
+
+I RIVER_IN <- 12586269025
+I VECTOR_INWARD <- vector_direction(0, 1)
+I VECTOR_OUTWARD <- vector_direction(1, 0)
+I VECTOR_STILL <- vector_direction(1, 1)
+I VECTOR_OK <- (VECTOR_INWARD == 1) * (VECTOR_OUTWARD == -1) * (VECTOR_STILL == 0)
+I LOGIC_OK <- VECTOR_OK
+I RIVER_OUT <- 20365011074
