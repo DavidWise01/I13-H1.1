@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 · DIAGNOSTICS v0.1 · INTROSPECTION v0.1 · TRACE v0.1 FROZEN**
+Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 · DIAGNOSTICS v0.1 · INTROSPECTION v0.1 · TRACE v0.1 · DEBUGGER v0.1 FROZEN**
 
 This document freezes only compiler architecture and behavior proven by the compiler/conformance path. It does not add language features.
 
@@ -360,6 +360,34 @@ CLI tracing streams events rather than collecting a full execution history in me
 
 v0.1 traces the canonical reference VM; it does not redefine Wasm parity or claim to expose host Wasm instructions. The full contract lives in `docs/COMPILER-TRACE.md`.
 
+## Interactive debugger v0.1 — FROZEN
+
+`I13-DEBUGGER-0.1`
+
+The CLI exposes:
+
+```text
+i13 debug file.i13
+```
+
+Debugger control consumes the same pre-instruction observer point as tracing. `vm::run`, `vm::run_observed`, and `vm::run_debugged` enter one execution loop; there is no debugger interpreter.
+
+The debugger may pause and inspect immutable snapshots containing tagged globals, active I13 frames, current operand stack, current locals, PC/opcode and source span. It may resume execution or quit the debugger session. It cannot mutate values, frames, stacks, PCs or IVM instructions.
+
+The frozen debugger law is:
+
+```text
+DEBUGGER MAY PAUSE EXECUTION.
+DEBUGGER MAY INSPECT EXECUTION.
+DEBUGGER MAY NOT MUTATE EXECUTION.
+```
+
+v0.1 provides `step`, `next`, `continue`, source-line breakpoints, breakpoint deletion/listing, `where`, binding lookup, stack inspection, frame inspection and clean debugger quit.
+
+Source-line breakpoint suppression is frame-aware: deeper calls do not clear the caller's suppression, so returning to another lowered instruction on the triggering source line does not spuriously re-fire the same breakpoint.
+
+The repaired debugger proof commit `ce3d605e4ef9e7398bc8e2de6bf492bd4c927f30` passed all compiler/debugger tests, compiler-owned Wasm parity, the canonical 4096-frame gate and conformance v0.1. The full contract lives in `docs/COMPILER-DEBUGGER.md`.
+
 ## Compiler-owned Wasm law
 
 The production backend consumes **validated IVM**, not HIR and not AST.
@@ -393,6 +421,7 @@ The accepted compiler path closes these defects:
 - reference step metering is explicitly separated from language semantics.
 - compiler layer dumps are observer-only and do not create a fourth authority.
 - runtime tracing observes the real VM loop rather than duplicating execution semantics.
+- interactive debugging pauses the same VM loop without exposing mutable execution state or a second interpreter.
 
 ## Scope freeze during compiler construction
 
@@ -432,6 +461,7 @@ REFERENCE VM    COMPLETE
 CLI CHECK       COMPLETE
 CLI RUN         COMPLETE
 CLI TRACE       COMPLETE · I13-TRACE-0.1
+CLI DEBUG       COMPLETE · I13-DEBUGGER-0.1
 CLI DUMP        COMPLETE · TOKENS/AST/HIR/IVM
 CLI BUILD       COMPLETE
 WASM CODEGEN    COMPLETE · TAGGED VALUE MODEL
@@ -443,6 +473,7 @@ DIAGNOSTICS     v0.1 FROZEN · SOURCE-MAPPED
 CONFORMANCE     v0.1 FROZEN · CI-GATED
 INTROSPECTION   v0.1 FROZEN · OBSERVER-ONLY
 TRACE           v0.1 FROZEN · SINGLE-VM OBSERVER
+DEBUGGER        v0.1 FROZEN · READ-ONLY CONTROL
 ```
 
-This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, formal conformance, source-mapped diagnostics, static compiler introspection, and execution-time introspection while preserving one execution authority.
+This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, formal conformance, source-mapped diagnostics, static compiler introspection, execution-time introspection, and interactive read-only debugging while preserving one execution authority.
