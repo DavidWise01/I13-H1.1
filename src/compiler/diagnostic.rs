@@ -15,6 +15,7 @@ pub enum DiagnosticCode {
     VmRuntime,
     VmStepLimit,
     VmCallLimit,
+    WasmBackend,
 }
 
 impl DiagnosticCode {
@@ -33,6 +34,7 @@ impl DiagnosticCode {
             Self::VmRuntime => "E0501",
             Self::VmStepLimit => "E0502",
             Self::VmCallLimit => "E0503",
+            Self::WasmBackend => "E0601",
         }
     }
 }
