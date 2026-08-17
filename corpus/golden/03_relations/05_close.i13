@@ -1,0 +1,23 @@
+// 03 RELATIONS · ROCK 05 · CLOSE
+I RIVER_IN <- 2178309
+
+def point_ok(I x, I y, I ex, I ey) {
+    if x == ex {
+        if y == ey { -> 1 }
+    }
+    -> 0
+}
+
+def flay_close() {
+    if point_ok(0, 0, 0, 0) != 1 { -> 0 }
+    if point_ok(0, 1, 0, 1) != 1 { -> 0 }
+    if point_ok(0, -1, 0, -1) != 1 { -> 0 }
+    if point_ok(-1, 0, -1, 0) != 1 { -> 0 }
+    if point_ok(1, 0, 1, 0) != 1 { -> 0 }
+    if point_ok(0, 0, 0, 0) != 1 { -> 0 }
+    -> 1
+}
+
+I CLOSE_OK <- flay_close()
+I RELATION_OK <- CLOSE_OK
+I RIVER_OUT <- RIVER_IN + 1346269
