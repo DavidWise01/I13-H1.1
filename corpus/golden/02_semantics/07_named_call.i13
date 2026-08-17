@@ -1,0 +1,8 @@
+def known_value() {
+    -> 1
+}
+
+I RIVER_IN <- 75025
+I NAMED_CALL_OK <- known_value() == 1
+I RIVER_OUT <- RIVER_IN + 46368
+I SEMANTIC_OK <- NAMED_CALL_OK
