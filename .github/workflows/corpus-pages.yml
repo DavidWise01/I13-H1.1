@@ -1,0 +1,83 @@
+name: I13 golden corpus Pages river
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/corpus.html'
+      - 'docs/semantics.html'
+      - 'docs/landing.js'
+      - 'docs/CORPUS-*.md'
+      - 'corpus/golden/**'
+      - 'corpus/README.md'
+      - 'scripts/corpus_*.js'
+      - '.github/workflows/corpus-*.yml'
+  pull_request:
+    paths:
+      - 'docs/corpus.html'
+      - 'docs/semantics.html'
+      - 'docs/landing.js'
+      - 'docs/CORPUS-*.md'
+      - 'corpus/golden/**'
+      - 'corpus/README.md'
+      - 'scripts/corpus_*.js'
+      - '.github/workflows/corpus-*.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  golden-river-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check landing JavaScript
+        run: node --check docs/landing.js
+      - name: Check three-reach continuity
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('corpus/golden/00_atoms/manifest.json','utf8'));
+          const s=JSON.parse(fs.readFileSync('corpus/golden/01_syntax/manifest.json','utf8'));
+          const m=JSON.parse(fs.readFileSync('corpus/golden/02_semantics/manifest.json','utf8'));
+          if(a.composition.final!==s.inherits.handoff) throw new Error('atoms -> syntax discontinuity');
+          if(s.composition.final!==m.inherits.handoff) throw new Error('syntax -> semantics discontinuity');
+          if(m.composition.final!==196418) throw new Error('semantic final drift');
+          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final}`);
+          NODE
+      - name: Check River Observatory
+        run: |
+          test -s docs/corpus.html
+          grep -Fq '27</strong><span>VERIFIED ROCKS' docs/corpus.html
+          grep -Fq 'CURRENT = 196418' docs/corpus.html
+          grep -Fq '02 SEMANTICS · COMPLETE' docs/corpus.html
+          grep -Fq '[ | ( ada ) | ]' docs/corpus.html
+          grep -Fq 'OPEN SEMANTIC / ADA OBSERVATORY' docs/corpus.html
+      - name: Check Semantic Ada Observatory
+        run: |
+          test -s docs/semantics.html
+          grep -Fq 'I13 GOLDEN CORPUS · 02 SEMANTICS · FROZEN' docs/semantics.html
+          grep -Fq '[ | ( ada ) | ]' docs/semantics.html
+          grep -Fq 'rhythm · tempo · pace · timing' docs/semantics.html
+          grep -Fq '9/9 SEMANTIC ROCKS' docs/semantics.html
+          grep -Fq '196418' docs/semantics.html
+          grep -Fq 'E0501' docs/semantics.html
+          grep -Fq 'E0203' docs/semantics.html
+          grep -Fq 'E0202' docs/semantics.html
+      - name: Check executable Ada lens
+        run: |
+          test -s corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def analysis_relation' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def music_rhythm' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def music_tempo' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def music_pace' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def music_timing' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'def reason_four' corpus/golden/02_semantics/ada_lens.i13
+          grep -Fq 'I ADA_LENS_OK <-' corpus/golden/02_semantics/ada_lens.i13
+      - name: Check frozen semantic contract and discovery
+        run: |
+          grep -Fq 'FROZEN KNOWN GOOD · HIR-GATED · VM/WASM VERIFIED' docs/CORPUS-SEMANTICS.md
+          grep -Fq 'I13-GOLDEN-02-SEMANTICS-RIVER-0.1' docs/CORPUS-SEMANTICS.md
+          grep -Fq "link.href='semantics.html'" docs/landing.js
+          grep -Fq 'Twenty-seven curated I13 rocks' docs/landing.js
+          grep -Fq 'CORPUS-SEMANTICS.md' docs/landing.js
