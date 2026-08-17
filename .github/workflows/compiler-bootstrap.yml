@@ -1,0 +1,61 @@
+name: I13 compiler bootstrap
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+
+      - name: Check I13 bootstrap source
+        run: target/debug/i13 check examples/compiler_bootstrap.i13
+
+      - name: Execute bootstrap on reference VM
+        run: |
+          target/debug/i13 run examples/compiler_bootstrap.i13 | tee /tmp/i13-bootstrap-vm.txt
+          grep -q '^BOOTSTRAP_OK = 1$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^LAW_CHECKSUM = 15638$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^FRAME_4095 = 1$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^FRAME_4096 = 0$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^CALL16_NEED = 17$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^CALL16_NET = -16$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^NUMBER_BIN_OK = 1$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^FUNCTION_BIN_VETO = 0$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^FUNCTION_CALL_OK = 1$' /tmp/i13-bootstrap-vm.txt
+          grep -q '^NUMBER_CALL_VETO = 0$' /tmp/i13-bootstrap-vm.txt
+
+      - name: Build bootstrap Wasm
+        run: target/debug/i13 build examples/compiler_bootstrap.i13 -o /tmp/compiler-bootstrap.wasm
+
+      - name: Verify bootstrap on generated Wasm
+        run: |
+          node scripts/verify_compiler_wasm.js /tmp/compiler-bootstrap.wasm \
+            BOOTSTRAP_OK=1 \
+            LAW_CHECKSUM=15638 \
+            FRAME_4095=1 \
+            FRAME_4096=0 \
+            CALL16_NEED=17 \
+            CALL16_NET=-16 \
+            NUMBER_BIN_OK=1 \
+            FUNCTION_BIN_VETO=0 \
+            FUNCTION_CALL_OK=1 \
+            NUMBER_CALL_VETO=0
+
+      - name: Prove bootstrap remains I13 source
+        run: |
+          test "$(find examples -maxdepth 1 -name 'compiler_bootstrap.i13' | wc -l)" -eq 1
+          grep -q '^def stack_need' examples/compiler_bootstrap.i13
+          grep -q '^def stack_net' examples/compiler_bootstrap.i13
+          grep -q '^def frame_admit_call' examples/compiler_bootstrap.i13
+          grep -q '^def bootstrap_selftest' examples/compiler_bootstrap.i13
