@@ -1,0 +1,19 @@
+// 05 LOGIC · ROCK 02 · Aristotle fork · form survives changed particulars
+
+def relation(I a, I b) {
+    if a < b { -> 1 }
+    if a > b { -> -1 }
+    -> 0
+}
+
+def form_survives(I a, I b, I c, I d) {
+    if relation(a, b) == relation(c, d) { -> 1 }
+    -> 0
+}
+
+I RIVER_IN <- 2971215073
+I FORM_A <- relation(2, 5)
+I FORM_B <- relation(8, 13)
+I FORM_OK <- form_survives(2, 5, 8, 13) * (FORM_A == 1) * (FORM_B == 1)
+I LOGIC_OK <- FORM_OK
+I RIVER_OUT <- 4807526976
