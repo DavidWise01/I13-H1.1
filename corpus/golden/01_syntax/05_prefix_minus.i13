@@ -1,0 +1,4 @@
+// I13 GOLDEN CORPUS · 01 SYNTAX · ROCK 05
+I RIVER_IN <- 377
+I delta <- -233
+I RIVER_OUT <- RIVER_IN - delta
