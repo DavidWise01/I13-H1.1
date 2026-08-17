@@ -1,0 +1,71 @@
+// I13 GOLDEN CORPUS · 04 ANALYSIS · COMPOSED RIVER
+// inherits 03_relations final handoff: 14930352
+
+I RIVER_START <- 14930352
+
+I R0_IN <- RIVER_START
+I R0_OUT <- R0_IN + 9227465
+
+I R1_IN <- R0_OUT
+I R1_OUT <- R1_IN + 14930352
+
+I R2_IN <- R1_OUT
+I R2_OUT <- R2_IN + 24157817
+
+I R3_IN <- R2_OUT
+I R3_OUT <- R3_IN + 39088169
+
+I R4_IN <- R3_OUT
+I R4_OUT <- R4_IN + 63245986
+
+I R5_IN <- R4_OUT
+I R5_OUT <- R5_IN + 102334155
+
+I R6_IN <- R5_OUT
+I R6_OUT <- R6_IN + 165580141
+
+I R7_IN <- R6_OUT
+I R7_OUT <- R7_IN + 267914296
+
+I R8_IN <- R7_OUT
+I R8_OUT <- R8_IN + 433494437
+
+def interval(I admitted, I a, I b) {
+    if admitted != 1 { -> 0 }
+    if b < a { -> a - b }
+    -> b - a
+}
+
+def rhythm(I admitted, I a, I b, I c) {
+    if admitted != 1 { -> 0 }
+    if b - a == c - b { -> 1 }
+    -> 0
+}
+
+def river_selftest() {
+    if RIVER_START != 14930352 { -> 0 }
+    if R0_OUT != 24157817 { -> 0 }
+    if R1_IN != R0_OUT { -> 0 }
+    if R1_OUT != 39088169 { -> 0 }
+    if R2_IN != R1_OUT { -> 0 }
+    if R2_OUT != 63245986 { -> 0 }
+    if R3_IN != R2_OUT { -> 0 }
+    if R3_OUT != 102334155 { -> 0 }
+    if R4_IN != R3_OUT { -> 0 }
+    if R4_OUT != 165580141 { -> 0 }
+    if R5_IN != R4_OUT { -> 0 }
+    if R5_OUT != 267914296 { -> 0 }
+    if R6_IN != R5_OUT { -> 0 }
+    if R6_OUT != 433494437 { -> 0 }
+    if R7_IN != R6_OUT { -> 0 }
+    if R7_OUT != 701408733 { -> 0 }
+    if R8_IN != R7_OUT { -> 0 }
+    if R8_OUT != 1134903170 { -> 0 }
+    if interval(0, 8, 13) != 0 { -> 0 }
+    if interval(1, 8, 13) != 5 { -> 0 }
+    if rhythm(1, 2, 5, 8) != 1 { -> 0 }
+    -> 1
+}
+
+I RIVER_OK <- river_selftest()
+I RIVER_FINAL <- R8_OUT
