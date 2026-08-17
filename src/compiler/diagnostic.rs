@@ -9,6 +9,9 @@ pub enum DiagnosticCode {
     SemanticUnsupportedAttribute,
     SemanticUnknownFunction,
     SemanticArityMismatch,
+    IvmUnboundName,
+    IvmAssignUndeclared,
+    IvmValidation,
 }
 
 impl DiagnosticCode {
@@ -21,6 +24,9 @@ impl DiagnosticCode {
             Self::SemanticUnsupportedAttribute => "E0201",
             Self::SemanticUnknownFunction => "E0202",
             Self::SemanticArityMismatch => "E0203",
+            Self::IvmUnboundName => "E0301",
+            Self::IvmAssignUndeclared => "E0302",
+            Self::IvmValidation => "E0401",
         }
     }
 }
