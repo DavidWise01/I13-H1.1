@@ -1,0 +1,13 @@
+// 03 RELATIONS · ROCK 00 · ORIGIN
+I RIVER_IN <- 196418
+
+def at_origin(I x, I y) {
+    if x == 0 {
+        if y == 0 { -> 1 }
+    }
+    -> 0
+}
+
+I ORIGIN_OK <- at_origin(0, 0)
+I RELATION_OK <- ORIGIN_OK
+I RIVER_OUT <- RIVER_IN + 121393
