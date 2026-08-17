@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 04 Analysis
 
-Status: **CONSTRUCTED · GATE PENDING**
+Status: **FROZEN KNOWN GOOD · UPSTREAM-FLAY-GATED · HIR/VM/WASM VERIFIED**
 
 ID: `I13-GOLDEN-04-ANALYSIS-0.1`
 
@@ -85,7 +85,7 @@ Only then are analysis rocks certified.
          |s| 1134903170
 ```
 
-The composed witness must finish with:
+The composed witness finishes with:
 
 ```text
 RIVER_START = 14930352
@@ -108,5 +108,19 @@ ANALYSIS_OK               = 1
 ```
 
 The unchanged input is the non-mutation witness.
+
+## Frozen proof
+
+GitHub Actions run `32069931782`: **success**.
+
+```text
+UPSTREAM FLAY PASS
+ANALYSIS 00..08 PASS
+ANALYSIS METHOD PASS
+ANALYSIS RIVER PASS
+HIR checkpoint
+VM = WASM
+repeat deterministic
+```
 
 `[ admitted | value ]`, `<flay>`, the wall diagrams, `[ | ( ada ) | ]`, and `|s|` are documentary notation; they do not extend I13 grammar.
