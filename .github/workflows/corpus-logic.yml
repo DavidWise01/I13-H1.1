@@ -1,0 +1,112 @@
+name: I13 golden corpus 05 logic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/05_logic/**'
+      - 'corpus/golden/04_analysis/**'
+      - '.github/workflows/corpus-logic.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/05_logic/**'
+      - 'corpus/golden/04_analysis/**'
+      - '.github/workflows/corpus-logic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  logic-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify upstream Analysis handoff
+        run: |
+          target/debug/i13 check corpus/golden/04_analysis/analysis.i13
+          target/debug/i13 run corpus/golden/04_analysis/analysis.i13 | tee /tmp/analysis.txt
+          grep -Fq 'ANALYSIS_OPEN_VALUE = 23' /tmp/analysis.txt
+          grep -Fq 'ANALYSIS_INPUT = 13' /tmp/analysis.txt
+          grep -Fq 'ANALYSIS_AFTER = 13' /tmp/analysis.txt
+          grep -Fq 'ANALYSIS_OK = 1' /tmp/analysis.txt
+      - name: Verify nine Logic rocks through HIR and VM
+        run: |
+          for f in corpus/golden/05_logic/0*.i13; do
+            echo "VERIFY $f"
+            target/debug/i13 check "$f"
+            target/debug/i13 dump "$f" --hir | grep -Fq 'I13 INTROSPECT HIR v0.1'
+            target/debug/i13 run "$f" | tee /tmp/logic-rock.txt
+            grep -Fq 'LOGIC_OK = 1' /tmp/logic-rock.txt
+          done
+          target/debug/i13 dump corpus/golden/05_logic/01_opposition.i13 --hir | grep -Fq 'Call opposition_chain argc=2'
+          target/debug/i13 dump corpus/golden/05_logic/02_form.i13 --hir | grep -Fq 'Call form_survives argc=4'
+          target/debug/i13 dump corpus/golden/05_logic/06_choice.i13 --hir | grep -Fq 'Call choice_state argc=2'
+          target/debug/i13 dump corpus/golden/05_logic/07_queen.i13 --hir | grep -Fq 'Call queen_traverse argc=2'
+          target/debug/i13 dump corpus/golden/05_logic/07_queen.i13 --hir | grep -Fq 'Assign mode=osmotic target=rays'
+      - name: Verify canonical Logic method in VM
+        run: |
+          target/debug/i13 check corpus/golden/05_logic/logic.i13
+          target/debug/i13 dump corpus/golden/05_logic/logic.i13 --hir | tee /tmp/logic.hir
+          grep -Fq 'Call opposition_chain argc=2' /tmp/logic.hir
+          grep -Fq 'Call form_survives argc=4' /tmp/logic.hir
+          grep -Fq 'Call consequence argc=3' /tmp/logic.hir
+          grep -Fq 'Call choice_state argc=2' /tmp/logic.hir
+          grep -Fq 'Call queen_traverse argc=2' /tmp/logic.hir
+          target/debug/i13 run corpus/golden/05_logic/logic.i13 | tee /tmp/logic.txt
+          grep -Fq 'LOGIC_UPSTREAM_ANALYSIS = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_ZERO_SYMBOLIC = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_ZERO_BCE = 347' /tmp/logic.txt
+          grep -Fq 'LOGIC_PRESSURE_OK = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_FORM_OK = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_CONSEQUENCE_OK = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_LOCAL_STATES_OK = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_QUEEN_OK = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_VALID = 1' /tmp/logic.txt
+          grep -Fq 'LOGIC_DECISION = 2' /tmp/logic.txt
+          grep -Fq 'LOGIC_BLOCKED_VALID = 0' /tmp/logic.txt
+          grep -Fq 'LOGIC_BLOCKED_DECISION = -1' /tmp/logic.txt
+          grep -Fq 'LOGIC_EVIDENCE_INPUT = 23' /tmp/logic.txt
+          grep -Fq 'LOGIC_EVIDENCE_AFTER = 23' /tmp/logic.txt
+          grep -Fq 'LOGIC_OK = 1' /tmp/logic.txt
+      - name: Verify canonical Logic method in Wasm twice
+        run: |
+          target/debug/i13 build corpus/golden/05_logic/logic.i13 -o /tmp/logic.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/logic.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            const expected={LOGIC_UPSTREAM_ANALYSIS:1,LOGIC_ZERO_SYMBOLIC:1,LOGIC_ZERO_BCE:347,LOGIC_PRESSURE_OK:1,LOGIC_FORM_OK:1,LOGIC_CONSEQUENCE_OK:1,LOGIC_LOCAL_STATES_OK:1,LOGIC_QUEEN_OK:1,LOGIC_VALID:1,LOGIC_DECISION:2,LOGIC_BLOCKED_VALID:0,LOGIC_BLOCKED_DECISION:-1,LOGIC_EVIDENCE_INPUT:23,LOGIC_EVIDENCE_AFTER:23,LOGIC_OK:1};
+            const verify=()=>{for(const [name,value] of Object.entries(expected)){const g=instance.exports[`i13.global.${name}`];if(!(g instanceof WebAssembly.Global)||g.value!==value)throw new Error(`${name} mismatch`);}};
+            instance.exports.i13_run(); verify();
+            instance.exports.i13_run(); verify();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Verify six-reach continuity and Logic river
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('corpus/golden/04_analysis/manifest.json','utf8'));
+          const l=JSON.parse(fs.readFileSync('corpus/golden/05_logic/manifest.json','utf8'));
+          if(l.inherits.handoff!==a.composition.final) throw new Error('analysis -> logic discontinuity');
+          if(l.composition.start!==l.inherits.handoff) throw new Error('logic start drift');
+          if(l.composition.final!==86267571272) throw new Error('logic final drift');
+          if(l.logic_zero.symbolic!==true||l.logic_zero.year_bce!==347||l.logic_zero.exact_day_known!==false) throw new Error('Logic 0 epoch drift');
+          NODE
+          target/debug/i13 check corpus/golden/05_logic/river.i13
+          target/debug/i13 run corpus/golden/05_logic/river.i13 | tee /tmp/river.txt
+          grep -Fq 'RIVER_START = 1134903170' /tmp/river.txt
+          grep -Fq 'RIVER_OK = 1' /tmp/river.txt
+          grep -Fq 'RIVER_FINAL = 86267571272' /tmp/river.txt
+      - name: Keep Logic upstream-safe and Boolean downstream
+        run: |
+          grep -Fq 'LOGIC MAY NOT MUTATE THE ANALYSIS EVIDENCE IT CONSUMES.' corpus/golden/05_logic/README.md
+          grep -Fq 'OPPOSITION ALONE DOES NOT CREATE TRUTH.' corpus/golden/05_logic/README.md
+          grep -Fq 'PRESERVE FORM WHILE TRAVERSING CONSEQUENCE.' corpus/golden/05_logic/README.md
+          grep -Fq 'Q IS THE QUEEN RIDER.' corpus/golden/05_logic/README.md
+          grep -Fq 'BOOLEAN IS DOWNSTREAM.' corpus/golden/05_logic/README.md
+          grep -Fq 'exact_day_known":false' corpus/golden/05_logic/manifest.json
