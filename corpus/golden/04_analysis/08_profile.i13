@@ -1,0 +1,76 @@
+// 04 ANALYSIS · ROCK 08 · composed admitted profile
+
+def interval(I admitted, I a, I b) {
+    if admitted != 1 { -> 0 }
+    if b < a { -> a - b }
+    -> b - a
+}
+
+def direction(I admitted, I a, I b) {
+    if admitted != 1 { -> 0 }
+    if a < b { -> 1 }
+    if a > b { -> -1 }
+    -> 0
+}
+
+def rhythm(I admitted, I a, I b, I c) {
+    if admitted != 1 { -> 0 }
+    I first <- b - a
+    I second <- c - b
+    if first == second { -> 1 }
+    -> 0
+}
+
+def rate(I admitted, I change, I units) {
+    if admitted != 1 { -> 0 }
+    if units == 0 { -> 0 }
+    -> change / units
+}
+
+def coverage(I admitted, I up, I down, I left, I right) {
+    if admitted != 1 { -> 0 }
+    I count <- 0
+    count.p <- up
+    count.p <- down
+    count.p <- left
+    count.p <- right
+    -> count
+}
+
+def repeat_sum(I value, I count) {
+    if count == 0 { -> 0 }
+    -> value + repeat_sum(value, count - 1)
+}
+
+def recurrence(I admitted, I value, I count) {
+    if admitted != 1 { -> 0 }
+    -> repeat_sum(value, count)
+}
+
+def closure(I admitted, I sx, I sy, I ex, I ey) {
+    if admitted != 1 { -> 0 }
+    if sx == ex {
+        if sy == ey { -> 1 }
+    }
+    -> 0
+}
+
+def profile(I admitted) {
+    if admitted != 1 { -> 0 }
+    I score <- 0
+    score.p <- interval(admitted, 8, 13)
+    score.p <- direction(admitted, 8, 13)
+    score.p <- rhythm(admitted, 2, 5, 8)
+    score.p <- rate(admitted, 12, 3)
+    score.p <- coverage(admitted, 1, 0, 1, 1)
+    score.p <- recurrence(admitted, 2, 4)
+    score.p <- closure(admitted, 0, 0, 0, 0)
+    -> score
+}
+
+I RIVER_IN <- 701408733
+I OPEN_PROFILE <- profile(1)
+I BLOCKED_PROFILE <- profile(0)
+I PROFILE_OK <- (OPEN_PROFILE == 23) * (BLOCKED_PROFILE == 0)
+I ANALYSIS_OK <- PROFILE_OK
+I RIVER_OUT <- 1134903170
