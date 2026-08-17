@@ -16,11 +16,12 @@ SEMANTICS -> RELATIONS -> <flay> -> ANALYSIS -------------+
                                                 what am I reasoning from?
                                                           |
                                                           v
-                                                    ARISTOTLE
-                                                      form
-                                                          |
-                                                          v
-                                                       LOGIC
+                                                   LOGIC ROOT
+                                                  /          \
+                                                 /            \
+                                                v              v
+                                         ARISTOTLE FORK   DIALECTICAL TRUNK
+                                         analytics/form   proposition/conditional
 ```
 
 The historical inspiration is Plato's Cave and Divided Line: appearance, represented source, changed orientation, ascent to a broader account, and return. This project law is an I13 interpretation of that problem, not a claim that Plato wrote this notation or compiler architecture.
@@ -82,23 +83,33 @@ SHADOW
 
 The return is mandatory. A higher abstraction that cannot still account for the original evidence is not automatically privileged merely because it is more abstract.
 
-## Aristotle below the keystone
+## Aristotle below the keystone: fork, not trunk
 
-Aristotle is not recorded here as the inventor of perception. He is used downstream because he gave an early systematic account of perception and formal inference. The project mapping is:
+Aristotle is not recorded here as the inventor of perception and is no longer drawn as the sole route from Plato into Logic. He is a **formalization fork** from the broader dialectical environment.
 
 ```text
-PLATO
-position / appearance / source
-        |
-        v
-ARISTOTLE
-what form survives reception or substitution?
-        |
-        v
-FORMAL INFERENCE
+PLATO / ACADEMY DIALECTIC
+          |
+          +--------------------------+
+          |                          |
+          v                          v
+   ARISTOTLE FORK              DIALECTICAL TRUNK
+ analytics / term form        proposition / conditional
+          |                          |
+          v                          v
+  categorical syllogistic      Diodorus / Philo
+                                     |
+                                     v
+                                 Chrysippus
 ```
 
-This makes Aristotle the first formal logic lens *under* the keystone rather than the keystone itself.
+Aristotle remains valuable to the project because he makes inferential form itself explicit: what survives reception or substitution of particulars? But `05_logic` must not silently equate Logic with the Aristotelian branch.
+
+Historical/counterfactual notes are kept separately in:
+
+```text
+docs/LOGIC-GENEALOGY-FORK.md
+```
 
 ## Documentary notation
 
@@ -109,6 +120,8 @@ The following are human-readable architecture notation only and do not extend I1
 [ source | value ]
 [ appearance | value ]
 SHADOW -> SOURCE -> TURN -> ASCEND -> RETURN
+ARISTOTLE FORK
+DIALECTICAL TRUNK
 ```
 
 Executable companion:
