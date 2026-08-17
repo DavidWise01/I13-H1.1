@@ -36,6 +36,8 @@ corpus/golden/
 01_syntax
     ↓
 02_semantics
+    ↓
+03_relations
 ```
 
 The golden river does not restart between folders.
@@ -51,6 +53,10 @@ The golden river does not restart between folders.
                                                                     v
 02 SEMANTICS
 2584 |s| 4181 |s| 6765 |s| 10946 |s| 17711 |s| 28657 |s| 46368 |s| 75025 |s| 121393 |s| 196418
+                                                                    |
+                                                                    v
+03 RELATIONS / FLAY
+196418 |s| 317811 |s| 514229 |s| 832040 |s| 1346269 |s| 2178309 |s| 3524578 |s| 5702887 |s| 9227465 |s| 14930352
 ```
 
 `|s|` is corpus documentation notation for stream handoff, not I13 syntax.
@@ -61,27 +67,45 @@ Layer roles:
 00_atoms      smallest accepted executable pieces
 01_syntax     legal source arrangements of those pieces
 02_semantics  meaning of accepted arrangements
+03_relations  explicit fit relationships + FLAY methodology
 ```
 
-`02_semantics` adds HIR checkpoints, VM/Wasm meaning parity, semantic rejection witnesses, and the executable `ada_lens.i13` model. Its documentary mathematical-poetry emblem is:
+`02_semantics` carries HIR checkpoints, VM/Wasm meaning parity, semantic rejection witnesses, and the executable `ada_lens.i13` model. Its documentary mathematical-poetry emblem is:
 
 ```text
 [ | ( ada ) | ]
 ```
 
-The emblem and `~>` notation are not I13 syntax. They describe a human-readable conceptual funnel that the executable Ada lens models using current I13 primitives:
+`03_relations` makes the downstream method explicit:
 
 ```text
 semantics
    ↓
-analysis + music(rhythm, tempo, pace, timing)
+relations
    ↓
-reason
+<flay>
    ↓
-boolean
+analysis
+   ↓
+logic / boolean
 ```
 
-Every golden rock is independently compilable when it represents accepted execution, and every downstream reach must inherit the upstream composition final exactly. Each reach contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata. Rejected semantic programs live as attached bank witnesses rather than pretending to emit a successful handoff.
+FLAY is a deterministic five-point local relation method:
+
+```text
+(0,0)
+  -> UP
+  -> DOWN
+  -> LEFT
+  -> RIGHT
+  -> (0,0) CLOSE
+```
+
+The five unique points are origin plus the four cardinal neighbors. Returning to origin closes the set; it is not a sixth unique point. FLAY may recurse when a new chunk fits, or when an old chunk becomes valid somewhere newly exposed. Downstream stays blocked until the methodology is satisfied.
+
+`[ | ( ada ) | ]`, `<flay>`, coordinate diagrams, `~>` and `|s|` are documentary notation, not I13 grammar.
+
+Every accepted golden rock is independently compilable and VM/Wasm verified. Every downstream reach must inherit the upstream composition final exactly. Each reach contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata.
 
 See:
 
@@ -93,6 +117,9 @@ docs/CORPUS-SYNTAX.md
 corpus/golden/02_semantics/README.md
 docs/CORPUS-SEMANTICS.md
 docs/semantics.html
+corpus/golden/03_relations/README.md
+docs/CORPUS-RELATIONS.md
+docs/relations.html
 ```
 
 ## Stage 14 — admission gate
