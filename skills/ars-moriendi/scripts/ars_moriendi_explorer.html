@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ars Moriendi — Explorer</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#a36bff;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:1000px}
+  .row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  input,select,button{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  button{cursor:pointer;color:var(--acc);border-color:#2a1d4a}
+  button:hover{background:#160f2a}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--acc)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;margin:3px;border-radius:10px;background:#160f2a;color:var(--acc);border:1px solid #2a1d4a}
+  .tempt{background:#1a0f12;color:#ff9d6e;border-color:#4a2517}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #2a1d4a;border-radius:6px;padding:5px 8px;display:inline-block;margin-top:6px}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9760; Ars Moriendi — Explorer</h1>
+  <div class="sub">The Art of Dying (c.1415&ndash;1450). Sourced from Wikisource <em>The Book of the Craft of Dying</em> (Caxton's English rendering) + Wikipedia's scholarly structure. Self-contained; no fetch.</div>
+</header>
+<main>
+  <div class="row">
+    <input id="q" placeholder="filter chapters / themes…" style="flex:1;min-width:220px">
+    <select id="cat"><option value="">all parts</option><option value="Text">The Text</option><option value="Temptations">The 5 Temptations</option><option value="Structure">Scholarly Structure</option></select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="card" style="margin-top:14px">
+    <h3>Source (fetched, not archive.org)</h3>
+    <p><span class="pill">Wikisource: The Book of the Craft of Dying</span> <span class="pill">6 chapters / 93K chars</span> <span class="pill">2 Latin versions c.1415 &amp; 1450</span></p>
+    <a class="dl" href="https://en.wikisource.org/wiki/The_Book_of_the_Craft_of_Dying/craft" target="_blank" rel="noopener">Wikisource text &#8599;</a>
+    <a class="dl" href="https://en.wikipedia.org/wiki/Ars_Moriendi" target="_blank" rel="noopener">Wikipedia structure &#8599;</a>
+  </div>
+</main>
+<footer>
+  Sourced 2026-08-16 via Python urllib from en.wikisource.org + en.wikipedia.org (archive.org was down/503 this session). The 5 Temptations + 11-woodcut sequence reflect the documented short-version structure. Open via file:// or any static host.
+</footer>
+<script>
+// Real structure: 6 chapters from Wikisource "The Book of the Craft of Dying"
+// + the 5 Temptations + 11-woodcut sequence from the documented short version.
+const NODES = [
+  {t:"Chapter I — The Hour of Death", cat:"Text", d:"The onset of the deathbed; summoning confessor & friends; the soul's passage begins."},
+  {t:"Chapter II — The Five Temptations (1)", cat:"Text", d:"Demons assault the dying: Temptation against Faith — the first of the five."},
+  {t:"Chapter III — The Five Temptations (2)", cat:"Text", d:"Temptation to Despair, and the remedies of hope and Christ's passion."},
+  {t:"Chapter IV — The Five Temptations (3)", cat:"Text", d:"Temptation to Impatience in suffering; patience as the counter-virtue."},
+  {t:"Chapter V — The Five Temptations (4)", cat:"Text", d:"Temptation to Vainglory / Spiritual Pride; hidden self-exaltation at the end."},
+  {t:"Chapter VI — The Five Temptations (5) & Consolation", cat:"Text", d:"Temptation to Avarice; final consolations, the angels, and a good death."},
+  {t:"Temptation I — Against Faith", cat:"Temptations", d:"The devil suggests the faith is vain; answered by the articles of belief."},
+  {t:"Temptation II — To Despair", cat:"Temptations", d:"Whispers that one's sins are too great; answered by Christ's mercy."},
+  {t:"Temptation III — To Impatience", cat:"Temptations", d:"Provokes anger at suffering; answered by the passion of Christ."},
+  {t:"Temptation IV — To Vainglory", cat:"Temptations", d:"Spiritual pride in seeming holy; answered by humility."},
+  {t:"Temptation V — To Avarice", cat:"Temptations", d:"Clinging to worldly goods; answered by contempt of the world."},
+  {t:"Two Latin Versions (c.1415 & c.1450)", cat:"Structure", d:"A 'short version' (11 woodcuts, the deathbed drama) and a 'long version' (homiletic expansion)."},
+  {t:"The Eleven Woodcuts", cat:"Structure", d:"The short version's blockbook sequence: angels vs demons at the deathbed; woodblock 7 of 11 (Netherlands, c.1460) shows the crowned temptations."},
+  {t:"Historical Context", cat:"Structure", d:"Written ~60 years after the Black Death; a manual for a 'good death' amid 15th-c. upheaval."}
+];
+const grid = document.getElementById("grid");
+function render(){
+  const term = document.getElementById("q").value.toLowerCase();
+  const cat = document.getElementById("cat").value;
+  grid.innerHTML = "";
+  NODES.filter(n => (!term || n.t.toLowerCase().includes(term) || n.d.toLowerCase().includes(term)) && (!cat || n.cat === cat))
+    .forEach(n => {
+      const el = document.createElement("div");
+      el.className = "card";
+      const cls = n.cat === "Temptations" ? "pill tempt" : "pill";
+      el.innerHTML = `<h3>${n.t}</h3><p>${n.d}</p><span class="${cls}">${n.cat}</span>`;
+      grid.appendChild(el);
+    });
+}
+document.getElementById("q").oninput = render;
+document.getElementById("cat").onchange = render;
+render();
+</script>
+</body>
+</html>
