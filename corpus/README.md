@@ -33,18 +33,42 @@ corpus/golden/
     ↓
 00_atoms
     ↓
-future progressive language layers
+01_syntax
+    ↓
+02_semantics (next)
 ```
 
-`00_atoms` is a hand-curated progressive stream:
+The golden river does not restart between folders.
 
 ```text
+00 ATOMS
 0 |s| 1 |s| 1 |s| 2 |s| 3 |s| 5 |s| 8 |s| 13 |s| 21 |s| 34
+                                                                    |
+                                                                    v
+01 SYNTAX
+34 |s| 55 |s| 89 |s| 144 |s| 233 |s| 377 |s| 610 |s| 987 |s| 1597 |s| 2584
 ```
 
-`|s|` is corpus documentation notation for stream handoff, not I13 syntax. Every rock is independently compilable, its `RIVER_IN` equals the previous rock's `RIVER_OUT`, and `corpus/golden/00_atoms/river.i13` composes the current inside I13 itself.
+`|s|` is corpus documentation notation for stream handoff, not I13 syntax.
 
-See `corpus/golden/00_atoms/README.md` and `docs/CORPUS-ATOMS.md`.
+Layer roles:
+
+```text
+00_atoms      smallest accepted executable pieces
+01_syntax     legal source arrangements of those pieces
+02_semantics  meaning of accepted arrangements
+```
+
+Every golden rock is independently compilable and VM/Wasm verified. Every downstream reach must inherit the upstream composition final exactly. Each reach also contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata.
+
+See:
+
+```text
+corpus/golden/00_atoms/README.md
+docs/CORPUS-ATOMS.md
+corpus/golden/01_syntax/README.md
+docs/CORPUS-SYNTAX.md
+```
 
 ## Stage 14 — admission gate
 
