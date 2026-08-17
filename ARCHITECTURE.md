@@ -158,6 +158,38 @@ E1.CORPUS-001   external corpus orientation/calibration geometry
 
 Canonical detail: `docs/E1-FACTORY.md`.
 
-## 7. Historical runtime boundary
+## 7. Stage 15.3 live handoff
+
+The workbench implements the closed loop without making E1 an internal suite.
+
+```text
+internal workbench
+   |
+   | Wasm-verified request capsule
+   v
+sandbox="allow-scripts"
+E1 service (opaque origin)
+   |
+   | bounded prime + parent receipt
+   v
+internal Wasm boundary verify
+   + closed-loop verify
+   |
+   v
+[E1ID]cv
+   |
+   v
+Cortex receives prime
+```
+
+The E1 service has no same-origin capability, no browser-storage path, and no fetch path. It cannot read the internal workbench DOM or runtime state. The parent does not inspect the E1 DOM. `postMessage` is the only live interface.
+
+The internal side SHA256-binds the bounded request and returned prime, then folds compact nonzero `u32` addresses into the current Wasm ABI. The full SHA256 values stay in the E1ID receipt; the Wasm core enforces crossing direction, witness presence, contamination veto, and parent closure.
+
+Successful return dispatches `i13:e1-prime` inside the workbench. Failed verification releases no prime.
+
+Canonical detail: `docs/STAGE15.3-E1-HANDOFF.md`.
+
+## 8. Historical runtime boundary
 
 The older v0.4 Wasm VM used iterative native frames, a 15-opcode I-13 VM, a deterministic Cortex rule mask, and a 32-byte graphics command record. It is retained under `reference/legacy/` as proof/history. It is not automatically the semantic definition of H1.1.
