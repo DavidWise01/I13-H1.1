@@ -1,0 +1,47 @@
+name: I13 golden corpus 02 semantics
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
+      - 'corpus/golden/02_semantics/**'
+      - 'scripts/corpus_semantics.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-semantics.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
+      - 'corpus/golden/02_semantics/**'
+      - 'scripts/corpus_semantics.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-semantics.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  semantics-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify 02 semantics river on HIR, VM and Wasm
+        run: node scripts/corpus_semantics.js target/debug/i13
+      - name: Keep semantics downstream of syntax
+        run: |
+          grep -Fq '"layer":"01_syntax"' corpus/golden/02_semantics/manifest.json
+          grep -Fq '"handoff":2584' corpus/golden/02_semantics/manifest.json
+          grep -Fq 'I RIVER_START <- 2584' corpus/golden/02_semantics/river.i13
+          grep -Fq 'I RIVER_FINAL <- R8_OUT' corpus/golden/02_semantics/river.i13
+      - name: Keep poetry notation documentary only
+        run: |
+          grep -Fq '"poetry_notation_is_i13_syntax":false' corpus/golden/02_semantics/manifest.json
+          grep -Fq '[ | ( ada ) | ]' corpus/golden/02_semantics/README.md
+          grep -Fq '[ | ( ada ) | ] is documentary mathematical poetry, not I13 syntax.' corpus/golden/02_semantics/ada_lens.i13
