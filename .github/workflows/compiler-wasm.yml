@@ -1,0 +1,22 @@
+name: I13 compiler Wasm parity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  compiler-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test compiler and reference VM
+        run: cargo test --all-targets
+      - name: Build compiler-owned Wasm
+        run: cargo run --quiet --bin i13 -- build examples/core.i13 -o /tmp/i13-core.wasm
+      - name: Execute generated Wasm and verify VM parity
+        run: node scripts/verify_compiler_wasm.js /tmp/i13-core.wasm CORE_OK=1 ROUTES=56
