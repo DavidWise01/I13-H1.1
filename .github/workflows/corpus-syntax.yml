@@ -1,0 +1,44 @@
+name: I13 golden corpus 01 syntax
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
+      - 'scripts/corpus_syntax.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-syntax.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
+      - 'scripts/corpus_syntax.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-syntax.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify 01 syntax river on VM and Wasm
+        run: node scripts/corpus_syntax.js target/debug/i13
+      - name: Keep syntax downstream of atoms
+        run: |
+          grep -Fq '"layer": "00_atoms"' corpus/golden/01_syntax/manifest.json
+          grep -Fq '"handoff": 34' corpus/golden/01_syntax/manifest.json
+          grep -Fq 'RIVER_START <- 34' corpus/golden/01_syntax/river.i13
+          grep -Fq 'RIVER_FINAL <- R8_OUT' corpus/golden/01_syntax/river.i13
+      - name: Keep stream notation documentary only
+        run: |
+          grep -Fq '"stream_notation_is_i13_syntax": false' corpus/golden/01_syntax/manifest.json
+          ! grep -R -n -E '^[[:space:]]*[^/].*\|s\|' corpus/golden/01_syntax/*.i13
