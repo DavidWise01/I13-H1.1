@@ -66,7 +66,7 @@ pub fn build_wasm(source: SourceFile) -> Result<(CompileOutput, Vec<u8>), Vec<Di
 mod tests {
     use super::*;
     use super::hir::{HirExprKind, HirStmtKind};
-    use super::ivm::{Op, OPCODE_COUNT};
+    use super::ivm::{Op, I13_FRAME_LIMIT, OPCODE_COUNT};
 
     #[test]
     fn declaration_lowers_to_assign_name_constant() {
@@ -128,6 +128,17 @@ mod tests {
         assert_eq!(Op::Const.effect(0).net, 1);
         assert_eq!(Op::Call.effect(2).need, 3);
         assert_eq!(Op::Call.effect(2).net, -2);
+    }
+
+    #[test]
+    fn canonical_i13_frame_limit_is_4096_and_vm_enforces_it() {
+        assert_eq!(I13_FRAME_LIMIT, 4096);
+        let source = SourceFile::new(
+            "frame-limit.i13",
+            "def count(I n) { if n <= 0 { -> 0 } -> 1 + count(n - 1) }\nI OUT <- count(4095)\n",
+        );
+        let errors = run(source, vm::VmConfig::default()).unwrap_err();
+        assert!(errors.iter().any(|d| d.code == DiagnosticCode::VmCallLimit));
     }
 
     #[test]
