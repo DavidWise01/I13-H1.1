@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#04070b">
+<meta name="description" content="I13 compiler observatory: compiler pipeline, VM/Wasm parity, diagnostics, conformance, introspection, trace and debugger status.">
+<title>I13 · Compiler Observatory</title>
+<link rel="stylesheet" href="compiler.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-i">I</span><span>I13 / COMPILER</span></a>
+  <nav aria-label="Compiler observatory navigation">
+    <a href="#pipeline" class="active">PIPELINE</a>
+    <a href="#components">COMPONENTS</a>
+    <a href="#runtime-law">LAW</a>
+    <a href="#debugger">DEBUGGER</a>
+    <a href="workbench.html">WORKBENCH</a>
+    <a href="index.html">ORIGIN</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div>
+      <p class="eyebrow">I13 COMPILER OBSERVATORY · KNOWN-GOOD EXECUTABLE SLICE</p>
+      <h1>Source to <span>execution.</span></h1>
+      <p class="lead">A visual record of the compiler that currently turns <code>.i13</code> source into validated IVM-13, executes it on the explicit-frame reference VM, and lowers the same execution authority into real WebAssembly.</p>
+      <div class="badge-row">
+        <span class="pill good">VM = WASM · KNOWN-GOOD SURFACE</span>
+        <span class="pill info">TAGGED VALUES FROZEN</span>
+        <span class="pill info">DEBUGGER v0.1 FROZEN</span>
+        <span class="pill warn">8M STEPS = RUNTIME POLICY</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="#pipeline">VIEW COMPILER FLOW</a>
+        <a class="button ghost" href="COMPILER-CANON.md">READ COMPILER CANON</a>
+        <a class="button ghost" href="workbench.html">OPEN LIVE WORKBENCH</a>
+      </div>
+    </div>
+
+    <aside class="hero-status" aria-label="Compiler status">
+      <div class="status-head">
+        <span class="status-led">COMPILER GREEN</span>
+        <span class="commit">debug proof ce3d605</span>
+      </div>
+      <div class="metrics">
+        <div class="metric"><strong>15</strong><span>FROZEN IVM OPCODES</span></div>
+        <div class="metric"><strong>4096</strong><span>I13 FRAME CEILING</span></div>
+        <div class="metric"><strong>29</strong><span>DIFFERENTIAL ATTACKS KNOWN GOOD</span></div>
+        <div class="metric"><strong>11/11</strong><span>CONFORMANCE v0.1</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="section" id="pipeline">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">AUTHORITY CHAIN</p>
+        <h2>The compiler spine.</h2>
+      </div>
+      <p>Static introspection can reveal every major layer, but authority remains fixed: SPEC defines the language, HIR defines meaning, and IVM defines execution.</p>
+    </div>
+
+    <div class="pipeline-shell">
+      <div class="pipeline" aria-label="I13 compiler pipeline">
+        <div class="node" data-pipeline-node><strong>SOURCE</strong><small>.i13 + spans</small></div>
+        <div class="node" data-pipeline-node><strong>TOKENS</strong><small>lexer</small></div>
+        <div class="node" data-pipeline-node><strong>AST</strong><small>what was written</small></div>
+        <div class="node authority" data-pipeline-node><strong>HIR</strong><small>semantic authority</small></div>
+        <div class="node" data-pipeline-node><strong>VALIDATE</strong><small>semantic + IVM gates</small></div>
+        <div class="node authority" data-pipeline-node><strong>IVM-13</strong><small>execution authority</small></div>
+      </div>
+      <div class="backend-split">
+        <div class="backend"><strong>REFERENCE VM</strong><small>explicit I13 frames · tagged values</small></div>
+        <div class="backend"><strong>WEBASSEMBLY</strong><small>validated IVM → real .wasm</small></div>
+        <div class="backend parity">VM(program) == WASM(program)</div>
+      </div>
+      <div class="authority-key">
+        <span><b>SPEC</b> · language authority</span>
+        <span><b>HIR</b> · semantic authority</span>
+        <span><b>IVM-13</b> · execution authority</span>
+        <span><b>DUMP / TRACE / DEBUG</b> · observers</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="components">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">COMPILER TOOLING</p>
+        <h2>Known-good components.</h2>
+      </div>
+      <p>Each component is deliberately downstream of compiler authority. They make the machine inspectable and testable without quietly becoming new semantics.</p>
+    </div>
+
+    <div class="components">
+      <article class="component" data-kind="diagnostic">
+        <small>v0.1 · FROZEN</small><h3>Diagnostics</h3>
+        <p>Stable E-codes, phase/category, source excerpts, exact spans and one renderer for check/run/build.</p>
+        <a href="COMPILER-DIAGNOSTICS.md">CONTRACT →</a>
+      </article>
+      <article class="component" data-kind="conformance">
+        <small>v0.1 · 11/11</small><h3>Conformance</h3>
+        <p>Executable contract for accepted results, compile errors, runtime traps and canonical resource behavior.</p>
+        <a href="COMPILER-CONFORMANCE.md">MANIFEST LAW →</a>
+      </article>
+      <article class="component" data-kind="introspection">
+        <small>v0.1 · FROZEN</small><h3>Introspection</h3>
+        <p>Deterministic read-only dumps of tokens, AST, HIR and validated IVM with symbolic operands.</p>
+        <a href="COMPILER-INTROSPECTION.md">DUMP LAW →</a>
+      </article>
+      <article class="component" data-kind="trace">
+        <small>v0.1 · FROZEN</small><h3>Trace</h3>
+        <p>Streaming pre-instruction observation of the real VM loop: PC, frames, stack effects, bindings and spans.</p>
+        <a href="COMPILER-TRACE.md">TRACE LAW →</a>
+      </article>
+      <article class="component" data-kind="debug">
+        <small>v0.1 · FROZEN</small><h3>Debugger</h3>
+        <p>Step, next, continue, source breakpoints and immutable binding/frame/stack inspection on the same VM.</p>
+        <a href="COMPILER-DEBUGGER.md">DEBUG LAW →</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="value-law">
+    <div class="section-head">
+      <div><p class="eyebrow">REPRESENTATION LAW</p><h2>Value identity survives lowering.</h2></div>
+      <p>The first Wasm torture break came from flattening function handles into numeric payloads. The frozen repair carries kind, payload and binding state as separate facts.</p>
+    </div>
+    <div class="geometry-grid">
+      <article class="geometry">
+        <h3>Stored I13 value</h3>
+        <div class="value-strip"><span class="kind">kind</span><span class="payload">payload</span><span class="bound">bound</span></div>
+        <p><b>NUMBER</b> uses kind 0 with an f64 payload. <b>FUNCTION</b> uses kind 1 with a function/table identity payload. Binding state remains independent.</p>
+      </article>
+      <article class="geometry">
+        <h3>Operation gates</h3>
+        <div class="type-route"><div class="route-card"><strong>Bin / Cmp / If</strong><span>require NUMBER</span></div><span class="route-arrow">⇄</span><div class="route-card"><strong>Call</strong><span>requires FUNCTION</span></div></div>
+        <p>Ask, Answer, arguments, returns, globals and locals preserve the tagged pair. A backend may change representation; it may not erase value identity.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="runtime-law">
+    <div class="section-head">
+      <div><p class="eyebrow">RESOURCE BOUNDARIES</p><h2>Language law vs runtime policy.</h2></div>
+      <p>The compiler deliberately distinguishes a canonical I13 execution limit from an implementation safety fuse.</p>
+    </div>
+    <div class="law-grid">
+      <article class="law-card">
+        <div class="law-number">4096</div><h3>Active I13 frames</h3>
+        <div class="meter"><span></span></div>
+        <p>Canonical language execution law. Root/main counts as frame 1. Reference VM and generated Wasm must enforce the same ceiling.</p>
+        <div class="mini-law">I13-EXEC-LIMIT-001 · CONFORMANCE INCLUDED</div>
+      </article>
+      <article class="law-card policy">
+        <div class="law-number">8,000,000</div><h3>Reference VM steps</h3>
+        <div class="meter"><span></span></div>
+        <p>Deterministic runtime safety fuse. One executed IVM instruction equals one VM step, but the 8M default is not language validity and Wasm need not copy it.</p>
+        <div class="mini-law">I13-RUNTIME-POLICY-001 · CONFORMANCE EXCLUDED</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="evidence">
+    <div class="section-head">
+      <div><p class="eyebrow">HARDENING EVIDENCE</p><h2>Attack → understand → lock.</h2></div>
+      <p>Torture discovers, policy tests characterize, and conformance freezes accepted behavior. A green workflow is evidence only for the behavior it actually tests.</p>
+    </div>
+    <div class="test-grid">
+      <article class="test-card"><strong>29</strong><h3>Differential attacks</h3><p>Arithmetic, control, tagged function flow, arity, binding edges and recursion through the canonical frame fence.</p></article>
+      <article class="test-card"><strong>4094</strong><h3>Last legal recursive count</h3><p>VM and Wasm both complete. 4095 and 4096 produce matched canonical frame rejection/trap.</p></article>
+      <article class="test-card"><strong>11/11</strong><h3>Conformance v0.1</h3><p>Whole CLI paths, stable diagnostics, execution results, runtime traps and the I13 frame law remain gated.</p></article>
+      <article class="test-card"><strong>8/8</strong><h3>Tagged-value regression</h3><p>Function identity survives globals, arguments, returns and comparisons without falling back into numeric payloads.</p></article>
+      <article class="test-card"><strong>1 VM</strong><h3>Trace + debugger</h3><p>Run, trace and debug share the same execution loop. Observers cannot write execution state.</p></article>
+      <article class="test-card probe"><strong>19</strong><h3>explode(19) policy probe</h3><p>Reference VM hits the 8M safety fuse while Wasm completes. Classified as runtime-policy divergence, not semantic defect.</p></article>
+    </div>
+  </section>
+
+  <section class="section" id="debugger">
+    <div class="section-head">
+      <div><p class="eyebrow">DEBUGGER v0.1</p><h2>Introspection over time.</h2></div>
+      <p>The terminal below is a visual guide to the frozen debugger vocabulary. It is not a browser execution engine and does not redefine compiler authority.</p>
+    </div>
+    <div class="cli-grid">
+      <div class="cli-list" aria-label="I13 compiler CLI commands">
+        <div class="cli-command"><b>i13 check</b> file.i13</div>
+        <div class="cli-command"><b>i13 run</b> file.i13</div>
+        <div class="cli-command"><b>i13 build</b> file.i13 -o file.wasm</div>
+        <div class="cli-command"><b>i13 dump</b> file.i13 --tokens|--ast|--hir|--ivm</div>
+        <div class="cli-command"><b>i13 trace</b> file.i13</div>
+        <div class="cli-command"><b>i13 debug</b> file.i13</div>
+        <div class="status-line">debugger proof gate · PASS</div>
+        <p class="visual-note">Debugger commands: step · next · continue · break · delete · bindings · print · stack · frames · where · quit</p>
+      </div>
+
+      <div class="terminal" data-debug-terminal>
+        <div class="terminal-bar"><span class="dots"><i></i><i></i><i></i></span><span class="terminal-label">I13 DEBUGGER v0.1 · VISUAL GUIDE</span></div>
+        <div class="terminal-body" data-terminal-body></div>
+        <div class="terminal-controls">
+          <button data-terminal-step>ENTRY</button>
+          <button data-terminal-step>BREAK</button>
+          <button data-terminal-step>NEXT</button>
+          <button data-terminal-step>DONE</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="documents">
+    <div class="section-head"><div><p class="eyebrow">CANONICAL RECORD</p><h2>Compiler documents.</h2></div><p>These records separate construction history, accepted law and measured evidence.</p></div>
+    <div class="docs-grid">
+      <a class="doc-link" href="COMPILER-CANON.md">COMPILER-CANON.md</a>
+      <a class="doc-link" href="COMPILER-DIAGNOSTICS.md">COMPILER-DIAGNOSTICS.md</a>
+      <a class="doc-link" href="COMPILER-CONFORMANCE.md">COMPILER-CONFORMANCE.md</a>
+      <a class="doc-link" href="COMPILER-INTROSPECTION.md">COMPILER-INTROSPECTION.md</a>
+      <a class="doc-link" href="COMPILER-TRACE.md">COMPILER-TRACE.md</a>
+      <a class="doc-link" href="COMPILER-DEBUGGER.md">COMPILER-DEBUGGER.md</a>
+      <a class="doc-link" href="COMPILER-RUNTIME-POLICY.md">COMPILER-RUNTIME-POLICY.md</a>
+      <a class="doc-link" href="COMPILER-TORTURE-001.md">COMPILER-TORTURE-001.md</a>
+      <a class="doc-link" href="COMPILER-TORTURE-002.md">COMPILER-TORTURE-002.md</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>I13 Compiler Observatory · source → executable I13</span>
+  <span><a href="index.html">ORIGIN</a> · <a href="workbench.html">WORKBENCH</a> · <a href="https://github.com/DavidWise01/I13-H1.1">GITHUB</a></span>
+</footer>
+<script src="compiler.js"></script>
+</body>
+</html>
