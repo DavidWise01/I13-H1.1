@@ -1,0 +1,13 @@
+// 03 RELATIONS · ROCK 02 · DOWN
+I RIVER_IN <- 514229
+
+def at_down(I x, I y) {
+    if x == 0 {
+        if y == -1 { -> 1 }
+    }
+    -> 0
+}
+
+I DOWN_OK <- at_down(0, -1)
+I RELATION_OK <- DOWN_OK
+I RIVER_OUT <- RIVER_IN + 317811
