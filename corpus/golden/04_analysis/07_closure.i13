@@ -1,0 +1,17 @@
+// 04 ANALYSIS · ROCK 07 · closure at origin
+
+def closure(I admitted, I sx, I sy, I ex, I ey) {
+    if admitted != 1 { -> 0 }
+    if sx == ex {
+        if sy == ey { -> 1 }
+    }
+    -> 0
+}
+
+I RIVER_IN <- 433494437
+I CLOSED <- closure(1, 0, 0, 0, 0)
+I OPEN_PATH <- closure(1, 0, 0, 1, 0)
+I BLOCKED_CLOSURE <- closure(0, 0, 0, 0, 0)
+I CLOSURE_OK <- (CLOSED == 1) * (OPEN_PATH == 0) * (BLOCKED_CLOSURE == 0)
+I ANALYSIS_OK <- CLOSURE_OK
+I RIVER_OUT <- 701408733
