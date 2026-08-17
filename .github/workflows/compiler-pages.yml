@@ -10,6 +10,8 @@ on:
       - 'docs/landing.js'
       - 'docs/workbench.html'
       - 'docs/COMPILER-*.md'
+      - 'examples/compiler_bootstrap.i13'
+      - '.github/workflows/compiler-bootstrap.yml'
       - '.github/workflows/compiler-pages.yml'
   pull_request:
     paths:
@@ -19,6 +21,8 @@ on:
       - 'docs/landing.js'
       - 'docs/workbench.html'
       - 'docs/COMPILER-*.md'
+      - 'examples/compiler_bootstrap.i13'
+      - '.github/workflows/compiler-bootstrap.yml'
       - '.github/workflows/compiler-pages.yml'
 
 permissions:
@@ -44,6 +48,20 @@ jobs:
           grep -Fq 'DEBUGGER v0.1' docs/compiler.html
           grep -Fq 'i13 debug' docs/compiler.html
           grep -Fq 'COMPILER-DEBUGGER.md' docs/compiler.html
+      - name: Check bootstrap visual contract
+        run: |
+          test -s examples/compiler_bootstrap.i13
+          test -s docs/COMPILER-BOOTSTRAP.md
+          grep -Fq 'I13 BOOTSTRAP v0.1' docs/compiler.html
+          grep -Fq 'I13-BOOTSTRAP-0.1' docs/compiler.html
+          grep -Fq '15638' docs/compiler.html
+          grep -Fq '5946' docs/compiler.html
+          grep -Fq '17 / -16' docs/compiler.html
+          grep -Fq 'COMPILER-BOOTSTRAP.md' docs/compiler.html
+          grep -Fq 'BOOTSTRAP_OK <- bootstrap_selftest()' examples/compiler_bootstrap.i13
+          grep -Fq 'def stack_need' examples/compiler_bootstrap.i13
+          grep -Fq 'def stack_net' examples/compiler_bootstrap.i13
+          grep -Fq 'def frame_admit_call' examples/compiler_bootstrap.i13
       - name: Check landing and workbench discovery
         run: |
           grep -Fq "link.href='compiler.html'" docs/landing.js
@@ -54,6 +72,9 @@ jobs:
         run: |
           grep -Fq 'I13-DEBUGGER-0.1' docs/COMPILER-DEBUGGER.md
           grep -Fq 'FROZEN KNOWN GOOD' docs/COMPILER-DEBUGGER.md
+          grep -Fq 'I13-BOOTSTRAP-0.1' docs/COMPILER-BOOTSTRAP.md
+          grep -Fq 'I13-BOOTSTRAP-001' docs/COMPILER-BOOTSTRAP.md
+          grep -Fq 'BOOTSTRAP       v0.1 FROZEN' docs/COMPILER-CANON.md
           grep -Fq 'DEBUGGER        v0.1 FROZEN' docs/COMPILER-CANON.md
           grep -Fq 'TRACE           v0.1 FROZEN' docs/COMPILER-CANON.md
           grep -Fq 'INTROSPECTION   v0.1 FROZEN' docs/COMPILER-CANON.md
