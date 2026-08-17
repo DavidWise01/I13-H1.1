@@ -1,0 +1,7 @@
+// ROCK 06 · COMPARE
+// river: 8 |s| 13
+// adds: comparison result
+
+I RIVER_IN <- 8
+I RIVER_MATCH <- RIVER_IN == 8
+I RIVER_OUT <- RIVER_IN + 5
