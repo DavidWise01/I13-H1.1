@@ -1,0 +1,11 @@
+I x <- 99
+
+def pick(I x) {
+    -> x
+}
+
+I RIVER_IN <- 10946
+I SCOPE_OK <- pick(7) == 7
+I GLOBAL_STILL_OK <- x == 99
+I RIVER_OUT <- RIVER_IN + 6765
+I SEMANTIC_OK <- SCOPE_OK * GLOBAL_STILL_OK
