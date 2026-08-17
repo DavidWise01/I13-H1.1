@@ -1,0 +1,60 @@
+name: I13 compiler Pages observatory
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/compiler.html'
+      - 'docs/compiler.css'
+      - 'docs/compiler.js'
+      - 'docs/landing.js'
+      - 'docs/workbench.html'
+      - 'docs/COMPILER-*.md'
+      - '.github/workflows/compiler-pages.yml'
+  pull_request:
+    paths:
+      - 'docs/compiler.html'
+      - 'docs/compiler.css'
+      - 'docs/compiler.js'
+      - 'docs/landing.js'
+      - 'docs/workbench.html'
+      - 'docs/COMPILER-*.md'
+      - '.github/workflows/compiler-pages.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compiler-observatory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check observatory JavaScript syntax
+        run: node --check docs/compiler.js
+      - name: Check compiler observatory contract
+        run: |
+          test -s docs/compiler.html
+          test -s docs/compiler.css
+          test -s docs/compiler.js
+          grep -Fq 'I13 COMPILER OBSERVATORY' docs/compiler.html
+          grep -Fq 'VM(program) == WASM(program)' docs/compiler.html
+          grep -Fq '4096' docs/compiler.html
+          grep -Fq '8,000,000' docs/compiler.html
+          grep -Fq '11/11' docs/compiler.html
+          grep -Fq 'DEBUGGER v0.1' docs/compiler.html
+          grep -Fq 'i13 debug' docs/compiler.html
+          grep -Fq 'COMPILER-DEBUGGER.md' docs/compiler.html
+      - name: Check landing and workbench discovery
+        run: |
+          grep -Fq "link.href='compiler.html'" docs/landing.js
+          grep -Fq 'OPEN COMPILER OBSERVATORY' docs/landing.js
+          grep -Fq 'href="compiler.html"' docs/workbench.html
+          grep -Fq 'COMPILER / STATUS' docs/workbench.html
+      - name: Check frozen compiler documents
+        run: |
+          grep -Fq 'I13-DEBUGGER-0.1' docs/COMPILER-DEBUGGER.md
+          grep -Fq 'FROZEN KNOWN GOOD' docs/COMPILER-DEBUGGER.md
+          grep -Fq 'DEBUGGER        v0.1 FROZEN' docs/COMPILER-CANON.md
+          grep -Fq 'TRACE           v0.1 FROZEN' docs/COMPILER-CANON.md
+          grep -Fq 'INTROSPECTION   v0.1 FROZEN' docs/COMPILER-CANON.md
+          grep -Fq 'CONFORMANCE     v0.1 FROZEN' docs/COMPILER-CANON.md
