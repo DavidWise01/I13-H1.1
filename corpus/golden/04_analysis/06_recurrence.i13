@@ -1,0 +1,19 @@
+// 04 ANALYSIS · ROCK 06 · recursive accumulation
+
+def repeat_sum(I value, I count) {
+    if count == 0 { -> 0 }
+    -> value + repeat_sum(value, count - 1)
+}
+
+def recurrence(I admitted, I value, I count) {
+    if admitted != 1 { -> 0 }
+    -> repeat_sum(value, count)
+}
+
+I RIVER_IN <- 267914296
+I OPEN_RECURRENCE <- recurrence(1, 2, 4)
+I EMPTY_RECURRENCE <- recurrence(1, 2, 0)
+I BLOCKED_RECURRENCE <- recurrence(0, 2, 4)
+I RECURRENCE_OK <- (OPEN_RECURRENCE == 8) * (EMPTY_RECURRENCE == 0) * (BLOCKED_RECURRENCE == 0)
+I ANALYSIS_OK <- RECURRENCE_OK
+I RIVER_OUT <- 433494437
