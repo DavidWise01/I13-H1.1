@@ -1,6 +1,6 @@
 # I13 Compiler Torture 002 — Resource Boundary Break
 
-Status: **REPRODUCED · OPEN · NOT FIXED IN DISCOVERY PASS**
+Status: **CLOSED · REGRESSION-LOCKED**
 
 Break ID: `I13-WASM-LIMIT-002`
 
@@ -31,11 +31,7 @@ Pass 002 then added and passed:
 24. recursion 4094                             PASS
 ```
 
-Therefore the current measured parity boundary includes successful recursive execution through `count(4094)`.
-
-## First new break
-
-Source:
+## Original break
 
 ```i13
 def count(I n) {
@@ -46,73 +42,55 @@ def count(I n) {
 I OUT <- count(4095)
 ```
 
-Reference VM result:
+Original behavior:
 
 ```text
-E0503 reference VM exceeded 4096 frames
+Reference VM: E0503 reference VM exceeded 4096 frames
+Generated Wasm: OUT = 4095
 ```
 
-Generated Wasm result:
+Cause: the reference VM owned an explicit 4096-frame execution boundary while the first Wasm backend delegated recursion capacity to the host engine.
+
+## Repair
+
+The boundary is now part of I13 itself as `I13-EXEC-LIMIT-001`:
 
 ```text
-OK
-OUT = 4095
-kind(OUT) = NUMBER
+I13_FRAME_LIMIT = 4096
 ```
 
-Therefore:
+The count includes the main/root frame.
+
+The IVM layer owns the constant. The reference VM uses it as the canonical maximum. Generated Wasm now carries a private active-frame counter:
 
 ```text
-CLI/reference VM(program) != generated Wasm(program)
+i13_run
+  ↓
+frame_depth = 1
+
+Call
+  ↓
+require frame_depth < 4096
+  ↓
+frame_depth += 1
+  ↓
+call_indirect
+  ↓
+frame_depth -= 1
 ```
 
-at the default reference-VM frame boundary.
+A trapped run does not need to unwind the private counter because every new `i13_run` resets it to root frame `1` before execution.
 
-## Why it breaks
+## Regression proof
 
-The reference VM owns an explicit resource contract:
+After the repair:
 
 ```text
-VmConfig::default()
-
-step_limit  = 8,000,000
-frame_limit = 4096
+count(4094)  VM PASS  == Wasm PASS
+count(4095)  VM VETO  == Wasm TRAP
+count(4096)  VM VETO  == Wasm TRAP
 ```
 
-Its frame vector includes the main frame. A recursive call that would push beyond that limit returns `E0503` rather than executing.
+Therefore `I13-WASM-LIMIT-002` is closed.
 
-The current Wasm backend preserves IVM value semantics but does not emit an equivalent I13 frame counter/limit. Recursive I13 calls lower to host Wasm calls through `call_indirect`, so the host engine decides how deep execution may continue.
-
-At this tested boundary the host engine permits one execution that the default reference VM forbids:
-
-```text
-count(4094)  VM PASS   == Wasm PASS
-count(4095)  VM E0503  != Wasm PASS
-```
-
-This is not a Number/Function tagging defect. It is loss of an executable **resource-limit contract** during lowering.
-
-## Boundary of known good
-
-Known-good VM/Wasm parity is now measured through all first 24 ordered attacks and through recursion depth 4094.
-
-Parity is **not** claimed at or beyond the reference VM frame-limit fence until `I13-WASM-LIMIT-002` is resolved.
-
-## Repair direction not chosen in discovery pass
-
-The discovery pass intentionally does not choose a repair. Plausible directions include:
-
-```text
-A. emit an explicit Wasm I13 frame counter and enforce the same limit
-B. move the limit out of semantic parity and define it as host policy for both backends
-C. replace recursive Wasm calls with an explicit I13 frame machine/trampoline
-```
-
-Whichever repair is selected must preserve the compiler law:
-
-```text
-BACKENDS MAY DIFFER.
-RESULTS MAY NOT.
-```
-
-The discovery harness is `scripts/compiler_torture_003.sh` and the CI lane is `.github/workflows/compiler-torture-003.yml`.
+The same restress continued beyond this repaired seam and discovered the next independent mismatch at the reference VM step budget. That result is recorded in `docs/COMPILER-TORTURE-003.md`.
