@@ -1,0 +1,8 @@
+def pair_sum(I a, I b) {
+    -> a + b
+}
+
+I RIVER_IN <- 46368
+I ARITY_OK <- pair_sum(3, 4) == 7
+I RIVER_OUT <- RIVER_IN + 28657
+I SEMANTIC_OK <- ARITY_OK
