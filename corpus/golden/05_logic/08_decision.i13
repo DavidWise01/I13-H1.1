@@ -1,0 +1,18 @@
+// 05 LOGIC · ROCK 08 · tagged decision
+// A numeric state of 0 may be a valid II choice, so validity is carried separately.
+
+def decision(I valid, I state) {
+    if valid == 1 { -> state }
+    -> -1
+}
+
+I RIVER_IN <- 53316291173
+I LOGIC_EVIDENCE_INPUT <- 23
+I LOGIC_EVIDENCE_AFTER <- LOGIC_EVIDENCE_INPUT
+I LOGIC_VALID <- 1
+I LOGIC_DECISION <- decision(LOGIC_VALID, 2)
+I LOGIC_BLOCKED_VALID <- 0
+I LOGIC_BLOCKED_DECISION <- decision(LOGIC_BLOCKED_VALID, 2)
+I DECISION_OK <- (LOGIC_VALID == 1) * (LOGIC_DECISION == 2) * (LOGIC_BLOCKED_VALID == 0) * (LOGIC_BLOCKED_DECISION == -1) * (LOGIC_EVIDENCE_AFTER == LOGIC_EVIDENCE_INPUT)
+I LOGIC_OK <- DECISION_OK
+I RIVER_OUT <- 86267571272
