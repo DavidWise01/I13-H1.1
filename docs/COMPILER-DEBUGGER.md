@@ -1,6 +1,6 @@
 # I13 Compiler Debugger v0.1
 
-Status: **CONSTRUCTED · CI-GATED PENDING FINAL FREEZE**
+Status: **FROZEN KNOWN GOOD · COMPILER TESTED · CONFORMANCE LOCKED**
 
 Component ID: `I13-DEBUGGER-0.1`
 
@@ -26,7 +26,7 @@ Command surface:
 i13 debug file.i13
 ```
 
-## Authority law
+## Authority law — FROZEN
 
 ```text
 SPEC -> HIR -> IVM     authority
@@ -43,7 +43,7 @@ DEBUGGER MAY NOT MUTATE EXECUTION.
 
 Debugger snapshots contain clones/read-only views of VM state. No debugger command receives a mutable reference to globals, locals, frames, stacks, program counters, or IVM instructions.
 
-## Single-VM law
+## Single-VM law — FROZEN
 
 `run`, `run_observed`, and `run_debugged` enter the same VM execution loop.
 
@@ -77,7 +77,7 @@ breakpoint:<source-line>
 
 `continue` runs until a source-line breakpoint or program completion/fault.
 
-Source-line breakpoints are suppressed until execution leaves the line that triggered them, preventing one source breakpoint from repeatedly firing on every lowered IVM instruction from the same source line.
+Source-line breakpoints are suppressed in the frame that triggered them until that same-or-shallower frame advances to a different source line. Deeper calls do not clear the caller's suppression. This prevents a breakpoint on a call line from firing again when the callee returns to another lowered IVM instruction on the same source line.
 
 ## Read-only snapshot
 
@@ -150,9 +150,13 @@ debugged VmResult == plain VmResult
 one debugger snapshot per executed IVM instruction when continuously observed
 tagged Function values survive debugger inspection
 active function frames are visible
-source-line breakpoint suppression works
+source-line breakpoint suppression survives deeper calls
 real CLI supports break + inspect + next + continue
 ```
+
+The first debugger test pass exposed a real source-breakpoint re-entry defect: a deeper function call cleared suppression for the caller's breakpoint line, so returning to the same source line fired the breakpoint again. The repair binds suppression to `(source line, frame depth)` and clears it only after the triggering frame advances away.
+
+The repaired proof commit `ce3d605e4ef9e7398bc8e2de6bf492bd4c927f30` passed the complete compiler/Wasm gate: all Rust targets, debugger regression tests, generated Wasm parity, and the canonical 4096-frame test. The canonical conformance v0.1 workflow also passed on the same proof commit.
 
 ## Non-goals for v0.1
 
