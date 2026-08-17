@@ -1,0 +1,112 @@
+// I13 GOLDEN CORPUS · 03 RELATIONS · FLAY METHODOLOGY
+// <flay> and [ \ . . . . . / ] are documentary notation, not I13 syntax.
+// Five unique points: origin + up/down/left/right. Return to origin closes the pass.
+
+def at_origin(I x, I y) {
+    if x == 0 {
+        if y == 0 { -> 1 }
+    }
+    -> 0
+}
+
+def at_up(I x, I y) {
+    if x == 0 {
+        if y == 1 { -> 1 }
+    }
+    -> 0
+}
+
+def at_down(I x, I y) {
+    if x == 0 {
+        if y == -1 { -> 1 }
+    }
+    -> 0
+}
+
+def at_left(I x, I y) {
+    if x == -1 {
+        if y == 0 { -> 1 }
+    }
+    -> 0
+}
+
+def at_right(I x, I y) {
+    if x == 1 {
+        if y == 0 { -> 1 }
+    }
+    -> 0
+}
+
+def fit_bit(I chunk, I slot, I bit) {
+    if chunk == slot { -> bit }
+    -> 0
+}
+
+def flay_mask(I chunk, I up, I down, I left, I right) {
+    I mask <- 0
+    mask.p <- fit_bit(chunk, up, 1)
+    mask.p <- fit_bit(chunk, down, 2)
+    mask.p <- fit_bit(chunk, left, 4)
+    mask.p <- fit_bit(chunk, right, 8)
+    -> mask
+}
+
+def flay_cycle() {
+    if at_origin(0, 0) != 1 { -> 0 }
+    if at_up(0, 1) != 1 { -> 0 }
+    if at_down(0, -1) != 1 { -> 0 }
+    if at_left(-1, 0) != 1 { -> 0 }
+    if at_right(1, 0) != 1 { -> 0 }
+    if at_origin(0, 0) != 1 { -> 0 }
+    -> 1
+}
+
+// Same old chunk fits a newly exposed cardinal place on each recursive pass.
+def flay_old_chunk(I chunk, I depth) {
+    if depth == 0 { -> 1 }
+    if depth == 4 {
+        if flay_mask(chunk, chunk, -100, -200, -300) == 1 {
+            -> flay_old_chunk(chunk, 3)
+        }
+        -> 0
+    }
+    if depth == 3 {
+        if flay_mask(chunk, -100, chunk, -200, -300) == 2 {
+            -> flay_old_chunk(chunk, 2)
+        }
+        -> 0
+    }
+    if depth == 2 {
+        if flay_mask(chunk, -100, -200, chunk, -300) == 4 {
+            -> flay_old_chunk(chunk, 1)
+        }
+        -> 0
+    }
+    if depth == 1 {
+        if flay_mask(chunk, -100, -200, -300, chunk) == 8 {
+            -> flay_old_chunk(chunk, 0)
+        }
+        -> 0
+    }
+    -> 0
+}
+
+// A new chunk becomes the candidate at the next local origin.
+def flay_new_chunks(I chunk, I remaining) {
+    if remaining == 0 { -> 1 }
+    if flay_mask(chunk, chunk, -100, -200, -300) == 0 { -> 0 }
+    -> flay_new_chunks(chunk + 1, remaining - 1)
+}
+
+def flay_gate(I satisfied, I value) {
+    if satisfied == 1 { -> value }
+    -> 0
+}
+
+I FLAY_CYCLE_OK <- flay_cycle()
+I FLAY_OLD_OK <- flay_old_chunk(13, 4)
+I FLAY_NEW_OK <- flay_new_chunks(20, 4)
+I FLAY_SATISFIED <- FLAY_CYCLE_OK * FLAY_OLD_OK * FLAY_NEW_OK
+I FLAY_BLOCKED_VALUE <- flay_gate(0, 13)
+I FLAY_OPEN_VALUE <- flay_gate(FLAY_SATISFIED, 13)
+I FLAY_OK <- FLAY_SATISFIED * (FLAY_BLOCKED_VALUE == 0) * (FLAY_OPEN_VALUE == 13)
