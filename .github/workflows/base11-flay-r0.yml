@@ -1,0 +1,79 @@
+name: I13 Base 11 FLAY r0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/base11_flay_r0.i13'
+      - 'docs/BASE11-FLAY-R0.md'
+      - 'docs/base11.html'
+      - '.github/workflows/base11-flay-r0.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/base11_flay_r0.i13'
+      - 'docs/BASE11-FLAY-R0.md'
+      - 'docs/base11.html'
+      - '.github/workflows/base11-flay-r0.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  base11-r0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish pending Base 11 status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/base11-r0',description:'Base 11 r0 traversal proof running'})
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify Base 11 witness in HIR and VM
+        run: |
+          target/debug/i13 check corpus/golden/base11_flay_r0.i13
+          target/debug/i13 dump corpus/golden/base11_flay_r0.i13 --hir | tee /tmp/base11.hir
+          grep -Fq 'Call nested_frame_ok argc=3' /tmp/base11.hir
+          grep -Fq 'Assign mode=osmotic target=BASE11_DOWN' /tmp/base11.hir
+          grep -Fq 'Assign mode=osmotic target=BASE11_UP' /tmp/base11.hir
+          target/debug/i13 run corpus/golden/base11_flay_r0.i13 | tee /tmp/base11.txt
+          grep -Fq 'BASE11_LOCAL_SPAN = 11' /tmp/base11.txt
+          grep -Fq 'BASE11_ARM_DEPTH = 1000' /tmp/base11.txt
+          grep -Fq 'BASE11_DOWN = 5000' /tmp/base11.txt
+          grep -Fq 'BASE11_UP = 5000' /tmp/base11.txt
+          grep -Fq 'BASE11_LIVE_DEPTH = 0' /tmp/base11.txt
+          grep -Fq 'BASE11_QUESTIONS = 0' /tmp/base11.txt
+          grep -Fq 'BASE11_R0 = 1' /tmp/base11.txt
+          grep -Fq 'BASE11_OK = 1' /tmp/base11.txt
+      - name: Verify Base 11 Wasm parity twice
+        run: |
+          target/debug/i13 build corpus/golden/base11_flay_r0.i13 -o /tmp/base11.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/base11.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            const expected={BASE11_LOCAL_SPAN:11,BASE11_ARM_DEPTH:1000,BASE11_DOWN:5000,BASE11_UP:5000,BASE11_LIVE_DEPTH:0,BASE11_QUESTIONS:0,BASE11_R0:1,BASE11_OK:1};
+            const verify=()=>{for(const [name,value] of Object.entries(expected)){const g=instance.exports[`i13.global.${name}`];if(!(g instanceof WebAssembly.Global)||g.value!==value)throw new Error(`${name} mismatch`);}};
+            instance.exports.i13_run(); verify();
+            instance.exports.i13_run(); verify();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Keep Base 11 non-river and documentary
+        run: |
+          grep -Fq 'NON-RIVER TRAVERSAL PRIMITIVE' docs/BASE11-FLAY-R0.md
+          grep -Fq 'not radix-11 arithmetic' corpus/golden/base11_flay_r0.i13
+          grep -Fq 'Vector[' docs/BASE11-FLAY-R0.md
+          grep -Fq 'r0' docs/base11.html
+      - name: Publish Base 11 result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const ok='${{ job.status }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/base11-r0',description:ok?'Base 11 r0 HIR/VM/Wasm verified':'Base 11 r0 proof failed'})
