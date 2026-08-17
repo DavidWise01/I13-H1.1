@@ -220,4 +220,29 @@ Continuity core:
 
 Canonical E1 specification: `docs/E1-FACTORY.md`.
 
-This E1 attachment is the current H1.1 trunk boundary.
+## Stage 15.3 — live E1 crossing
+
+The workbench now executes the attachment as a bounded closed loop:
+
+```text
+internal/y Cortex request
+    -> Wasm `i13_e1_boundary_verify`
+    -> postMessage
+    -> external/x `e1-service.html`
+         sandbox="allow-scripts"
+         opaque origin
+    -> bounded prime + parent receipt
+    -> Wasm return boundary verify
+    -> Wasm closed-loop verify
+    -> [E1ID]cv
+    -> `i13:e1-prime`
+    -> Cortex continues
+```
+
+The E1 service has no same-origin capability, no fetch path, and no browser-storage path. It cannot read internal DOM/runtime state. The internal page does not read E1 DOM state. `postMessage` is the only live bridge.
+
+The full request/return SHA256 values remain in E1ID while compact nonzero `u32` folds feed the current Wasm ABI. No prime is released if the boundary, witness, parent, or contamination checks fail.
+
+Canonical Stage 15.3 specification: `docs/STAGE15.3-E1-HANDOFF.md`.
+
+This live `[ y | x ]` handoff is the current H1.1 trunk boundary.
