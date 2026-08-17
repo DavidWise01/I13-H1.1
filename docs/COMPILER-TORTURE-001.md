@@ -1,14 +1,12 @@
 # I13 Compiler Torture 001 — First Break
 
-Status: **REPRODUCED · OPEN · NOT FIXED IN THIS PASS**
+Status: **REPRODUCED · REPAIRED · REGRESSION-LOCKED**
 
 Break ID: `I13-WASM-TYPE-001`
 
-Purpose: attack the known-good compiler vertically until the first reference-VM / generated-Wasm semantic disagreement appears. Stop at the first disagreement; do not continue searching past it in the same pass.
+Purpose: attack the known-good compiler vertically until the first reference-VM / generated-Wasm semantic disagreement appears. Stop at the first disagreement, preserve the evidence, then repair without changing the I13 language surface.
 
-## Attack order
-
-The harness executes these cases in order:
+## Original attack order
 
 ```text
 1. arithmetic precedence
@@ -21,13 +19,13 @@ The harness executes these cases in order:
 The first four passed:
 
 ```text
-arith_precedence   OUT=10   VM=WASM   repeated Wasm run deterministic
-control_false_path OUT=9    VM=WASM   repeated Wasm run deterministic
-recursion_256      OUT=256  VM=WASM   repeated Wasm run deterministic
-division_zero      VM error = Wasm trap
+arith_precedence    OUT=10   VM=WASM
+control_false_path  OUT=9    VM=WASM
+recursion_256       OUT=256  VM=WASM
+division_zero       VM error = Wasm trap
 ```
 
-## First break
+## Original first break
 
 Source:
 
@@ -42,22 +40,20 @@ Reference VM result:
 E0501 Bin requires numeric operands
 ```
 
-Generated Wasm result:
+Original generated Wasm result:
 
 ```text
 i13.global.f   = 0
 i13.global.OUT = 1
 ```
 
-Therefore:
+Therefore, at discovery time:
 
 ```text
 VM(program) != WASM(program)
 ```
 
-and the compiler law correctly classifies this as a backend/compiler defect.
-
-## Why it breaks
+## Root cause
 
 The reference VM has a tagged runtime value model:
 
@@ -66,33 +62,98 @@ Value::Number(f64)
 Value::Function(function_id)
 ```
 
-`Bin` requires numeric operands, so `f + 1` is rejected.
+The first Wasm backend stored both payloads in one `f64` plane. A function binding wrote the function/table id as an `f64`; ordinary `Ask` then returned that payload with no value-kind tag.
 
-The current Wasm backend stores global payloads in one `f64` value plane. A function binding writes the function/table id into that plane as an `f64`. An ordinary IVM `Ask` then reads the same global as `f64` with no runtime value-kind tag. `Bin` consequently sees a valid Wasm number and computes it.
-
-For the first function, function id `0` becomes numeric `0.0`, therefore:
+For the first function:
 
 ```text
+Function(0)
+   ↓ flatten
+0.0
+   ↓
 0.0 + 1.0 = 1.0
 ```
 
-The problem is not Wasm arithmetic. The problem is loss of the IVM value-kind distinction during lowering.
+The bug was loss of IVM value identity during lowering, not Wasm arithmetic.
 
-## Boundary of known good
+## Chosen repair — Option B
 
-Known-good Wasm parity currently includes the tested numeric/control subset, recursive function calls, deterministic reset, and division-by-zero trapping.
-
-It does **not** include programs that allow a function-valued `Name` to flow into numeric operations.
-
-## Why the attack existed
-
-The compiler canon says:
+The Wasm backend now preserves tagged values end-to-end:
 
 ```text
-BACKENDS MAY DIFFER.
-RESULTS MAY NOT.
+[ kind:i32 | payload:f64 ]
+
+NUMBER   = [0 | numeric f64]
+FUNCTION = [1 | function/table id]
 ```
 
-The reference VM deliberately distinguishes function handles from numbers. The Wasm backend therefore must preserve that distinction somehow, or the semantic checker must prove that a function-valued name can only occur in call position before code generation.
+Storage keeps declaration state separately:
 
-This pass records the break without choosing the repair. The defect is evidence for the next hardening decision, not permission to alter the language surface.
+```text
+[ kind | payload | bound ]
+```
+
+Generated exports now include:
+
+```text
+i13.global.<name>
+i13.kind.<name>
+i13.state.<name>
+```
+
+Function parameters and function returns also carry tagged pairs, so identity survives calls rather than being repaired only at globals.
+
+Operation boundaries enforce the reference-VM law:
+
+```text
+Bin / Cmp / If  require NUMBER
+Call            requires FUNCTION
+```
+
+## Regression expansion
+
+After the repair, the torture sequence was expanded so the original example could not pass through a one-off patch.
+
+Current ordered regression set:
+
+```text
+1. arithmetic precedence
+2. false-path control flow
+3. recursion depth 256
+4. division-by-zero runtime parity
+5. function value used as a number
+6. function value carried through an argument, then used as number
+7. function value carried through return + global assignment, then used as number
+8. function value used as comparison operand
+```
+
+Observed result:
+
+```text
+PASS[1] arith_precedence
+PASS[2] control_false_path
+PASS[3] recursion_256
+PASS[4] division_zero
+PASS[5] function_as_number
+PASS[6] function_through_argument
+PASS[7] function_through_return
+PASS[8] function_as_compare_operand
+
+TORTURE PASS · 8 attacks
+```
+
+For attacks 5–8, parity means:
+
+```text
+Reference VM runtime error
+=
+Generated Wasm trap
+```
+
+## Closure
+
+`I13-WASM-TYPE-001` is **CLOSED**.
+
+The original failure remains documented because it defines why the tagged-value law exists. The executable regression is `scripts/compiler_torture.sh` and must remain green.
+
+The repair did not add syntax, remove flexibility, or change the Twelve. It changed only backend representation so Wasm preserves the value distinction IVM already had.
