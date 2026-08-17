@@ -1,0 +1,7 @@
+// I13 GOLDEN CORPUS · 01 SYNTAX · ROCK 06
+def add(I x, I y) {
+    -> x + y
+}
+
+I RIVER_IN <- 610
+I RIVER_OUT <- add(RIVER_IN, add(144, 233))
