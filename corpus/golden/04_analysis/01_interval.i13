@@ -1,0 +1,14 @@
+// 04 ANALYSIS · ROCK 01 · interval
+
+def interval(I admitted, I a, I b) {
+    if admitted != 1 { -> 0 }
+    if b < a { -> a - b }
+    -> b - a
+}
+
+I RIVER_IN <- 24157817
+I OPEN_INTERVAL <- interval(1, 8, 13)
+I BLOCKED_INTERVAL <- interval(0, 8, 13)
+I INTERVAL_OK <- (OPEN_INTERVAL == 5) * (BLOCKED_INTERVAL == 0)
+I ANALYSIS_OK <- INTERVAL_OK
+I RIVER_OUT <- 39088169
