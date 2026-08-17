@@ -80,6 +80,18 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 > node. Pairs with E2 (DSA) as the "quantitative methods" pair — DSA = algorithm
 > theory, R = applied stats. Contrasts A (Python) as a data-language comparison.
 
+## E5. OCCULT / OBSCURE (topic) — Deathbed Literature / Memento Mori (-ology: death-literature & pre-Reformation devotion)
+| Skill | Layer | Status | Tool |
+|---|---|---|---|
+| `ars-moriendi` | occult-obscure | VERIFIED | `ars_moriendi_explorer.html` |
+
+> **E5 = the pivot node:** the user's "occult & obscure" request. Sourced from
+> Wikisource + Wikipedia (archive.org was 503 this session). Ars Moriendi (Art of
+> Dying), two Latin versions c.1415 & c.1450 — 11 woodcuts, 5 deathbed temptations.
+> Distinct from E1 (Greek rhetoric / Art History); this is *death-literature / the
+> occult-death tradition*. Pairs with F (MIND) as the *belief-and-influence*
+> contrast — medieval manual for the soul's final temptation vs modern mind-control.
+
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |
 |---|---|---|---|---|
@@ -101,6 +113,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 - **Computer Science (algorithms)** → E2 (data-structures-algorithms)
 - **Programming Languages (C++)** → E3 (fundamentals-cpp)
 - **Statistics / R Programming** → E4 (beginning-r)
+- **Deathbed Literature / Memento Mori** → E5 (ars-moriendi)
 - **Late-Antique Greek Rhetoric** → E1 (libanius-1517)
 - **Art History / Satirical Prints** → E1 (works-of-hogarth)
 - **Clinical Psychology / Psychiatry** → F-clinical (rape-of-the-mind)
@@ -116,6 +129,7 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 6. `pl-foundations` — fundamentals-cpp
 7. `humanities-classics` — libanius-1517, works-of-hogarth
 8. `data-science` — beginning-r
+9. `occult-obscure` — ars-moriendi
 
 ## RULE SET (flay discipline, v0.10)
 - Every flay ships a runnable artifact (move #5): CLI or self-contained HTML/JS.

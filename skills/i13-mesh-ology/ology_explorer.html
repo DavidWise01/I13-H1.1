@@ -32,7 +32,7 @@
 <main>
   <div class="row">
     <input id="q" placeholder="search skill…" style="flex:1;min-width:200px">
-    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="PL Foundations">PL Foundations</option><option value="Humanities / Classics">Humanities / Classics</option><option value="Data Science">Data Science</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
+    <select id="topic"><option value="">all topics</option><option value="Python Fluency">Python Fluency</option><option value="Computational Primitives">Computational Primitives</option><option value="Security / OSINT">Security / OSINT</option><option value="Web / Frontend Patterns">Web / Frontend Patterns</option><option value="Computing History">Computing History</option><option value="CS Foundations">CS Foundations</option><option value="PL Foundations">PL Foundations</option><option value="Humanities / Classics">Humanities / Classics</option><option value="Data Science">Data Science</option><option value="Occult / Obscure">Occult / Obscure</option><option value="Mind / Thought-Control">Mind / Thought-Control</option></select>
     <select id="status"><option value="">all statuses</option><option value="VERIFIED">VERIFIED</option><option value="CLINICAL">CLINICAL</option><option value="CONTESTED">CONTESTED</option></select>
   </div>
   <div class="grid" id="grid"></div>
@@ -56,7 +56,9 @@ const SKILLS = [
   {n:"programming-8086", topic:"Computing History", ology:"History of Computing", layer:"computing-history", status:"VERIFIED", tool:"8086_explorer.html", note:"Coffron x86 asm (8086/8088, 1983) — 9-chapter ref (merged #24)"},
   {n:"libanius-1517", topic:"Humanities / Classics", ology:"Late-Antique Greek Rhetoric", layer:"humanities-classics", status:"VERIFIED", tool:"libanius_portal.html", note:"Libanius Greek rhetoric, 1517 ed — oldest & 1st non-technical node (merged #27)"},
   {n:"works-of-hogarth", topic:"Humanities / Classics", ology:"Art History / Satirical Prints", layer:"humanities-classics", status:"VERIFIED", tool:"hogarth_portal.html", note:"Hogarth/Trusler engravings+commentary, 1833 — 1st Art-History node (merged #29)"},
-  {n:"beginning-r", topic:"Data Science", ology:"Statistics / R Programming", layer:"data-science", status:"VERIFIED", tool:"r_explorer.html", note:"Gardener Beginning R — 1st data-science/stats node (merged #32)"}
+  {n:"beginning-r", topic:"Data Science", ology:"Statistics / R Programming", layer:"data-science", status:"VERIFIED", tool:"r_explorer.html", note:"Gardener Beginning R — 1st data-science/stats node (merged #32)"},
+  {n:"ars-moriendi", topic:"Occult / Obscure", ology:"Deathbed Literature / Memento Mori", layer:"occult-obscure", status:"VERIFIED", tool:"ars_moriendi_explorer.html", note:"Ars Moriendi (Art of Dying), c.1415/1450 — 1st occult/obscure node (merged #34)"},
+
 ];
 function render(){
   const term = document.getElementById("q").value.toLowerCase();
