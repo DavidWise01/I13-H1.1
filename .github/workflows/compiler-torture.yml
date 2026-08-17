@@ -1,0 +1,23 @@
+name: I13 compiler differential torture
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - 'scripts/compiler_torture.sh'
+      - '.github/workflows/compiler-torture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  torture-to-first-break:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Attack VM/Wasm parity until first break
+        run: bash scripts/compiler_torture.sh
