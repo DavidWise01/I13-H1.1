@@ -1,0 +1,12 @@
+// I13 GOLDEN CORPUS · 01 SYNTAX · ROCK 04
+def step(I x) {
+    if x == 233 {
+        if x == 233 {
+            -> x + 144
+        }
+    }
+    -> 0
+}
+
+I RIVER_IN <- 233
+I RIVER_OUT <- step(RIVER_IN)
