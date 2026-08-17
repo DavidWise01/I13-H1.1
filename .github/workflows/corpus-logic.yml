@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   logic-river:
@@ -110,3 +111,16 @@ jobs:
           grep -Fq 'Q IS THE QUEEN RIDER.' corpus/golden/05_logic/README.md
           grep -Fq 'BOOLEAN IS DOWNSTREAM.' corpus/golden/05_logic/README.md
           grep -Fq 'exact_day_known":false' corpus/golden/05_logic/manifest.json
+      - name: Publish green Logic canon status
+        if: ${{ success() && github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              context: 'i13/logic-canon',
+              description: '05 Logic HIR/VM/Wasm/river verified'
+            })
