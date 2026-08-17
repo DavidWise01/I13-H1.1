@@ -1,0 +1,115 @@
+// I13 GOLDEN CORPUS · 05 LOGIC
+// Logic consumes admitted Analysis evidence, preserves evidence, and chooses through a bounded local field.
+// Logic 0 Day is a symbolic project epoch: Aristotle's departure from Plato's Academy around 347 BCE.
+
+def logic_admitted(I gate) {
+    if gate == 1 { -> 1 }
+    -> 0
+}
+
+def opposite(I state) {
+    if state == 1 { -> 0 }
+    -> 1
+}
+
+def opposition_chain(I state, I turns) {
+    if turns == 0 { -> state }
+    -> opposition_chain(opposite(state), turns - 1)
+}
+
+def relation(I a, I b) {
+    if a < b { -> 1 }
+    if a > b { -> -1 }
+    -> 0
+}
+
+def form_survives(I a, I b, I c, I d) {
+    if relation(a, b) == relation(c, d) { -> 1 }
+    -> 0
+}
+
+def consequence(I source, I transition, I target) {
+    if source == 1 {
+        if transition == 1 {
+            if target == 1 { -> 1 }
+        }
+    }
+    -> 0
+}
+
+def choice_state(I voxel_in, I vector_in) {
+    if voxel_in == 1 {
+        if vector_in == 1 { -> 0 }
+        -> 1
+    }
+    if vector_in == 1 { -> 2 }
+    -> 3
+}
+
+def queen_coverage2d(I up, I down, I left, I right) {
+    I rays <- 0
+    rays.p <- up
+    rays.p <- down
+    rays.p <- left
+    rays.p <- right
+    -> rays / 4
+}
+
+def queen_step(I state) {
+    if state == 0 { -> 1 }
+    if state == 1 { -> 2 }
+    if state == 2 { -> 3 }
+    -> 0
+}
+
+def queen_traverse(I state, I depth) {
+    if depth == 0 { -> state }
+    -> queen_traverse(queen_step(state), depth - 1)
+}
+
+def queen_phase4d(I t) {
+    -> t + 0.0001
+}
+
+def decision(I valid, I state) {
+    if valid == 1 { -> state }
+    -> -1
+}
+
+I LOGIC_UPSTREAM_ANALYSIS <- logic_admitted(1)
+I LOGIC_ZERO_SYMBOLIC <- 1
+I LOGIC_ZERO_BCE <- 347
+
+// The Academy-style contradiction chain is pressure, not a truth oracle.
+I LOGIC_PRESSURE_OK <- opposition_chain(1, 3) == 0
+
+// Aristotle fork: changed particulars retain the same relational form.
+I LOGIC_FORM_OK <- form_survives(2, 5, 8, 13)
+
+// Dialectical/Stoic fork: a locally open transition licenses the asserted target.
+I LOGIC_CONSEQUENCE_OK <- consequence(1, 1, 1)
+
+I LOGIC_II <- choice_state(1, 1)
+I LOGIC_IO <- choice_state(1, 0)
+I LOGIC_OI <- choice_state(0, 1)
+I LOGIC_OO <- choice_state(0, 0)
+I LOGIC_LOCAL_STATES_OK <- (LOGIC_II == 0) * (LOGIC_IO == 1) * (LOGIC_OI == 2) * (LOGIC_OO == 3)
+
+I LOGIC_QUEEN_COVERAGE <- queen_coverage2d(1, 1, 1, 1)
+I LOGIC_QUEEN_SWEEP <- 360
+I LOGIC_QUEEN_PATH <- queen_traverse(0, 6)
+I LOGIC_QUEEN_T0 <- 1
+I LOGIC_QUEEN_T1 <- queen_phase4d(LOGIC_QUEEN_T0)
+I LOGIC_QUEEN_OK <- (LOGIC_QUEEN_COVERAGE == 1) * (LOGIC_QUEEN_SWEEP == 360) * (LOGIC_QUEEN_PATH == 2) * (LOGIC_QUEEN_T1 > LOGIC_QUEEN_T0)
+
+// Analysis profile 23 is consumed as evidence and must remain unchanged by Logic.
+I LOGIC_EVIDENCE_INPUT <- 23
+I LOGIC_EVIDENCE_AFTER <- LOGIC_EVIDENCE_INPUT
+
+// Decision is a four-state relation, not Boolean. Carry validity separately because state 0 is legitimate II.
+I LOGIC_VALID <- LOGIC_UPSTREAM_ANALYSIS
+I LOGIC_DECISION <- decision(LOGIC_VALID, LOGIC_QUEEN_PATH)
+I LOGIC_BLOCKED_VALID <- 0
+I LOGIC_BLOCKED_DECISION <- decision(LOGIC_BLOCKED_VALID, LOGIC_QUEEN_PATH)
+
+I LOGIC_OK <- (LOGIC_ZERO_SYMBOLIC == 1) * (LOGIC_ZERO_BCE == 347) * LOGIC_PRESSURE_OK * LOGIC_FORM_OK * LOGIC_CONSEQUENCE_OK * LOGIC_LOCAL_STATES_OK * LOGIC_QUEEN_OK * (LOGIC_VALID == 1) * (LOGIC_DECISION == 2) * (LOGIC_BLOCKED_VALID == 0) * (LOGIC_BLOCKED_DECISION == -1) * (LOGIC_EVIDENCE_AFTER == LOGIC_EVIDENCE_INPUT)
