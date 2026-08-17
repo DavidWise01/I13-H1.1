@@ -1,0 +1,3 @@
+def add(I a, I b) { -> a + b }
+def twice(I x) { -> add(x, x) }
+I OUT <- twice(7)
