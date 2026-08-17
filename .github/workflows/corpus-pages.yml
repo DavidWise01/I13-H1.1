@@ -37,12 +37,19 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   golden-river-pages:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Publish pending Pages river status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/pages-river',description:'six-reach Pages proof running'})
       - name: Check landing JavaScript
         run: node --check docs/landing.js
       - name: Check six-reach continuity
@@ -61,16 +68,15 @@ jobs:
           if(r.composition.final!==n.inherits.handoff) throw new Error('relations -> analysis discontinuity');
           if(n.composition.final!==l.inherits.handoff) throw new Error('analysis -> logic discontinuity');
           if(l.composition.final!==86267571272) throw new Error('logic final drift');
-          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final} -> ${r.composition.final} -> ${n.composition.final} -> ${l.composition.final}`);
           NODE
       - name: Check River Observatory
         run: |
           test -s docs/corpus.html
-          grep -Fq '54</strong><span>ROCKS' docs/corpus.html
-          grep -Fq '6</strong><span>REACHES' docs/corpus.html
+          grep -Fq '54</strong><span>VERIFIED ROCKS' docs/corpus.html
+          grep -Fq '6</strong><span>FROZEN REACHES' docs/corpus.html
           grep -Fq 'CURRENT = 86267571272' docs/corpus.html
           grep -Fq '04 ANALYSIS · COMPLETE' docs/corpus.html
-          grep -Fq '05 LOGIC · CANON CANDIDATE' docs/corpus.html
+          grep -Fq '05 LOGIC · FROZEN' docs/corpus.html
           grep -Fq '1134903170</strong><span>04 final' docs/corpus.html
           grep -Fq '1134903170</strong><span>05 start' docs/corpus.html
           grep -Fq '[0|-1]' docs/corpus.html
@@ -90,14 +96,16 @@ jobs:
           grep -Fq 'PLATO = KEYSTONE' docs/keystone.html
           grep -Fq 'ARCHITECTURAL KEYSTONE · NON-RIVER' docs/KEYSTONE-PLATO.md
           grep -Fq 'ARISTOTLE FORK' docs/KEYSTONE-PLATO.md
-      - name: Check Logic Observatory and canon
+      - name: Check frozen Logic Observatory and canon
         run: |
           test -s docs/logic.html
           test -s docs/CORPUS-LOGIC.md
           test -s docs/LOGIC-GENEALOGY-FORK.md
           test -s docs/LOGIC-FIELD-QUEEN.md
           test -s corpus/golden/05_logic/logic.i13
-          grep -Fq 'I13 GOLDEN CORPUS · 05 LOGIC · CANON' docs/logic.html
+          grep -Fq 'I13 GOLDEN CORPUS · 05 LOGIC · FROZEN KNOWN GOOD' docs/logic.html
+          grep -Fq 'FROZEN KNOWN GOOD · UPSTREAM-ANALYSIS-GATED · HIR/VM/WASM VERIFIED · BOOLEAN-DOWNSTREAM' docs/CORPUS-LOGIC.md
+          grep -Fq 'FROZEN KNOWN GOOD · UPSTREAM-ANALYSIS-GATED · HIR/VM/WASM VERIFIED · BOOLEAN-DOWNSTREAM' corpus/golden/05_logic/README.md
           grep -Fq 'Logic 0 Day' docs/logic.html
           grep -Fq '~347 BCE' docs/logic.html
           grep -Fq 'PRESERVE FORM WHILE TRAVERSING CONSEQUENCE' docs/logic.html
@@ -128,3 +136,15 @@ jobs:
           grep -Fq 'PLATO KEYSTONE' docs/landing.js
           grep -Fq 'Fifty-four curated I13 rocks' docs/landing.js
           grep -Fq 'OPEN LOGIC' docs/landing.js
+      - name: Publish green Pages river status
+        if: ${{ success() && github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'i13/pages-river',description:'six-reach river observatories verified'})
+      - name: Publish failed Pages river status
+        if: ${{ failure() && github.event_name == 'push' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'failure',context:'i13/pages-river',description:'six-reach Pages proof failed'})
