@@ -1,0 +1,19 @@
+// 04 ANALYSIS · ROCK 05 · cardinal coverage
+
+def coverage(I admitted, I up, I down, I left, I right) {
+    if admitted != 1 { -> 0 }
+    I count <- 0
+    count.p <- up
+    count.p <- down
+    count.p <- left
+    count.p <- right
+    -> count
+}
+
+I RIVER_IN <- 165580141
+I OPEN_COVERAGE <- coverage(1, 1, 0, 1, 1)
+I FULL_COVERAGE <- coverage(1, 1, 1, 1, 1)
+I BLOCKED_COVERAGE <- coverage(0, 1, 1, 1, 1)
+I COVERAGE_OK <- (OPEN_COVERAGE == 3) * (FULL_COVERAGE == 4) * (BLOCKED_COVERAGE == 0)
+I ANALYSIS_OK <- COVERAGE_OK
+I RIVER_OUT <- 267914296
