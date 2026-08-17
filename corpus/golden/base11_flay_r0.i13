@@ -1,0 +1,67 @@
+// I13 BASE 11 · FLAY R0 TRAVERSAL · NON-RIVER WITNESS
+// Project traversal convention, not radix-11 arithmetic and not new I13 syntax.
+// r0 is the local home/return state. DOWN counts entered recursive frames.
+// UP counts unwound recursive frames. Closure requires home + DOWN==UP + ?==0.
+
+def count_down(I remaining, I count) {
+    if remaining == 0 { -> count }
+    -> count_down(remaining - 1, count + 1)
+}
+
+def count_up(I remaining, I count) {
+    if remaining == 0 { -> count }
+    -> count_up(remaining - 1, count + 1)
+}
+
+def nested_frame_ok(I remaining, I vector_ok, I voxel_ok) {
+    if vector_ok != 1 { -> 0 }
+    if voxel_ok != 1 { -> 0 }
+    if remaining == 0 { -> 1 }
+    -> nested_frame_ok(remaining - 1, vector_ok, voxel_ok)
+}
+
+def question_debt(I needed, I known) {
+    if needed > known { -> needed - known }
+    -> 0
+}
+
+def r0_close(I at_home, I down, I up, I questions) {
+    if at_home == 1 {
+        if down == up {
+            if questions == 0 { -> 1 }
+        }
+    }
+    -> 0
+}
+
+// Local Base 11 mnemonic: 5 outward + r0 + 5 return = 11 positions.
+I BASE11_OUTWARD <- 5
+I BASE11_HOME <- 1
+I BASE11_RETURN <- 5
+I BASE11_LOCAL_SPAN <- BASE11_OUTWARD + BASE11_HOME + BASE11_RETURN
+
+// Stress witness: each of five local FLAY arms may burrow 1000 local frames.
+I BASE11_ARM_DEPTH <- 1000
+I BASE11_VECTOR_OK <- 1
+I BASE11_VOXEL_OK <- 1
+I BASE11_NESTED_FRAME_OK <- nested_frame_ok(BASE11_ARM_DEPTH, BASE11_VECTOR_OK, BASE11_VOXEL_OK)
+
+I BASE11_DOWN <- 0
+BASE11_DOWN.p <- count_down(BASE11_ARM_DEPTH, 0)
+BASE11_DOWN.p <- count_down(BASE11_ARM_DEPTH, 0)
+BASE11_DOWN.p <- count_down(BASE11_ARM_DEPTH, 0)
+BASE11_DOWN.p <- count_down(BASE11_ARM_DEPTH, 0)
+BASE11_DOWN.p <- count_down(BASE11_ARM_DEPTH, 0)
+
+I BASE11_UP <- 0
+BASE11_UP.p <- count_up(BASE11_ARM_DEPTH, 0)
+BASE11_UP.p <- count_up(BASE11_ARM_DEPTH, 0)
+BASE11_UP.p <- count_up(BASE11_ARM_DEPTH, 0)
+BASE11_UP.p <- count_up(BASE11_ARM_DEPTH, 0)
+BASE11_UP.p <- count_up(BASE11_ARM_DEPTH, 0)
+
+I BASE11_LIVE_DEPTH <- BASE11_DOWN - BASE11_UP
+I BASE11_QUESTIONS <- question_debt(5, 5)
+I BASE11_R0 <- r0_close(1, BASE11_DOWN, BASE11_UP, BASE11_QUESTIONS)
+
+I BASE11_OK <- (BASE11_LOCAL_SPAN == 11) * (BASE11_NESTED_FRAME_OK == 1) * (BASE11_DOWN == 5000) * (BASE11_UP == 5000) * (BASE11_LIVE_DEPTH == 0) * (BASE11_QUESTIONS == 0) * (BASE11_R0 == 1)
