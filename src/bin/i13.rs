@@ -10,7 +10,7 @@ fn main() {
     let command = args.first().map(String::as_str).unwrap_or("");
 
     let (path, output_path, dump_kind) = match args.as_slice() {
-        [command, path] if matches!(command.as_str(), "check" | "run") => (path.clone(), None, None),
+        [command, path] if matches!(command.as_str(), "check" | "run" | "trace") => (path.clone(), None, None),
         [command, path, flag, output] if command == "build" && flag == "-o" => (path.clone(), Some(output.clone()), None),
         [command, path, flag] if command == "dump" => {
             let Some(kind) = DumpKind::from_flag(flag) else { usage() };
@@ -50,12 +50,31 @@ fn main() {
                     execution.peak_stack,
                     execution.max_call_depth,
                 );
-                for (slot, name) in output.ivm.globals.iter().enumerate() {
-                    if let Some(compiler::vm::Value::Number(value)) = execution.globals.get(slot).copied().flatten() {
-                        println!("{name} = {value}");
-                    }
-                }
+                print_numeric_globals(&output.ivm, &execution);
                 Ok(())
+            }
+            Err(errors) => Err(errors),
+        },
+        "trace" => match compile(source) {
+            Ok(output) => {
+                let config = compiler::vm::VmConfig::default();
+                print!("{}", compiler::trace::header(config.step_limit, config.frame_limit.min(compiler::ivm::I13_FRAME_LIMIT)));
+                let mut observer = |event: &compiler::TraceEvent| {
+                    println!("{}", compiler::trace::render_event(&output.ivm, event));
+                };
+                match compiler::vm::run_observed(&output.ivm, config, &mut observer) {
+                    Ok(execution) => {
+                        println!(
+                            "TRACE OK · {} step(s) · peak stack {} · call depth {}",
+                            execution.steps,
+                            execution.peak_stack,
+                            execution.max_call_depth,
+                        );
+                        print_numeric_globals(&output.ivm, &execution);
+                        Ok(())
+                    }
+                    Err(error) => Err(vec![error]),
+                }
             }
             Err(errors) => Err(errors),
         },
@@ -100,10 +119,19 @@ fn main() {
     }
 }
 
+fn print_numeric_globals(program: &compiler::ivm::IvmProgram, execution: &compiler::vm::VmResult) {
+    for (slot, name) in program.globals.iter().enumerate() {
+        if let Some(compiler::vm::Value::Number(value)) = execution.globals.get(slot).copied().flatten() {
+            println!("{name} = {value}");
+        }
+    }
+}
+
 fn usage() -> ! {
     eprintln!("usage:");
     eprintln!("  i13 check <file.i13>");
     eprintln!("  i13 run <file.i13>");
+    eprintln!("  i13 trace <file.i13>");
     eprintln!("  i13 build <file.i13> -o <file.wasm>");
     eprintln!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm");
     process::exit(2);
