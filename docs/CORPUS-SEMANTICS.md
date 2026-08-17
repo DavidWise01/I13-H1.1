@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 02 Semantics
 
-Status: **CONSTRUCTED · GATE PENDING**
+Status: **FROZEN KNOWN GOOD · HIR-GATED · VM/WASM VERIFIED**
 
 ID: `I13-GOLDEN-02-SEMANTICS-RIVER-0.1`
 
@@ -70,8 +70,6 @@ The name is an homage to Ada Lovelace's representational insight. It does not cl
 
 ## Compression and interpretation
 
-The lens makes a directional distinction:
-
 ```text
 meaning
   ↓ compression
@@ -125,9 +123,28 @@ wrong arity        -> E0203
 unknown function   -> E0202
 ```
 
-## Required proof
+## Frozen proof
 
-Every successful semantic rock must pass:
+The first authoritative gate completed successfully on workflow run `32052652158`, job `95455536222`.
+
+```text
+SEMANTICS 00 PASS · 2584 -> 4181
+SEMANTICS 01 PASS · 4181 -> 6765
+SEMANTICS 02 PASS · 6765 -> 10946
+SEMANTICS 03 PASS · 10946 -> 17711
+SEMANTICS 04 PASS · 17711 -> 28657
+SEMANTICS 05 PASS · 28657 -> 46368
+SEMANTICS 06 PASS · 46368 -> 75025
+SEMANTICS 07 PASS · 75025 -> 121393
+SEMANTICS 08 PASS · 121393 -> 196418
+ADA LENS PASS
+BANK 00 PASS · E0501 / Wasm trap
+BANK 06 PASS · E0203
+BANK 07 PASS · E0202
+SEMANTICS RIVER PASS · HIR checkpoint · VM=WASM
+```
+
+Every successful semantic rock passes:
 
 ```text
 source
@@ -139,9 +156,7 @@ reference VM
 generated Wasm
 ```
 
-and VM/Wasm must agree on the exported witnesses and river handoff.
-
-`river.i13` must finish with:
+`river.i13` finishes with:
 
 ```text
 RIVER_START = 2584
