@@ -40,6 +40,8 @@ corpus/golden/
 03_relations
     ↓
 04_analysis
+    ↓
+05_logic
 ```
 
 The golden river does not restart between folders.
@@ -63,6 +65,10 @@ The golden river does not restart between folders.
                                                                     v
 04 ANALYSIS
 14930352 |s| 24157817 |s| 39088169 |s| 63245986 |s| 102334155 |s| 165580141 |s| 267914296 |s| 433494437 |s| 701408733 |s| 1134903170
+                                                                    |
+                                                                    v
+05 LOGIC
+1134903170 |s| 1836311903 |s| 2971215073 |s| 4807526976 |s| 7778742049 |s| 12586269025 |s| 20365011074 |s| 32951280099 |s| 53316291173 |s| 86267571272
 ```
 
 `|s|` is corpus documentation notation for stream handoff, not I13 syntax.
@@ -75,6 +81,7 @@ Layer roles:
 02_semantics  meaning of accepted arrangements
 03_relations  explicit fit relationships + FLAY methodology
 04_analysis   FLAY-gated measurements over admitted relations
+05_logic      form-preserving consequence traversal over admitted evidence
 ```
 
 `02_semantics` carries HIR checkpoints, VM/Wasm meaning parity, semantic rejection witnesses, and the executable `ada_lens.i13` model. Its documentary mathematical-poetry emblem is:
@@ -95,8 +102,12 @@ relations
    ↓
 analysis
    ↓
-logic / boolean
+logic
+   ↓
+boolean
 ```
+
+Plato remains a **non-river epistemic keystone** above later inference. Logic does not begin by silently equating one historical branch with all reasoning.
 
 FLAY is a deterministic five-point local relation method:
 
@@ -123,7 +134,83 @@ Analysis cannot open its own gate. It carries admission separately from measurem
 
 The first analysis reach measures admission, interval, signed direction, rhythm, rate, cardinal coverage, recursive accumulation, closure and a deterministic composed profile. `analysis.i13` also proves the admitted input is unchanged (`13 -> 13`).
 
-`[ | ( ada ) | ]`, `<flay>`, `[ admitted | value ]`, coordinate diagrams, `~>` and `|s|` are documentary notation, not I13 grammar.
+## Logic 0 Day
+
+`LOGIC 0 DAY` is a symbolic project epoch pinned to Aristotle leaving Plato's Academy around **347 BCE**. The exact calendar day is not known and no single personal motive is asserted as fact.
+
+The documented intellectual pressure is Academy dialectic: position, question, concession, opposition, contradiction/refutation and repeated examination.
+
+```text
+PLATO / ACADEMY DIALECTIC
+        |
+        +-----------------------------+
+        |                             |
+        v                             v
+ ARISTOTLE FORK                DIALECTICAL TRUNK
+ preserve form                 preserve consequence
+        |                             |
+        +-------------+---------------+
+                      |
+                      v
+       PRESERVE FORM WHILE
+       TRAVERSING CONSEQUENCE
+```
+
+Repeated opposition is represented recursively, but opposition alone is not treated as truth.
+
+## Logic field
+
+Documentary architecture:
+
+```text
+Vector[
+  logic[
+    voxel_field[
+      voxel,
+      vector,
+      choice(
+        voxel(in,out),
+        vector(in,out)
+      )
+    ]
+  ]
+]
+```
+
+Local field:
+
+```text
+             VECTOR
+             IN    OUT
+VOXEL IN     II    IO
+VOXEL OUT    OI    OO
+```
+
+Executable state encoding is `II=0`, `IO=1`, `OI=2`, `OO=3`.
+
+Q means **Queen**. The Queen traverses the recursively generated local field while carrying the documentary backpack law:
+
+```text
+[(/ 2 ^ 2 \)]^n
+```
+
+The complete possibility space may be `4^n`; each local choice remains bounded at four states. `360` is a project sweep/orientation parameter and `.0001` a phase increment, not additional Boolean axes.
+
+Logic carries decision validity separately from the selected state:
+
+```text
+[ valid | decision ]
+
+[0|-1] blocked / no decision
+[1|0]  valid II
+[1|1]  valid IO
+[1|2]  valid OI
+[1|3]  valid OO
+```
+
+The canonical witness consumes Analysis profile `23`, preserves it as `23`, and currently emits `[1|2]`. Boolean remains downstream.
+
+`[ | ( ada ) | ]`, `<flay>`, `[ admitted | value ]`, `[ valid | decision ]`, `[(/2^2\)]^n`, coordinate diagrams, `~>` and `|s|` are documentary notation, not I13 grammar.
 
 Every accepted golden rock is independently compilable and VM/Wasm verified. Every downstream reach must inherit the upstream composition final exactly. Each reach contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata.
 
@@ -143,6 +230,11 @@ docs/relations.html
 corpus/golden/04_analysis/README.md
 docs/CORPUS-ANALYSIS.md
 docs/analysis.html
+corpus/golden/05_logic/README.md
+docs/CORPUS-LOGIC.md
+docs/logic.html
+docs/LOGIC-GENEALOGY-FORK.md
+docs/LOGIC-FIELD-QUEEN.md
 ```
 
 ## Stage 14 — admission gate
