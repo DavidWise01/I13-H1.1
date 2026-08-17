@@ -1,0 +1,20 @@
+// 04 ANALYSIS · ROCK 00 · inherited admission
+
+def admitted(I gate) {
+    if gate == 1 { -> 1 }
+    -> 0
+}
+
+def gated_value(I gate, I value) {
+    if gate == 1 { -> value }
+    -> 0
+}
+
+I RIVER_IN <- 14930352
+I BLOCKED_ADMITTED <- admitted(0)
+I BLOCKED_VALUE <- gated_value(0, 13)
+I OPEN_ADMITTED <- admitted(1)
+I OPEN_VALUE <- gated_value(1, 13)
+I ADMISSION_OK <- (BLOCKED_ADMITTED == 0) * (BLOCKED_VALUE == 0) * (OPEN_ADMITTED == 1) * (OPEN_VALUE == 13)
+I ANALYSIS_OK <- ADMISSION_OK
+I RIVER_OUT <- 24157817
