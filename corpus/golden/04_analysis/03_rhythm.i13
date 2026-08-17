@@ -1,0 +1,17 @@
+// 04 ANALYSIS · ROCK 03 · repeated interval / rhythm
+
+def rhythm(I admitted, I a, I b, I c) {
+    if admitted != 1 { -> 0 }
+    I first <- b - a
+    I second <- c - b
+    if first == second { -> 1 }
+    -> 0
+}
+
+I RIVER_IN <- 63245986
+I EVEN_RHYTHM <- rhythm(1, 2, 5, 8)
+I UNEVEN_RHYTHM <- rhythm(1, 2, 5, 9)
+I BLOCKED_RHYTHM <- rhythm(0, 2, 5, 8)
+I RHYTHM_OK <- (EVEN_RHYTHM == 1) * (UNEVEN_RHYTHM == 0) * (BLOCKED_RHYTHM == 0)
+I ANALYSIS_OK <- RHYTHM_OK
+I RIVER_OUT <- 102334155
