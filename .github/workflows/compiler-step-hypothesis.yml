@@ -1,0 +1,51 @@
+name: I13 compiler step-budget hypothesis
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - 'tests/compiler_step_semantics.rs'
+      - 'scripts/verify_compiler_wasm.js'
+      - '.github/workflows/compiler-step-hypothesis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  characterize-step-meter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Measure reference-VM step semantics
+        run: cargo test --test compiler_step_semantics -- --nocapture
+
+      - name: Reproduce current Wasm mismatch repeatedly
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --quiet --bin i13
+          BIN="$PWD/target/debug/i13"
+          cat > /tmp/explode19.i13 <<'I13'
+          def explode(I n) { if n <= 0 { -> 1 } -> explode(n - 1) + explode(n - 1) }
+          I OUT <- explode(19)
+          I13
+
+          for run in 1 2 3; do
+            set +e
+            "$BIN" run /tmp/explode19.i13 >/tmp/vm.out 2>/tmp/vm.err
+            status=$?
+            set -e
+            test "$status" -ne 0
+            grep -q 'E0502' /tmp/vm.err
+            grep -q '8000000 steps' /tmp/vm.err
+            echo "VM[$run] deterministic step veto"
+          done
+
+          "$BIN" build /tmp/explode19.i13 -o /tmp/explode19.wasm >/dev/null
+          node scripts/verify_compiler_wasm.js /tmp/explode19.wasm OUT=524288
+          echo 'WASM deterministic completion preserved for current open seam'
