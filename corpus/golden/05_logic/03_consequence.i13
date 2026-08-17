@@ -1,0 +1,18 @@
+// 05 LOGIC · ROCK 03 · dialectical/Stoic consequence fork
+// Project witness only: an asserted source may license an asserted target through an open transition.
+
+def consequence(I source, I transition, I target) {
+    if source == 1 {
+        if transition == 1 {
+            if target == 1 { -> 1 }
+        }
+    }
+    -> 0
+}
+
+I RIVER_IN <- 4807526976
+I CONSEQUENCE_OPEN <- consequence(1, 1, 1)
+I CONSEQUENCE_BLOCKED <- consequence(1, 0, 1)
+I CONSEQUENCE_OK <- (CONSEQUENCE_OPEN == 1) * (CONSEQUENCE_BLOCKED == 0)
+I LOGIC_OK <- CONSEQUENCE_OK
+I RIVER_OUT <- 7778742049
