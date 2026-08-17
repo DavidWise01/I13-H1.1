@@ -1,0 +1,67 @@
+name: I13 perception observer lens
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/perception_observers.i13'
+      - 'docs/PERCEPTION-OBSERVERS.md'
+      - 'docs/perception.html'
+      - '.github/workflows/perception-observers.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/perception_observers.i13'
+      - 'docs/PERCEPTION-OBSERVERS.md'
+      - 'docs/perception.html'
+      - '.github/workflows/perception-observers.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  perception-observers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Check perception observer witness
+        run: target/debug/i13 check corpus/golden/perception_observers.i13
+      - name: Run perception observer witness
+        run: |
+          target/debug/i13 run corpus/golden/perception_observers.i13 | tee /tmp/perception-observers.txt
+          grep -Fq 'LIKE_BY_LIKE_OK = 1' /tmp/perception-observers.txt
+          grep -Fq 'OBSERVER1_REPORT = 1' /tmp/perception-observers.txt
+          grep -Fq 'OBSERVER2_REPORT = 1' /tmp/perception-observers.txt
+          grep -Fq 'OBSERVER2_DIRECT_SOURCE = 0' /tmp/perception-observers.txt
+          grep -Fq 'OBSERVER_CHAIN_OK = 1' /tmp/perception-observers.txt
+          grep -Fq 'PERCEPTION_OBSERVER_OK = 1' /tmp/perception-observers.txt
+      - name: Build and verify Wasm parity
+        run: |
+          target/debug/i13 build corpus/golden/perception_observers.i13 -o /tmp/perception-observers.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/perception-observers.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            instance.exports.i13_run();
+            const expected={LIKE_BY_LIKE_OK:1,OBSERVER1_REPORT:1,OBSERVER2_REPORT:1,OBSERVER2_DIRECT_SOURCE:0,OBSERVER_CHAIN_OK:1,PERCEPTION_OBSERVER_OK:1};
+            for(const [name,value] of Object.entries(expected)){
+              const g=instance.exports[`i13.global.${name}`];
+              if(!(g instanceof WebAssembly.Global)||g.value!==value) throw new Error(`${name} mismatch`);
+            }
+            instance.exports.i13_run();
+            for(const [name,value] of Object.entries(expected)){
+              const g=instance.exports[`i13.global.${name}`];
+              if(g.value!==value) throw new Error(`${name} repeat mismatch`);
+            }
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Keep observer provenance explicit
+        run: |
+          grep -Fq 'ARCHITECTURAL LENS · NON-RIVER' docs/PERCEPTION-OBSERVERS.md
+          grep -Fq 'SECOND-ORDER OBSERVATION' docs/PERCEPTION-OBSERVERS.md
+          grep -Fq 'OBSERVER2_DIRECT_SOURCE  = 0' docs/PERCEPTION-OBSERVERS.md
+          grep -Fq 'Observer 2 witnesses Observer 1' docs/perception.html
