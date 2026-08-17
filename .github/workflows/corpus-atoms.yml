@@ -1,0 +1,36 @@
+name: I13 golden corpus 00 atoms
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'scripts/corpus_atoms.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-atoms.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/00_atoms/**'
+      - 'scripts/corpus_atoms.js'
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - '.github/workflows/corpus-atoms.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  atoms-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify 00 atoms river on VM and Wasm
+        run: node scripts/corpus_atoms.js target/debug/i13
+      - name: Keep stream notation documentary only
+        run: |
+          grep -Fq '|s| is documentation-only stream handoff' corpus/golden/00_atoms/manifest.json
+          ! grep -R --include='*.i13' -nE '^[^/]*\|s\|' corpus/golden/00_atoms
