@@ -8,24 +8,30 @@ on:
       - 'docs/semantics.html'
       - 'docs/relations.html'
       - 'docs/analysis.html'
+      - 'docs/keystone.html'
+      - 'docs/KEYSTONE-PLATO.md'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
       - 'corpus/README.md'
       - 'scripts/corpus_*.js'
       - '.github/workflows/corpus-*.yml'
+      - '.github/workflows/keystone-plato.yml'
   pull_request:
     paths:
       - 'docs/corpus.html'
       - 'docs/semantics.html'
       - 'docs/relations.html'
       - 'docs/analysis.html'
+      - 'docs/keystone.html'
+      - 'docs/KEYSTONE-PLATO.md'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
       - 'corpus/README.md'
       - 'scripts/corpus_*.js'
       - '.github/workflows/corpus-*.yml'
+      - '.github/workflows/keystone-plato.yml'
 
 permissions:
   contents: read
@@ -93,7 +99,19 @@ jobs:
           grep -Fq '9/9 ANALYSIS ROCKS' docs/analysis.html
           grep -Fq '1134903170' docs/analysis.html
           grep -Fq '13→13' docs/analysis.html
-      - name: Check executable Ada FLAY and Analysis lenses
+      - name: Check Plato Keystone
+        run: |
+          test -s docs/keystone.html
+          test -s docs/KEYSTONE-PLATO.md
+          test -s corpus/golden/keystone_plato.i13
+          grep -Fq 'I13 ARCHITECTURE · TOP-RIGHT KEYSTONE' docs/keystone.html
+          grep -Fq 'PLATO = KEYSTONE' docs/keystone.html
+          grep -Fq '[ source |' docs/keystone.html
+          grep -Fq 'ARISTOTLE' docs/keystone.html
+          grep -Fq 'ARCHITECTURAL KEYSTONE · NON-RIVER' docs/KEYSTONE-PLATO.md
+          grep -Fq 'A MATCHING PAYLOAD DOES NOT ERASE ROLE' docs/KEYSTONE-PLATO.md
+          grep -Fq 'I PLATO_KEYSTONE_OK <-' corpus/golden/keystone_plato.i13
+      - name: Check executable Ada FLAY Analysis and Plato lenses
         run: |
           test -s corpus/golden/02_semantics/ada_lens.i13
           grep -Fq 'def analysis_relation' corpus/golden/02_semantics/ada_lens.i13
@@ -109,6 +127,9 @@ jobs:
           grep -Fq 'def measure_recurrence' corpus/golden/04_analysis/analysis.i13
           grep -Fq 'I ANALYSIS_OPEN_VALUE <- analysis_profile(ANALYSIS_UPSTREAM_FLAY)' corpus/golden/04_analysis/analysis.i13
           grep -Fq 'ANALYSIS_AFTER == ANALYSIS_INPUT' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'I_VALUE_MATCH <- same_value' corpus/golden/keystone_plato.i13
+          grep -Fq 'I_ROLE_MATCH <- 0' corpus/golden/keystone_plato.i13
+          grep -Fq 'PLATO_KEYSTONE_OK' corpus/golden/keystone_plato.i13
       - name: Check frozen contracts and discovery
         run: |
           grep -Fq 'FROZEN KNOWN GOOD · HIR-GATED · VM/WASM VERIFIED' docs/CORPUS-SEMANTICS.md
@@ -116,8 +137,11 @@ jobs:
           grep -Fq 'FROZEN KNOWN GOOD · UPSTREAM-FLAY-GATED · HIR/VM/WASM VERIFIED' docs/CORPUS-ANALYSIS.md
           grep -Fq 'I13-FLAY-001' docs/CORPUS-RELATIONS.md
           grep -Fq 'I13-ANALYSIS-001' docs/CORPUS-ANALYSIS.md
+          grep -Fq 'I13-KEYSTONE-PLATO-001' docs/KEYSTONE-PLATO.md
           grep -Fq "link.href='semantics.html'" docs/landing.js
           grep -Fq "link.href='relations.html'" docs/landing.js
           grep -Fq "link.href='analysis.html'" docs/landing.js
+          grep -Fq "link.href='keystone.html'" docs/landing.js
+          grep -Fq 'PLATO KEYSTONE' docs/landing.js
           grep -Fq 'Forty-five curated I13 rocks' docs/landing.js
           grep -Fq 'OPEN ANALYSIS' docs/landing.js
