@@ -1,0 +1,5 @@
+def pair_sum(I a, I b) {
+    -> a + b
+}
+
+I OUT <- pair_sum(1)
