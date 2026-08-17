@@ -16,6 +16,7 @@ pub mod source;
 pub mod token;
 pub mod validator;
 pub mod vm;
+pub mod wasm;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use hir::HirProgram;
@@ -52,6 +53,13 @@ pub fn run(source: SourceFile, config: vm::VmConfig) -> Result<(CompileOutput, v
     let output = compile(source)?;
     let result = vm::run(&output.ivm, config).map_err(|error| vec![error])?;
     Ok((output, result))
+}
+
+/// Compiler-owned Wasm backend. The backend consumes validated IVM, never HIR directly.
+pub fn build_wasm(source: SourceFile) -> Result<(CompileOutput, Vec<u8>), Vec<Diagnostic>> {
+    let output = compile(source)?;
+    let bytes = wasm::emit(&output.ivm).map_err(|error| vec![error])?;
+    Ok((output, bytes))
 }
 
 #[cfg(test)]
@@ -143,10 +151,24 @@ mod tests {
     }
 
     #[test]
-    fn core_example_executes_on_reference_vm() {
+    fn wasm_backend_emits_a_real_module() {
+        let (_output, bytes) = build_wasm(SourceFile::new("test.i13", "I x <- 4 + 2 * 3\n")).unwrap();
+        assert!(bytes.len() > 8);
+        assert_eq!(&bytes[..4], b"\0asm");
+        assert_eq!(&bytes[4..8], &[1, 0, 0, 0]);
+        assert!(bytes.windows(b"i13_run".len()).any(|w| w == b"i13_run"));
+        assert!(bytes.windows(b"i13.global.x".len()).any(|w| w == b"i13.global.x"));
+    }
+
+    #[test]
+    fn core_example_executes_on_reference_vm_and_builds_wasm() {
         let source = SourceFile::new("examples/core.i13", include_str!("../../examples/core.i13"));
-        let (output, result) = run(source, vm::VmConfig::default()).unwrap();
+        let (output, result) = run(source.clone(), vm::VmConfig::default()).unwrap();
         assert_eq!(result.global_number(&output.ivm, "CORE_OK"), Some(1.0));
         assert_eq!(result.global_number(&output.ivm, "ROUTES"), Some(56.0));
+
+        let (_compiled, wasm) = build_wasm(source).unwrap();
+        assert!(wasm.len() > 8);
+        assert_eq!(&wasm[..4], b"\0asm");
     }
 }
