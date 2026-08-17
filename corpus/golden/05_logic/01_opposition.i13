@@ -1,0 +1,21 @@
+// 05 LOGIC · ROCK 01 · opposition pressure
+// Repeated opposition is pressure/refutation, not automatic truth.
+
+def opposite(I state) {
+    if state == 1 { -> 0 }
+    -> 1
+}
+
+def opposition_chain(I state, I turns) {
+    if turns == 0 { -> state }
+    -> opposition_chain(opposite(state), turns - 1)
+}
+
+I RIVER_IN <- 1836311903
+I OPPOSITION_START <- 1
+I OPPOSITION_AFTER_1 <- opposition_chain(OPPOSITION_START, 1)
+I OPPOSITION_AFTER_2 <- opposition_chain(OPPOSITION_START, 2)
+I OPPOSITION_AFTER_3 <- opposition_chain(OPPOSITION_START, 3)
+I OPPOSITION_OK <- (OPPOSITION_AFTER_1 == 0) * (OPPOSITION_AFTER_2 == 1) * (OPPOSITION_AFTER_3 == 0)
+I LOGIC_OK <- OPPOSITION_OK
+I RIVER_OUT <- 2971215073
