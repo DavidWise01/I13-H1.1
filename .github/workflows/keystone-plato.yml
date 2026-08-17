@@ -1,0 +1,66 @@
+name: I13 Plato keystone
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/keystone_plato.i13'
+      - 'docs/KEYSTONE-PLATO.md'
+      - 'docs/keystone.html'
+      - '.github/workflows/keystone-plato.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/keystone_plato.i13'
+      - 'docs/KEYSTONE-PLATO.md'
+      - 'docs/keystone.html'
+      - '.github/workflows/keystone-plato.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  plato-keystone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Check Plato keystone witness
+        run: target/debug/i13 check corpus/golden/keystone_plato.i13
+      - name: Run Plato keystone witness
+        run: |
+          target/debug/i13 run corpus/golden/keystone_plato.i13 | tee /tmp/plato.txt
+          grep -Fq 'I_VALUE_MATCH = 1' /tmp/plato.txt
+          grep -Fq 'I_ROLE_MATCH = 0' /tmp/plato.txt
+          grep -Fq 'I_RETURN_MATCH = 1' /tmp/plato.txt
+          grep -Fq 'I_POSITION_OK = 1' /tmp/plato.txt
+          grep -Fq 'PLATO_KEYSTONE_OK = 1' /tmp/plato.txt
+      - name: Build and verify Wasm parity
+        run: |
+          target/debug/i13 build corpus/golden/keystone_plato.i13 -o /tmp/plato.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/plato.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            instance.exports.i13_run();
+            const expected={I_VALUE_MATCH:1,I_ROLE_MATCH:0,I_RETURN_MATCH:1,I_POSITION_OK:1,PLATO_KEYSTONE_OK:1};
+            for(const [name,value] of Object.entries(expected)){
+              const g=instance.exports[`i13.global.${name}`];
+              if(!(g instanceof WebAssembly.Global)||g.value!==value) throw new Error(`${name} mismatch`);
+            }
+            instance.exports.i13_run();
+            for(const [name,value] of Object.entries(expected)){
+              const g=instance.exports[`i13.global.${name}`];
+              if(g.value!==value) throw new Error(`${name} repeat mismatch`);
+            }
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Keep keystone non-river and documentary
+        run: |
+          grep -Fq 'ARCHITECTURAL KEYSTONE · NON-RIVER' docs/KEYSTONE-PLATO.md
+          grep -Fq 'Plato is not inserted as another numbered river reach' docs/KEYSTONE-PLATO.md
+          grep -Fq 'A MATCHING PAYLOAD DOES NOT ERASE ROLE' docs/KEYSTONE-PLATO.md
+          grep -Fq 'PLATO_KEYSTONE_OK' corpus/golden/keystone_plato.i13
