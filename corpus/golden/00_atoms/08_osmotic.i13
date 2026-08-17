@@ -1,0 +1,8 @@
+// ROCK 08 · OSMOTIC .p
+// river: 21 |s| 34
+// adds: .p osmotic reassignment
+
+I RIVER_IN <- 21
+I river <- RIVER_IN
+river.p <- 13
+I RIVER_OUT <- river
