@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 · DIAGNOSTICS v0.1 · INTROSPECTION v0.1 · TRACE v0.1 · DEBUGGER v0.1 FROZEN**
+Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 · DIAGNOSTICS v0.1 · INTROSPECTION v0.1 · TRACE v0.1 · DEBUGGER v0.1 · BOOTSTRAP v0.1 FROZEN**
 
 This document freezes only compiler architecture and behavior proven by the compiler/conformance path. It does not add language features.
 
@@ -388,6 +388,72 @@ Source-line breakpoint suppression is frame-aware: deeper calls do not clear the
 
 The repaired debugger proof commit `ce3d605e4ef9e7398bc8e2de6bf492bd4c927f30` passed all compiler/debugger tests, compiler-owned Wasm parity, the canonical 4096-frame gate and conformance v0.1. The full contract lives in `docs/COMPILER-DEBUGGER.md`.
 
+## I13 bootstrap self-use v0.1 — FROZEN
+
+`I13-BOOTSTRAP-0.1`
+
+Bootstrap v0.1 begins moving executable compiler/runtime support logic into I13 wherever the current language surface is sufficient.
+
+```text
+I13-BOOTSTRAP-001
+
+IF A COMPILER OR RUNTIME LAW
+CAN BE EXPRESSED IN THE CURRENT
+I13 LANGUAGE SURFACE,
+ITS EXECUTABLE REFERENCE PROBE
+SHOULD BE WRITTEN IN I13.
+
+HOST CODE MAY ORCHESTRATE.
+HOST CODE MAY VERIFY.
+HOST CODE MUST NOT PRETEND
+I13 HAS CAPABILITIES IT DOES NOT HAVE.
+```
+
+`examples/compiler_bootstrap.i13` is a real I13 program that mirrors and self-tests:
+
+```text
+all 15 frozen opcode ids
+all 15 stack need/net effects
+variable Call(argc) effect
+4096-frame Call admission
+Number / Function kind gates
+Bin / Compare / If / Call kind requirements
+Answer mode validity and scope class
+recursive whole-law checksum
+```
+
+The authoritative stack-effect implementation remains `src/compiler/ivm.rs`; bootstrap is an executable mirror/witness and does not become a fourth authority.
+
+First proof evidence:
+
+```text
+VALID · IVM 15 ops · 16 region(s) · peak stack 4
+RUN OK · 5946 step(s) · peak stack 4 · call depth 19
+BUILD OK · 23186 byte(s) · 48 I13 global(s)
+WASM PARITY OK · 10 checked global(s) · repeat deterministic
+```
+
+Proof globals include:
+
+```text
+BOOTSTRAP_OK       = 1
+LAW_CHECKSUM       = 15638
+FRAME_4095         = 1
+FRAME_4096         = 0
+CALL16_NEED        = 17
+CALL16_NET         = -16
+NUMBER_BIN_OK      = 1
+FUNCTION_BIN_VETO  = 0
+FUNCTION_CALL_OK   = 1
+NUMBER_CALL_VETO   = 0
+```
+
+The first dedicated `I13 compiler bootstrap` workflow passed the I13 check, reference VM execution, generated Wasm execution and deterministic repeat gate.
+
+This is deliberately called **self-use**, not self-hosting. I13 v0.1 still lacks strings/text values, general collections, structured records, file/source byte access, modules/imports and host I/O primitives required for an honest lexer/parser/compiler implementation in I13.
+
+The full contract and migration boundary live in `docs/COMPILER-BOOTSTRAP.md`.
+
 ## Compiler-owned Wasm law
 
 The production backend consumes **validated IVM**, not HIR and not AST.
@@ -422,6 +488,7 @@ The accepted compiler path closes these defects:
 - compiler layer dumps are observer-only and do not create a fourth authority.
 - runtime tracing observes the real VM loop rather than duplicating execution semantics.
 - interactive debugging pauses the same VM loop without exposing mutable execution state or a second interpreter.
+- compiler-law self-use now executes in I13 without mislabeling the compiler as self-hosted.
 
 ## Scope freeze during compiler construction
 
@@ -445,6 +512,16 @@ The generated Wasm validates and instantiates in Node and matches the reference 
 CORE_OK = 1
 ROUTES  = 56
 ```
+
+The compiler bootstrap also passes all three executable routes:
+
+```text
+i13 check examples/compiler_bootstrap.i13
+i13 run examples/compiler_bootstrap.i13
+i13 build examples/compiler_bootstrap.i13 -o compiler-bootstrap.wasm
+```
+
+with `BOOTSTRAP_OK = 1` on the reference VM and generated Wasm.
 
 ## Current compiler status
 
@@ -474,6 +551,7 @@ CONFORMANCE     v0.1 FROZEN · CI-GATED
 INTROSPECTION   v0.1 FROZEN · OBSERVER-ONLY
 TRACE           v0.1 FROZEN · SINGLE-VM OBSERVER
 DEBUGGER        v0.1 FROZEN · READ-ONLY CONTROL
+BOOTSTRAP       v0.1 FROZEN · I13 SELF-USE · VM=WASM
 ```
 
-This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, formal conformance, source-mapped diagnostics, static compiler introspection, execution-time introspection, and interactive read-only debugging while preserving one execution authority.
+This does **not** mean the language is feature-complete or self-hosting. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, formal conformance, source-mapped diagnostics, static compiler introspection, execution-time introspection, interactive read-only debugging, and the first compiler-law workload written and executed in I13 itself while preserving one execution authority.
