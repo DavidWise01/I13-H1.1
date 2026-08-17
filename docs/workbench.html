@@ -6,11 +6,12 @@
 <meta name="theme-color" content="#f5f8fb">
 <title>I13 · Live Workbench</title>
 <style>
-:root{color-scheme:light;background:#f5f8fb}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f8fb}#i13-suite-runtime{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#f5f8fb}.origin-return{position:fixed;left:12px;bottom:12px;z-index:3000;padding:7px 10px;border:1px solid rgba(14,116,144,.34);border-radius:999px;background:rgba(248,250,252,.93);backdrop-filter:blur(10px);color:#0e7490;font:800 9px/1 "Cascadia Code",Consolas,monospace;letter-spacing:.08em;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.10)}.origin-return:hover{background:#ecfeff}noscript{display:block;padding:16px;font:14px/1.4 monospace}
+:root{color-scheme:light;background:#f5f8fb}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f5f8fb}#i13-suite-runtime{display:block;width:100%;height:calc(100vh - 54px);border:0;background:#f5f8fb}.origin-return,.compiler-return{position:fixed;bottom:12px;z-index:3000;padding:7px 10px;border:1px solid rgba(14,116,144,.34);border-radius:999px;background:rgba(248,250,252,.93);backdrop-filter:blur(10px);color:#0e7490;font:800 9px/1 "Cascadia Code",Consolas,monospace;letter-spacing:.08em;text-decoration:none;box-shadow:0 5px 18px rgba(15,23,42,.10)}.origin-return{left:12px}.compiler-return{right:12px;border-color:rgba(8,145,178,.42);color:#0369a1}.origin-return:hover,.compiler-return:hover{background:#ecfeff}noscript{display:block;padding:16px;font:14px/1.4 monospace}
 </style>
 </head>
 <body>
 <a class="origin-return" href="index.html">← I / ORIGIN</a>
+<a class="compiler-return" href="compiler.html">COMPILER / STATUS →</a>
 <iframe id="i13-suite-runtime" src="runtime.html" title="I13 H1.1 runtime" loading="eager"></iframe>
 <noscript><a href="runtime.html">Open the I13 runtime</a></noscript>
 <script>
