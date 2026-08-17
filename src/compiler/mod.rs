@@ -7,11 +7,14 @@
 pub mod ast;
 pub mod diagnostic;
 pub mod hir;
+pub mod ivm;
 pub mod lexer;
+pub mod lower_ivm;
 pub mod parser;
 pub mod semantic;
 pub mod source;
 pub mod token;
+pub mod validator;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use hir::HirProgram;
@@ -19,7 +22,14 @@ pub use parser::parse;
 pub use semantic::check;
 pub use source::{SourceFile, Span};
 
-/// Front-end vertical slice: source -> tokens -> AST -> HIR -> semantic check.
+#[derive(Debug, Clone, PartialEq)]
+pub struct CompileOutput {
+    pub hir: HirProgram,
+    pub ivm: ivm::IvmProgram,
+    pub validation: validator::ValidationReport,
+}
+
+/// Front-end authority: source -> tokens -> AST -> HIR -> semantic check.
 pub fn front_end(source: SourceFile) -> Result<HirProgram, Vec<Diagnostic>> {
     let tokens = lexer::lex(&source)?;
     let ast = parser::parse_tokens(&source, tokens)?;
@@ -28,10 +38,19 @@ pub fn front_end(source: SourceFile) -> Result<HirProgram, Vec<Diagnostic>> {
     Ok(hir)
 }
 
+/// Canonical checked compiler slice: source -> HIR -> IVM -> single-pass validation.
+pub fn compile(source: SourceFile) -> Result<CompileOutput, Vec<Diagnostic>> {
+    let hir = front_end(source)?;
+    let ivm = lower_ivm::lower(&hir)?;
+    let validation = validator::validate(&ivm)?;
+    Ok(CompileOutput { hir, ivm, validation })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use super::hir::{HirExprKind, HirStmtKind};
+    use super::ivm::{Op, OPCODE_COUNT};
 
     #[test]
     fn declaration_lowers_to_assign_name_constant() {
@@ -69,14 +88,15 @@ mod tests {
 
     #[test]
     fn p_assignment_is_osmotic_not_attribute() {
-        let hir = front_end(SourceFile::new("test.i13", "I x <- 1\nx.p <- 4\n")).unwrap();
-        match &hir.statements[1].kind {
+        let output = compile(SourceFile::new("test.i13", "I x <- 1\nx.p <- 4\n")).unwrap();
+        match &output.hir.statements[1].kind {
             HirStmtKind::Assign { osmotic, target, .. } => {
                 assert!(*osmotic);
                 assert_eq!(target, "x");
             }
             other => panic!("unexpected HIR: {other:?}"),
         }
+        assert!(output.ivm.main.iter().any(|inst| inst.op == Op::Bin));
     }
 
     #[test]
@@ -86,9 +106,19 @@ mod tests {
     }
 
     #[test]
-    fn core_example_is_a_front_end_acceptance_program() {
+    fn canonical_ivm_has_fifteen_ops_and_one_effect_law() {
+        assert_eq!(OPCODE_COUNT, 15);
+        assert_eq!(Op::Const.effect(0).need, 0);
+        assert_eq!(Op::Const.effect(0).net, 1);
+        assert_eq!(Op::Call.effect(2).need, 3);
+        assert_eq!(Op::Call.effect(2).net, -2);
+    }
+
+    #[test]
+    fn core_example_reaches_validated_ivm() {
         let source = SourceFile::new("examples/core.i13", include_str!("../../examples/core.i13"));
-        let hir = front_end(source).unwrap();
-        assert!(!hir.statements.is_empty());
+        let output = compile(source).unwrap();
+        assert!(!output.ivm.main.is_empty());
+        assert_eq!(output.validation.regions, 1 + output.ivm.functions.len());
     }
 }
