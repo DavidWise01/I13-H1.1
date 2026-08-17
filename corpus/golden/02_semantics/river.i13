@@ -1,0 +1,115 @@
+// I13 GOLDEN CORPUS · 02 SEMANTICS · RIVER WITNESS
+// inherits 01_syntax final handoff: 2584
+// [ | ( ada ) | ] and |s| are documentary notation, not I13 syntax.
+
+I RIVER_START <- 2584
+
+// 00 · representation identity
+def semantic_identity(I x) { -> x }
+I R0_IN <- RIVER_START
+I R0_REPRESENTATION_OK <- semantic_identity(R0_IN) == R0_IN
+I R0_OUT <- R0_IN + 1597
+
+// 01 · precedence
+I R1_IN <- R0_OUT
+I R1_PRECEDENCE_OK <- 2 + 3 * 4 == 14
+I R1_OUT <- R1_IN + 2584
+
+// 02 · association and grouping
+I R2_IN <- R1_OUT
+I R2_LEFT_OK <- 20 - 5 - 3 == 12
+I R2_GROUP_OK <- 20 - (5 - 3) == 18
+I R2_ASSOCIATION_OK <- R2_LEFT_OK * R2_GROUP_OK
+I R2_OUT <- R2_IN + 4181
+
+// 03 · parameter shadows same-named global
+I semantic_x <- 99
+def semantic_pick(I semantic_x) { -> semantic_x }
+I R3_IN <- R2_OUT
+I R3_SCOPE_OK <- semantic_pick(7) == 7
+I R3_GLOBAL_OK <- semantic_x == 99
+I R3_OUT <- R3_IN + 6765
+
+// 04 · binding modes
+I R4_IN <- R3_OUT
+I semantic_replace <- 10
+semantic_replace <- 3
+I R4_ASSIGN_OK <- semantic_replace == 3
+I semantic_osmotic <- 10
+semantic_osmotic.p <- 3
+I R4_OSMOTIC_OK <- semantic_osmotic == 13
+I R4_BINDING_OK <- R4_ASSIGN_OK * R4_OSMOTIC_OK
+I R4_OUT <- R4_IN + 10946
+
+// 05 · return/control path
+def semantic_choose(I x) {
+    if x == 1 { -> 7 }
+    -> 9
+}
+I R5_IN <- R4_OUT
+I R5_TAKEN_OK <- semantic_choose(1) == 7
+I R5_FALLBACK_OK <- semantic_choose(0) == 9
+I R5_RETURN_OK <- R5_TAKEN_OK * R5_FALLBACK_OK
+I R5_OUT <- R5_IN + 17711
+
+// 06 · arity contract
+def semantic_pair_sum(I a, I b) { -> a + b }
+I R6_IN <- R5_OUT
+I R6_ARITY_OK <- semantic_pair_sum(3, 4) == 7
+I R6_OUT <- R6_IN + 28657
+
+// 07 · known named call
+def semantic_known() { -> 1 }
+I R7_IN <- R6_OUT
+I R7_NAMED_CALL_OK <- semantic_known() == 1
+I R7_OUT <- R7_IN + 46368
+
+// 08 · distinct legal shapes, same meaning
+def semantic_compact(I x) { -> x + 75025 }
+def semantic_shaped(
+    I x
+)
+{
+    -> (x + 75025)
+}
+I R8_IN <- R7_OUT
+I R8_A <- semantic_compact(R8_IN)
+I R8_B <- semantic_shaped(
+    R8_IN
+)
+I R8_EQUIVALENCE_OK <- R8_A == R8_B
+I R8_OUT <- R8_B
+
+def semantic_river_selftest() {
+    if RIVER_START != 2584 { -> 0 }
+    if R0_REPRESENTATION_OK != 1 { -> 0 }
+    if R0_OUT != 4181 { -> 0 }
+    if R1_IN != R0_OUT { -> 0 }
+    if R1_PRECEDENCE_OK != 1 { -> 0 }
+    if R1_OUT != 6765 { -> 0 }
+    if R2_IN != R1_OUT { -> 0 }
+    if R2_ASSOCIATION_OK != 1 { -> 0 }
+    if R2_OUT != 10946 { -> 0 }
+    if R3_IN != R2_OUT { -> 0 }
+    if R3_SCOPE_OK * R3_GLOBAL_OK != 1 { -> 0 }
+    if R3_OUT != 17711 { -> 0 }
+    if R4_IN != R3_OUT { -> 0 }
+    if R4_BINDING_OK != 1 { -> 0 }
+    if R4_OUT != 28657 { -> 0 }
+    if R5_IN != R4_OUT { -> 0 }
+    if R5_RETURN_OK != 1 { -> 0 }
+    if R5_OUT != 46368 { -> 0 }
+    if R6_IN != R5_OUT { -> 0 }
+    if R6_ARITY_OK != 1 { -> 0 }
+    if R6_OUT != 75025 { -> 0 }
+    if R7_IN != R6_OUT { -> 0 }
+    if R7_NAMED_CALL_OK != 1 { -> 0 }
+    if R7_OUT != 121393 { -> 0 }
+    if R8_IN != R7_OUT { -> 0 }
+    if R8_EQUIVALENCE_OK != 1 { -> 0 }
+    if R8_OUT != 196418 { -> 0 }
+    -> 1
+}
+
+I RIVER_OK <- semantic_river_selftest()
+I RIVER_FINAL <- R8_OUT
