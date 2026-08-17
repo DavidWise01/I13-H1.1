@@ -1,0 +1,11 @@
+// ROCK 05 · ARG
+// river: 5 |s| 8
+// adds: function arguments
+
+I RIVER_IN <- 5
+
+def add(I x, I y) {
+    -> x + y
+}
+
+I RIVER_OUT <- add(RIVER_IN, 3)
