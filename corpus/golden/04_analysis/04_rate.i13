@@ -1,0 +1,15 @@
+// 04 ANALYSIS · ROCK 04 · rate
+
+def rate(I admitted, I change, I units) {
+    if admitted != 1 { -> 0 }
+    if units == 0 { -> 0 }
+    -> change / units
+}
+
+I RIVER_IN <- 102334155
+I OPEN_RATE <- rate(1, 12, 3)
+I ZERO_UNITS <- rate(1, 12, 0)
+I BLOCKED_RATE <- rate(0, 12, 3)
+I RATE_OK <- (OPEN_RATE == 4) * (ZERO_UNITS == 0) * (BLOCKED_RATE == 0)
+I ANALYSIS_OK <- RATE_OK
+I RIVER_OUT <- 165580141
