@@ -46,7 +46,7 @@ The semantic reach uses the documentary emblem:
 [ | ( ada ) | ]
 ```
 
-and the conceptual funnel:
+The Ada lens remains a human-readable semantic wrapper around analysis, musical relations and reason:
 
 ```text
 semantics {
@@ -56,23 +56,52 @@ semantics {
     reason
   )
 }
-        ~>
-relations
-        ~>
-boolean
 ```
 
 This is **mathematical poetry**: readable structure carrying geometry, symmetry, containment and conceptual intent. It is not executable I13 syntax.
 
-The executable file `corpus/golden/02_semantics/ada_lens.i13` translates the lens into current I13 primitives—functions, numeric relations, comparisons, control and Boolean-like `0/1` results.
+The executable file `corpus/golden/02_semantics/ada_lens.i13` translates that lens into current I13 primitives—functions, numeric relations, comparisons, control and Boolean-like `0/1` results.
 
 The name is an homage to Ada Lovelace's representational insight. It does not claim that Lovelace authored this modern stack or notation.
 
-## Compression and interpretation
+## Downstream correction: Relations owns methodology
+
+Semantics no longer jumps directly into a generic methodology/analysis box. Its exact final handoff `196418` is inherited by `03_relations`, where `<flay>` is the methodology gate:
 
 ```text
-meaning
-  ↓ compression
+[ | ( ada ) | ]
+      |
+      v
+   semantics
+      |
+  196418 handoff
+      |
+      v
+   relations
+      |
+      v
+    <flay>
+      |
+      v
+   analysis
+      |
+      v
+  logic / boolean
+```
+
+`<flay>` means a deterministic five-point fitting method: local origin, UP, DOWN, LEFT, RIGHT, then return to origin. It is defined and executed downstream in `03_relations`; it is not added to semantic grammar.
+
+## Compression and interpretation
+
+The overall downward path is now:
+
+```text
+semantic context
+  ↓
+explicit relations
+  ↓
+FLAY methodology
+  ↓
 analysis / timing relations
   ↓
 reason / decision
@@ -85,7 +114,7 @@ The inverse is interpretation, not lossless reconstruction:
 ```text
 boolean
   ↑ interpretation
-relations
+analysis / relations
   ↑
 semantic context
 ```
@@ -164,4 +193,6 @@ RIVER_OK    = 1
 RIVER_FINAL = 196418
 ```
 
-`|s|`, `[ | ( ada ) | ]`, and `~>` remain documentary notation only.
+`196418` is now locked as `03_relations` input.
+
+`|s|`, `[ | ( ada ) | ]`, `<flay>`, and `~>` remain documentary notation only.
