@@ -1,0 +1,34 @@
+// 03 RELATIONS · ROCK 08 · NEW CHUNKS + BLOCKED/OPEN GATE
+I RIVER_IN <- 9227465
+
+def fit_bit(I chunk, I slot, I bit) {
+    if chunk == slot { -> bit }
+    -> 0
+}
+
+def relation_mask(I chunk, I up, I down, I left, I right) {
+    I mask <- 0
+    mask.p <- fit_bit(chunk, up, 1)
+    mask.p <- fit_bit(chunk, down, 2)
+    mask.p <- fit_bit(chunk, left, 4)
+    mask.p <- fit_bit(chunk, right, 8)
+    -> mask
+}
+
+def new_chunks(I chunk, I remaining) {
+    if remaining == 0 { -> 1 }
+    if relation_mask(chunk, chunk, -100, -200, -300) == 0 { -> 0 }
+    -> new_chunks(chunk + 1, remaining - 1)
+}
+
+def gate(I satisfied, I value) {
+    if satisfied == 1 { -> value }
+    -> 0
+}
+
+I NEW_RECUR_OK <- new_chunks(20, 4)
+I BLOCKED_VALUE <- gate(0, 13)
+I OPEN_VALUE <- gate(NEW_RECUR_OK, 13)
+I FLAY_GATE_OK <- NEW_RECUR_OK * (BLOCKED_VALUE == 0) * (OPEN_VALUE == 13)
+I RELATION_OK <- FLAY_GATE_OK
+I RIVER_OUT <- RIVER_IN + 5702887
