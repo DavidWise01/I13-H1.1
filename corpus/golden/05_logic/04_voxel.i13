@@ -1,0 +1,13 @@
+// 05 LOGIC · ROCK 04 · voxel local position
+
+def voxel_state(I inside) {
+    if inside == 1 { -> 1 }
+    -> 0
+}
+
+I RIVER_IN <- 7778742049
+I VOXEL_IN <- voxel_state(1)
+I VOXEL_OUT <- voxel_state(0)
+I VOXEL_OK <- (VOXEL_IN == 1) * (VOXEL_OUT == 0)
+I LOGIC_OK <- VOXEL_OK
+I RIVER_OUT <- 12586269025
