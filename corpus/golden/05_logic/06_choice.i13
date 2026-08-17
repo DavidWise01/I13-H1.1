@@ -1,0 +1,20 @@
+// 05 LOGIC · ROCK 06 · bounded voxel/vector choice field
+// 0=II, 1=IO, 2=OI, 3=OO.
+
+def choice_state(I voxel_in, I vector_in) {
+    if voxel_in == 1 {
+        if vector_in == 1 { -> 0 }
+        -> 1
+    }
+    if vector_in == 1 { -> 2 }
+    -> 3
+}
+
+I RIVER_IN <- 20365011074
+I CHOICE_II <- choice_state(1, 1)
+I CHOICE_IO <- choice_state(1, 0)
+I CHOICE_OI <- choice_state(0, 1)
+I CHOICE_OO <- choice_state(0, 0)
+I CHOICE_OK <- (CHOICE_II == 0) * (CHOICE_IO == 1) * (CHOICE_OI == 2) * (CHOICE_OO == 3)
+I LOGIC_OK <- CHOICE_OK
+I RIVER_OUT <- 32951280099
