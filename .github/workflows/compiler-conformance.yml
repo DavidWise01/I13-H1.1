@@ -1,0 +1,37 @@
+name: I13 compiler conformance v0.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - 'spec/I13.md'
+      - 'tests/conformance/**'
+      - 'examples/core.i13'
+      - 'scripts/compiler_conformance.js'
+      - '.github/workflows/compiler-conformance.yml'
+  pull_request:
+    paths:
+      - 'src/compiler/**'
+      - 'src/bin/i13.rs'
+      - 'spec/I13.md'
+      - 'tests/conformance/**'
+      - 'examples/core.i13'
+      - 'scripts/compiler_conformance.js'
+      - '.github/workflows/compiler-conformance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Run canonical conformance manifest
+        run: node scripts/compiler_conformance.js tests/conformance/manifest.json
