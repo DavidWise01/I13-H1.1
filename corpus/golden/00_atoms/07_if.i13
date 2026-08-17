@@ -1,0 +1,14 @@
+// ROCK 07 · IF
+// river: 13 |s| 21
+// adds: conditional control
+
+I RIVER_IN <- 13
+
+def step(I x) {
+    if x == 13 {
+        -> x + 8
+    }
+    -> 0
+}
+
+I RIVER_OUT <- step(RIVER_IN)
