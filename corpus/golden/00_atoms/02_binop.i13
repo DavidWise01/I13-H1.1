@@ -1,0 +1,7 @@
+// ROCK 02 · BINOP
+// river: 1 |s| 2
+// adds: arithmetic BinOp
+
+I RIVER_IN <- 1
+I river <- RIVER_IN
+I RIVER_OUT <- river + 1
