@@ -3,7 +3,7 @@ mod compiler;
 
 use std::{env, fs, process};
 
-use compiler::{front_end, SourceFile};
+use compiler::{compile, SourceFile};
 
 fn main() {
     let mut args = env::args().skip(1);
@@ -23,8 +23,13 @@ fn main() {
         }
     };
 
-    match front_end(SourceFile::new(path.clone(), text)) {
-        Ok(hir) => println!("VALID · {} top-level statement(s)", hir.statements.len()),
+    match compile(SourceFile::new(path.clone(), text)) {
+        Ok(output) => println!(
+            "VALID · IVM {} ops · {} region(s) · peak stack {}",
+            compiler::ivm::OPCODE_COUNT,
+            output.validation.regions,
+            output.validation.peak_height,
+        ),
         Err(errors) => {
             for error in errors {
                 eprintln!("{}:{}:{} {} {}", path, error.span.line, error.span.column, error.code.as_str(), error.message);
