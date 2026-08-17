@@ -1,0 +1,16 @@
+// 05 LOGIC · ROCK 00 · symbolic Logic 0 Day
+// Historical pin: Aristotle leaves Plato's Academy around 347 BCE.
+// Exact calendar day is unknown; this is a project epoch, not a dating claim.
+
+def admitted(I gate) {
+    if gate == 1 { -> 1 }
+    -> 0
+}
+
+I RIVER_IN <- 1134903170
+I LOGIC_UPSTREAM_ANALYSIS <- admitted(1)
+I LOGIC_ZERO_SYMBOLIC <- 1
+I LOGIC_ZERO_BCE <- 347
+I ZERO_DAY_OK <- (LOGIC_UPSTREAM_ANALYSIS == 1) * (LOGIC_ZERO_SYMBOLIC == 1) * (LOGIC_ZERO_BCE == 347)
+I LOGIC_OK <- ZERO_DAY_OK
+I RIVER_OUT <- 1836311903
