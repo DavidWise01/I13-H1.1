@@ -1,0 +1,47 @@
+name: I13 golden corpus 03 relations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/03_relations/**'
+      - 'corpus/golden/02_semantics/manifest.json'
+      - 'scripts/corpus_relations.js'
+      - '.github/workflows/corpus-relations.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/03_relations/**'
+      - 'corpus/golden/02_semantics/manifest.json'
+      - 'scripts/corpus_relations.js'
+      - '.github/workflows/corpus-relations.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  relations-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify 03 relations FLAY river on HIR, VM and Wasm
+        run: node scripts/corpus_relations.js target/debug/i13
+      - name: Keep relations downstream of semantics
+        run: |
+          grep -Fq '"layer":"02_semantics"' corpus/golden/03_relations/manifest.json
+          grep -Fq '"handoff":196418' corpus/golden/03_relations/manifest.json
+          grep -Fq 'I RIVER_START <- 196418' corpus/golden/03_relations/river.i13
+          grep -Fq 'I RIVER_FINAL <- R8_OUT' corpus/golden/03_relations/river.i13
+      - name: Keep FLAY documentary and five-point
+        run: |
+          grep -Fq '"flay_notation_is_i13_syntax":false' corpus/golden/03_relations/manifest.json
+          grep -Fq '<flay>' corpus/golden/03_relations/README.md
+          grep -Fq 'START (0,0)' corpus/golden/03_relations/README.md
+          grep -Fq 'UP' corpus/golden/03_relations/README.md
+          grep -Fq 'DOWN' corpus/golden/03_relations/README.md
+          grep -Fq 'LEFT' corpus/golden/03_relations/README.md
+          grep -Fq 'RIGHT' corpus/golden/03_relations/README.md
+          grep -Fq 'CLOSE (0,0)' corpus/golden/03_relations/README.md
+          grep -Fq 'FLAY_BLOCKED_VALUE <- flay_gate(0, 13)' corpus/golden/03_relations/flay.i13
