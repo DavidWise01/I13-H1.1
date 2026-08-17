@@ -1,0 +1,5 @@
+def count(I n) {
+    if n <= 0 { -> 0 }
+    -> 1 + count(n - 1)
+}
+I OUT <- count(256)
