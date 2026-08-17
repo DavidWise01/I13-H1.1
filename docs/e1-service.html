@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="robots" content="noindex"><title>E1 bounded service</title></head>
+<body>
+<script>
+(() => {
+  'use strict';
+  const REQUEST = 'I13_E1_PRIME_REQUEST';
+  const RETURN = 'I13_E1_PRIME_RETURN';
+  const MAX_PAYLOAD_BYTES = 4096;
+  const encoder = new TextEncoder();
+  const ANCHORS = Object.freeze([
+    {role:'capstone',coord:'top|bottom',author:'Neal Stephenson',work:'The Fall',tags:['technical']},
+    {role:'keystone',coord:'top|top',author:'George Orwell',work:'1984',tags:['technical','somatic','phonic','doublespeak','triple-listen']},
+    {role:'core',coord:'middle|middle',author:'Enheduanna',work:'first author',tags:['example','instruction','42']},
+    {role:'ucapstone',coord:'bottom|top',author:'Neal Stephenson',work:'Seveneves',tags:['unknown','discovered']},
+    {role:'ukeystone',coord:'bottom|bottom',author:'Aldous Huxley',work:'Brave New World',tags:['barbaric','cultured','curated']},
+  ]);
+
+  function randomU32() {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return (a[0] >>> 0) || 1;
+  }
+
+  function validRequest(m) {
+    const c = m?.capsule || {};
+    return m?.type === REQUEST
+      && m?.version === 1
+      && typeof m.id === 'string' && m.id.length <= 128
+      && (m.module === 'RD-001' || m.module === 'CORPUS-001')
+      && typeof m.payload === 'string'
+      && encoder.encode(m.payload).length > 0
+      && encoder.encode(m.payload).length <= MAX_PAYLOAD_BYTES
+      && c.boundary === '[ y | x ]'
+      && c.from === 'internal' && c.to === 'external'
+      && typeof c.request_sha256 === 'string' && c.request_sha256.length === 64
+      && Number(c.request_u32) > 0
+      && Number(c.payload_u32) > 0
+      && Number(c.request_witness_u32) > 0
+      && c.shared_live_state === false;
+  }
+
+  function reverseDistill(payload) {
+    const units = String(payload).trim().split(/\s+/).filter(Boolean);
+    return {
+      module:'E1.RD-001',
+      law:'ABCD - D = ABC',
+      input_units:units,
+      extension:units.length > 1 ? units[units.length - 1] : null,
+      recovered_parent:units.length > 1 ? units.slice(0, -1) : units,
+      structural_only:true,
+      causal_claim:false,
+      ownership_claim:false,
+      private_state_exported:false,
+    };
+  }
+
+  function corpusOrient(payload) {
+    const text = String(payload).toLowerCase().replace(/[\s_]+/g, '-');
+    const measurements = ANCHORS.map(anchor => {
+      const hits = anchor.tags.filter(tag => text.includes(tag.toLowerCase().replace(/[\s_]+/g, '-')));
+      return {role:anchor.role,coord:anchor.coord,tag_hits:hits};
+    }).filter(x => x.tag_hits.length);
+    return {
+      module:'E1.CORPUS-001',
+      orientation_request:String(payload),
+      measurements,
+      anchors:ANCHORS,
+      continuity:'[ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]',
+      coordinates_are_rank:false,
+      corpus_ingest:false,
+      book_text_ingested:false,
+      private_state_exported:false,
+    };
+  }
+
+  addEventListener('message', event => {
+    const m = event.data;
+    if (!m || m.type !== REQUEST) return;
+    if (!validRequest(m)) {
+      parent.postMessage({type:RETURN,version:1,id:String(m?.id || ''),error:'invalid or unbounded E1 request'}, '*');
+      return;
+    }
+    const prime = m.module === 'RD-001' ? reverseDistill(m.payload) : corpusOrient(m.payload);
+    parent.postMessage({
+      type:RETURN,
+      version:1,
+      id:m.id,
+      prime,
+      capsule:{
+        boundary:'[ y | x ]',
+        from:'external',
+        to:'internal',
+        parent_request_sha256:m.capsule.request_sha256,
+        parent_request_u32:Number(m.capsule.request_u32) >>> 0,
+        return_witness_u32:randomU32(),
+        shared_live_state:false,
+      }
+    }, '*');
+  });
+})();
+</script>
+</body>
+</html>
