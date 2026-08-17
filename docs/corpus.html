@@ -4,130 +4,66 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#04070b">
-<meta name="description" content="I13 Golden Corpus River: 00 atoms flowing directly into verified 01 syntax, with VM/Wasm continuity and semantics downstream.">
+<meta name="description" content="I13 Golden Corpus River: 00 atoms, 01 syntax and 02 semantics in one VM/Wasm-verified current.">
 <title>I13 · Golden Corpus River</title>
 <link rel="stylesheet" href="compiler.css">
 <style>
-.river-shell{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(9,16,25,.96),rgba(5,10,16,.9));padding:26px;box-shadow:var(--shadow);overflow:hidden}.river-current{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:12px 2px 18px;scrollbar-width:thin}.rock{min-width:128px;border:1px solid #23435d;border-radius:48% 52% 44% 56%/55% 44% 56% 45%;background:radial-gradient(circle at 35% 28%,#162b3b,#08111a 68%);padding:18px 14px;text-align:center;box-shadow:inset 0 0 24px rgba(66,232,255,.035),0 12px 34px rgba(0,0,0,.25)}.rock.syntax{border-color:rgba(185,156,255,.5);background:radial-gradient(circle at 35% 28%,#251d39,#0b0d18 68%)}.rock strong{display:block;color:var(--cyan);font:900 20px/1 "Cascadia Code",monospace}.rock.syntax strong{color:var(--violet)}.rock span{display:block;color:var(--text);font-size:11px;font-weight:800;margin-top:8px}.rock small{display:block;color:var(--muted);font:9px/1.35 "Cascadia Code",monospace;margin-top:5px}.stream{flex:0 0 auto;color:var(--green);font:900 12px/1 "Cascadia Code",monospace;letter-spacing:.08em;text-shadow:0 0 16px rgba(125,255,165,.35)}.river-values{font:900 clamp(16px,2.3vw,28px)/1.6 "Cascadia Code",monospace;color:var(--cyan);word-spacing:.08em;text-align:center}.river-values.syntax-values{color:var(--violet)}.river-values .s{color:var(--green);font-size:.55em}.flow-law,.layer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.flow-law>div,.layer-card{border:1px solid var(--line);border-radius:13px;padding:16px;background:#08111a}.flow-law b,.layer-card b{display:block;color:var(--green);font:800 11px/1.4 "Cascadia Code",monospace}.layer-card:nth-child(2) b{color:var(--violet)}.layer-card:nth-child(3) b{color:var(--amber)}.flow-law span,.layer-card span{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:7px}.handoff{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin:18px 0}.handoff-box{border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;background:#08111a}.handoff-box strong{display:block;font:900 26px/1 "Cascadia Code",monospace;color:var(--cyan)}.handoff-box.syntax strong{color:var(--violet)}.handoff-box span{display:block;color:var(--muted);font-size:10px;margin-top:8px}.handoff-arrow{font:900 18px/1 "Cascadia Code",monospace;color:var(--green)}.next-river{border-style:dashed;opacity:.9}@media(max-width:800px){.flow-law,.layer-grid{grid-template-columns:1fr}.river-current{padding-bottom:24px}.handoff{grid-template-columns:1fr}.handoff-arrow{transform:rotate(90deg);text-align:center}}
+.reach{border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(9,16,25,.96),rgba(5,10,16,.9));padding:24px;box-shadow:var(--shadow);overflow:hidden}.reach-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:16px}.reach-head h3{margin:0;font-size:25px}.reach-head p{margin:0;color:var(--muted);font-size:11px}.values{font:900 clamp(14px,2.1vw,25px)/1.7 "Cascadia Code",monospace;text-align:center;overflow-wrap:anywhere}.atoms .values{color:var(--cyan)}.syntax .values{color:var(--violet)}.semantics .values{color:var(--amber)}.s{color:var(--green);font-size:.62em}.handoff{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:14px 0}.handoff>div{border:1px solid var(--line);border-radius:12px;background:#08111a;padding:13px;text-align:center}.handoff strong{display:block;font:900 21px/1 "Cascadia Code",monospace;color:var(--green)}.handoff span{display:block;color:var(--muted);font-size:9px;margin-top:6px}.handoff b{color:var(--green);font-family:"Cascadia Code",monospace}.rock-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:18px}.rock{min-height:92px;padding:12px;border:1px solid var(--line);border-radius:44% 56% 47% 53%/56% 45% 55% 44%;background:#0a121b;text-align:center;display:flex;flex-direction:column;justify-content:center}.rock b{font:900 13px/1 "Cascadia Code",monospace}.atoms .rock b{color:var(--cyan)}.syntax .rock b{color:var(--violet)}.semantics .rock b{color:var(--amber)}.rock span{font-size:9px;color:var(--muted);margin-top:6px;line-height:1.3}.layer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.layer{padding:18px;border:1px solid var(--line);border-radius:15px;background:#08111a}.layer b{display:block;font:900 12px/1.2 "Cascadia Code",monospace;color:var(--green)}.layer h3{margin:10px 0 6px}.layer p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}.poem{font:900 clamp(28px,7vw,74px)/1 "Cascadia Code",monospace;text-align:center;color:var(--amber);padding:28px 0;text-shadow:0 0 36px rgba(255,201,104,.2)}.funnel{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;align-items:center}.funnel div{border:1px solid var(--line);border-radius:11px;padding:13px;text-align:center;background:#08111a;font:800 10px/1.35 "Cascadia Code",monospace}.funnel .arrow{border:0;background:transparent;color:var(--green);padding:0}@media(max-width:900px){.rock-grid{grid-template-columns:repeat(3,1fr)}.layer-grid{grid-template-columns:1fr}.funnel{grid-template-columns:1fr}.funnel .arrow{transform:rotate(90deg)}.handoff{grid-template-columns:1fr}.handoff b{transform:rotate(90deg)}}
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html"><span class="brand-i">I</span><span>I13 / CORPUS</span></a>
-  <nav aria-label="Golden corpus navigation">
-    <a href="#river" class="active">RIVER</a>
-    <a href="#atoms">ATOMS</a>
-    <a href="#syntax">SYNTAX</a>
-    <a href="#layers">LAYERS</a>
-    <a href="compiler.html">COMPILER</a>
-    <a href="workbench.html">WORKBENCH</a>
-    <a href="index.html">ORIGIN</a>
-  </nav>
+  <nav><a href="#river" class="active">RIVER</a><a href="#layers">LAYERS</a><a href="#ada">ADA</a><a href="semantics.html">SEMANTICS</a><a href="compiler.html">COMPILER</a><a href="workbench.html">WORKBENCH</a></nav>
 </header>
-
 <main>
   <section class="hero">
     <div>
       <p class="eyebrow">I13 GOLDEN CORPUS · ONE CONTINUOUS RIVER</p>
-      <h1>Rocks become <span>language.</span></h1>
-      <p class="lead">The golden corpus now flows from the smallest executable pieces into the legal source shapes built from them. 00 Atoms ends at 34; 01 Syntax inherits that exact water and carries it to 2584.</p>
-      <div class="badge-row">
-        <span class="pill good">00 ATOMS · 9/9 PASS</span>
-        <span class="pill good">01 SYNTAX · 9/9 PASS</span>
-        <span class="pill good">VM = WASM</span>
-        <span class="pill info">CURRENT HANDOFF = 2584</span>
-      </div>
-      <div class="hero-actions">
-        <a class="button primary" href="#river">FOLLOW THE CURRENT</a>
-        <a class="button ghost" href="CORPUS-ATOMS.md">00 ATOMS CONTRACT</a>
-        <a class="button ghost" href="CORPUS-SYNTAX.md">01 SYNTAX CONTRACT</a>
-      </div>
+      <h1>Rocks become <span>meaning.</span></h1>
+      <p class="lead">The golden corpus now flows through three complete reaches: atoms establish the pieces, syntax establishes legal source shape, and semantics establishes which distinctions survive into meaning. No reach restarts the water.</p>
+      <div class="badge-row"><span class="pill good">00 ATOMS · 9/9</span><span class="pill good">01 SYNTAX · 9/9</span><span class="pill good">02 SEMANTICS · 9/9</span><span class="pill good">HIR → VM = WASM</span><span class="pill info">CURRENT = 196418</span></div>
+      <div class="hero-actions"><a class="button primary" href="#river">FOLLOW THE RIVER</a><a class="button ghost" href="semantics.html">SEMANTIC / ADA OBSERVATORY</a><a class="button ghost" href="CORPUS-SEMANTICS.md">READ CONTRACT</a></div>
     </div>
-    <aside class="hero-status">
-      <div class="status-head"><span class="status-led">RIVER GREEN</span><span class="commit">syntax gate a6c304a</span></div>
-      <div class="metrics">
-        <div class="metric"><strong>18</strong><span>VERIFIED ROCKS</span></div>
-        <div class="metric"><strong>2</strong><span>COMPLETE REACHES</span></div>
-        <div class="metric"><strong>2584</strong><span>CURRENT HANDOFF</span></div>
-        <div class="metric"><strong>2</strong><span>EXECUTION AUTHORITIES</span></div>
-      </div>
-    </aside>
+    <aside class="hero-status"><div class="status-head"><span class="status-led">RIVER GREEN</span><span class="commit">semantics gate 013ae5b</span></div><div class="metrics"><div class="metric"><strong>27</strong><span>VERIFIED ROCKS</span></div><div class="metric"><strong>3</strong><span>COMPLETE REACHES</span></div><div class="metric"><strong>196418</strong><span>CURRENT HANDOFF</span></div><div class="metric"><strong>3</strong><span>SEMANTIC BANK VETOES</span></div></div></aside>
   </section>
 
   <section class="section" id="river">
-    <div class="section-head"><div><p class="eyebrow">STREAM HANDOFF</p><h2>The same water.</h2></div><p><code>|s|</code> means corpus stream handoff only. It remains documentation, not I13 syntax.</p></div>
-    <div class="river-shell">
-      <p class="eyebrow">00 ATOMS</p>
-      <div class="river-values">0 <span class="s">|s|</span> 1 <span class="s">|s|</span> 1 <span class="s">|s|</span> 2 <span class="s">|s|</span> 3 <span class="s">|s|</span> 5 <span class="s">|s|</span> 8 <span class="s">|s|</span> 13 <span class="s">|s|</span> 21 <span class="s">|s|</span> 34</div>
-      <div class="handoff">
-        <div class="handoff-box"><strong>34</strong><span>00_atoms.composition.final</span></div>
-        <div class="handoff-arrow">|s| SAME HANDOFF |s|</div>
-        <div class="handoff-box syntax"><strong>34</strong><span>01_syntax.inherits.handoff</span></div>
-      </div>
-      <p class="eyebrow">01 SYNTAX</p>
-      <div class="river-values syntax-values">34 <span class="s">|s|</span> 55 <span class="s">|s|</span> 89 <span class="s">|s|</span> 144 <span class="s">|s|</span> 233 <span class="s">|s|</span> 377 <span class="s">|s|</span> 610 <span class="s">|s|</span> 987 <span class="s">|s|</span> 1597 <span class="s">|s|</span> 2584</div>
-    </div>
-  </section>
+    <div class="section-head"><div><p class="eyebrow">CONTINUITY</p><h2>Same water, deeper structure.</h2></div><p><code>|s|</code> is documentary stream notation only. Every reach inherits the exact final handoff of the reach above it.</p></div>
 
-  <section class="section" id="atoms">
-    <div class="section-head"><div><p class="eyebrow">00 ATOMS · COMPLETE v0.1</p><h2>What pieces exist.</h2></div><p>Atoms isolate the smallest accepted executable behaviors. Each rock introduced one minimal capability and passed it downstream.</p></div>
-    <div class="river-shell"><div class="river-current" aria-label="00 atom rocks">
-      <div class="rock"><strong>00</strong><span>SEED</span><small>0 → 1<br>I + constant</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>01</strong><span>NAME</span><small>1 → 1<br>binding read</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>02</strong><span>BINOP</span><small>1 → 2<br>arithmetic</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>03</strong><span>ASSIGN</span><small>2 → 3<br>rebind</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>04</strong><span>FUNCTION</span><small>3 → 5<br>def/ret/call</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>05</strong><span>ARG</span><small>5 → 8<br>arguments</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>06</strong><span>COMPARE</span><small>8 → 13<br>comparison</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>07</strong><span>IF</span><small>13 → 21<br>control</small></div><div class="stream">|s|</div>
-      <div class="rock"><strong>08</strong><span>OSMOTIC</span><small>21 → 34<br>.p bind</small></div>
-    </div></div>
-  </section>
+    <article class="reach atoms">
+      <div class="reach-head"><div><p class="eyebrow">00 ATOMS · COMPLETE</p><h3>What pieces exist?</h3></div><p>minimal executable vocabulary</p></div>
+      <div class="values">0 <span class="s">|s|</span> 1 <span class="s">|s|</span> 1 <span class="s">|s|</span> 2 <span class="s">|s|</span> 3 <span class="s">|s|</span> 5 <span class="s">|s|</span> 8 <span class="s">|s|</span> 13 <span class="s">|s|</span> 21 <span class="s">|s|</span> 34</div>
+      <div class="rock-grid"><div class="rock"><b>SEED</b><span>I + constant</span></div><div class="rock"><b>NAME</b><span>binding read</span></div><div class="rock"><b>BINOP</b><span>arithmetic</span></div><div class="rock"><b>ASSIGN</b><span>rebind</span></div><div class="rock"><b>FUNCTION</b><span>def/ret/call</span></div><div class="rock"><b>ARG</b><span>arguments</span></div><div class="rock"><b>COMPARE</b><span>relation</span></div><div class="rock"><b>IF</b><span>control</span></div><div class="rock"><b>OSMOTIC</b><span>.p bind</span></div></div>
+    </article>
+    <div class="handoff"><div><strong>34</strong><span>00 final</span></div><b>|s| = |s|</b><div><strong>34</strong><span>01 start</span></div></div>
 
-  <section class="section" id="syntax">
-    <div class="section-head"><div><p class="eyebrow">01 SYNTAX · COMPLETE v0.1</p><h2>How the pieces may be arranged.</h2></div><p>Syntax changes spelling, grouping, line layout and nesting while deliberately reusing the atom meanings underneath.</p></div>
-    <div class="river-shell"><div class="river-current" aria-label="01 syntax rocks">
-      <div class="rock syntax"><strong>00</strong><span>SPACE</span><small>34 → 55<br>comments + layout</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>01</strong><span>GROUP</span><small>55 → 89<br>( expression )</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>02</strong><span>CALL LINES</span><small>89 → 144<br>multiline args</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>03</strong><span>PARAM LINES</span><small>144 → 233<br>multiline params</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>04</strong><span>NEST</span><small>233 → 377<br>nested blocks</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>05</strong><span>PREFIX -</span><small>377 → 610<br>desugar to BinOp</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>06</strong><span>NEST CALL</span><small>610 → 987<br>call in argument</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>07</strong><span>DECIMAL</span><small>987 → 1597<br>Number spelling</small></div><div class="stream">|s|</div>
-      <div class="rock syntax"><strong>08</strong><span>IDENTIFIER</span><small>1597 → 2584<br>_ + digits</small></div>
-    </div></div>
-    <div class="geometry-grid" style="margin-top:16px">
-      <article class="geometry"><h3>Syntax delta</h3><div class="type-route"><div class="route-card"><strong>-x</strong><span>new source shape</span></div><span class="route-arrow">→</span><div class="route-card"><strong>0 - x</strong><span>existing BinOp meaning</span></div></div><p>Prefix minus demonstrates the boundary: parser surface grows while semantic identity remains unchanged.</p></article>
-      <article class="geometry"><h3>Continuity proof</h3><div class="type-route"><div class="route-card"><strong>00 FINAL</strong><span>34</span></div><span class="route-arrow">=</span><div class="route-card"><strong>01 START</strong><span>34</span></div></div><p>CI reads both manifests. Syntax cannot quietly restart or fork the corpus river.</p></article>
-    </div>
+    <article class="reach syntax">
+      <div class="reach-head"><div><p class="eyebrow">01 SYNTAX · COMPLETE</p><h3>How may the pieces be arranged?</h3></div><p>lexer/parser source geometry</p></div>
+      <div class="values">34 <span class="s">|s|</span> 55 <span class="s">|s|</span> 89 <span class="s">|s|</span> 144 <span class="s">|s|</span> 233 <span class="s">|s|</span> 377 <span class="s">|s|</span> 610 <span class="s">|s|</span> 987 <span class="s">|s|</span> 1597 <span class="s">|s|</span> 2584</div>
+      <div class="rock-grid"><div class="rock"><b>SPACE</b><span>comments/layout</span></div><div class="rock"><b>GROUP</b><span>parentheses</span></div><div class="rock"><b>CALL LINES</b><span>multiline args</span></div><div class="rock"><b>PARAM LINES</b><span>multiline params</span></div><div class="rock"><b>NEST</b><span>blocks</span></div><div class="rock"><b>PREFIX -</b><span>desugar</span></div><div class="rock"><b>NEST CALL</b><span>expression shape</span></div><div class="rock"><b>DECIMAL</b><span>Number spelling</span></div><div class="rock"><b>IDENTIFIER</b><span>_ + digits</span></div></div>
+    </article>
+    <div class="handoff"><div><strong>2584</strong><span>01 final</span></div><b>|s| = |s|</b><div><strong>2584</strong><span>02 start</span></div></div>
+
+    <article class="reach semantics">
+      <div class="reach-head"><div><p class="eyebrow">02 SEMANTICS · COMPLETE</p><h3>What does the accepted shape mean?</h3></div><p>HIR checkpoint + execution meaning</p></div>
+      <div class="values">2584 <span class="s">|s|</span> 4181 <span class="s">|s|</span> 6765 <span class="s">|s|</span> 10946 <span class="s">|s|</span> 17711 <span class="s">|s|</span> 28657 <span class="s">|s|</span> 46368 <span class="s">|s|</span> 75025 <span class="s">|s|</span> 121393 <span class="s">|s|</span> 196418</div>
+      <div class="rock-grid"><div class="rock"><b>REPRESENT</b><span>identity</span></div><div class="rock"><b>PRECEDENCE</b><span>operator meaning</span></div><div class="rock"><b>ASSOCIATE</b><span>group meaning</span></div><div class="rock"><b>SCOPE</b><span>binding resolution</span></div><div class="rock"><b>BIND MODE</b><span>assign vs .p</span></div><div class="rock"><b>RETURN</b><span>control meaning</span></div><div class="rock"><b>ARITY</b><span>call contract</span></div><div class="rock"><b>NAME CALL</b><span>resolution</span></div><div class="rock"><b>EQUIV</b><span>shape ≠ meaning</span></div></div>
+    </article>
   </section>
 
   <section class="section" id="layers">
-    <div class="section-head"><div><p class="eyebrow">LANGUAGE LAYERS</p><h2>Atoms → Syntax → Semantics.</h2></div><p>The three layers answer different questions over the same program stream.</p></div>
-    <div class="layer-grid">
-      <div class="layer-card"><b>00 · ATOMS</b><span><strong>What pieces exist?</strong><br>Names, constants, assignment, calls, arguments, comparisons, control and osmotic binding in minimal executable form.</span></div>
-      <div class="layer-card"><b>01 · SYNTAX</b><span><strong>How may the pieces be arranged?</strong><br>Whitespace, grouping, multiline forms, nesting, desugared spellings and identifier/literal shapes accepted by lexer/parser.</span></div>
-      <div class="layer-card"><b>02 · SEMANTICS</b><span><strong>What does an accepted arrangement mean?</strong><br>Precedence, scope, binding resolution, equivalence, return/control meaning, kind boundaries and semantic rejection.</span></div>
-    </div>
-    <div class="pipeline-shell" style="margin-top:16px"><div class="authority-key"><span><b>ROCKS</b> · vocabulary</span><span>→</span><span><b>RIVERBED</b> · grammar</span><span>→</span><span><b>CURRENT</b> · meaning</span></div></div>
+    <div class="section-head"><div><p class="eyebrow">LAYER LAW</p><h2>Vocabulary → grammar → meaning.</h2></div><p>The river metaphor maps directly onto the compiler pipeline without making the corpus itself an authority.</p></div>
+    <div class="layer-grid"><article class="layer"><b>00 · ATOMS / ROCKS</b><h3>Vocabulary</h3><p>The smallest accepted executable behaviors. They tell us what building pieces exist.</p></article><article class="layer"><b>01 · SYNTAX / RIVERBED</b><h3>Grammar</h3><p>Legal arrangement and spelling of those pieces. Syntax may grow while meaning stays unchanged.</p></article><article class="layer"><b>02 · SEMANTICS / CURRENT</b><h3>Meaning</h3><p>Precedence, scope, representation, binding, control, equivalence and rejection after source shape is accepted.</p></article></div>
+    <div class="pipeline-shell" style="margin-top:16px"><div class="authority-key"><span><b>SPEC</b> language authority</span><span>→</span><span><b>HIR</b> semantic authority</span><span>→</span><span><b>IVM</b> execution authority</span><span>→</span><span><b>VM = WASM</b></span></div></div>
   </section>
 
-  <section class="section" id="law">
-    <div class="section-head"><div><p class="eyebrow">GOLDEN CORPUS LAW</p><h2>Flow, don't pile.</h2></div><p>Every reach inherits the exact upstream handoff and adds one new class of evidence without replacing the water that came before it.</p></div>
-    <div class="flow-law">
-      <div><b>1 · CONTINUITY</b><span>Within a reach and between reaches, downstream input must equal upstream output.</span></div>
-      <div><b>2 · ONE DELTA</b><span>Atoms add behavior. Syntax adds source shape. Semantics will add meaning assertions.</span></div>
-      <div><b>3 · TWO EXECUTION PROOFS</b><span>Every executable rock and composition witness must agree on reference VM and generated Wasm.</span></div>
-    </div>
-  </section>
-
-  <section class="section next-river">
-    <div class="section-head"><div><p class="eyebrow">DOWNSTREAM · 02 SEMANTICS</p><h2>Meaning starts at 2584.</h2></div><p>The next reach must inherit <code>2584</code> and use the legal shapes proven here to test what I13 means—not merely what it can parse.</p></div>
-    <div class="pipeline-shell"><div class="authority-key"><span><b>00 ATOMS</b> · pieces · final 34</span><span>→</span><span><b>01 SYNTAX</b> · arrangements · final 2584</span><span>→</span><span><b>02 SEMANTICS</b> · meaning · starts 2584</span></div></div>
+  <section class="section" id="ada">
+    <div class="section-head"><div><p class="eyebrow">MATHEMATICAL POETRY</p><h2>Human-readable structure can sit above executable reduction.</h2></div><p>The notation is documentary, not I13 grammar. The executable companion is <code>ada_lens.i13</code>.</p></div>
+    <div class="pipeline-shell"><div class="poem">[ | ( ada ) | ]</div><div class="funnel"><div>SEMANTICS</div><div class="arrow">~></div><div>ANALYSIS + MUSIC<br>rhythm · tempo · pace · timing</div><div class="arrow">~></div><div>REASON → BOOLEAN</div></div><div class="authority-key"><span><b>poetry</b> human-readable geometry</span><span><b>ada_lens.i13</b> executable model</span><span><b>0/1</b> compressed decision, not full semantic reconstruction</span></div></div>
+    <div class="hero-actions"><a class="button primary" href="semantics.html">OPEN SEMANTIC / ADA OBSERVATORY</a><a class="button ghost" href="CORPUS-SEMANTICS.md">READ SEMANTIC LAW</a></div>
   </section>
 </main>
-
-<footer class="footer"><span>I13 Golden Corpus · one river from pieces to meaning</span><span><a href="index.html">ORIGIN</a> · <a href="compiler.html">COMPILER</a> · <a href="workbench.html">WORKBENCH</a></span></footer>
+<footer class="footer"><span>I13 Golden Corpus · 27 rocks · 3 reaches · one river</span><span><a href="semantics.html">SEMANTICS</a> · <a href="compiler.html">COMPILER</a> · <a href="index.html">ORIGIN</a></span></footer>
 </body>
 </html>
