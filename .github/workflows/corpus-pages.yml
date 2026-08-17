@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/corpus.html'
       - 'docs/semantics.html'
+      - 'docs/relations.html'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
@@ -16,6 +17,7 @@ on:
     paths:
       - 'docs/corpus.html'
       - 'docs/semantics.html'
+      - 'docs/relations.html'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
@@ -33,51 +35,63 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check landing JavaScript
         run: node --check docs/landing.js
-      - name: Check three-reach continuity
+      - name: Check four-reach continuity
         run: |
           node - <<'NODE'
           const fs=require('fs');
           const a=JSON.parse(fs.readFileSync('corpus/golden/00_atoms/manifest.json','utf8'));
           const s=JSON.parse(fs.readFileSync('corpus/golden/01_syntax/manifest.json','utf8'));
           const m=JSON.parse(fs.readFileSync('corpus/golden/02_semantics/manifest.json','utf8'));
+          const r=JSON.parse(fs.readFileSync('corpus/golden/03_relations/manifest.json','utf8'));
           if(a.composition.final!==s.inherits.handoff) throw new Error('atoms -> syntax discontinuity');
           if(s.composition.final!==m.inherits.handoff) throw new Error('syntax -> semantics discontinuity');
-          if(m.composition.final!==196418) throw new Error('semantic final drift');
-          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final}`);
+          if(m.composition.final!==r.inherits.handoff) throw new Error('semantics -> relations discontinuity');
+          if(r.composition.final!==14930352) throw new Error('relations final drift');
+          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final} -> ${r.composition.final}`);
           NODE
       - name: Check River Observatory
         run: |
           test -s docs/corpus.html
-          grep -Fq '27</strong><span>VERIFIED ROCKS' docs/corpus.html
-          grep -Fq 'CURRENT = 196418' docs/corpus.html
-          grep -Fq '02 SEMANTICS · COMPLETE' docs/corpus.html
-          grep -Fq '[ | ( ada ) | ]' docs/corpus.html
-          grep -Fq 'OPEN SEMANTIC / ADA OBSERVATORY' docs/corpus.html
-      - name: Check Semantic Ada Observatory
+          grep -Fq '36</strong><span>VERIFIED ROCKS' docs/corpus.html
+          grep -Fq 'CURRENT = 14930352' docs/corpus.html
+          grep -Fq '03 RELATIONS · FLAY · COMPLETE' docs/corpus.html
+          grep -Fq '196418</strong><span>02 final' docs/corpus.html
+          grep -Fq '196418</strong><span>03 start' docs/corpus.html
+          grep -Fq 'RELATIONS / FLAY OBSERVATORY' docs/corpus.html
+      - name: Check Semantic Ada Observatory handoff
         run: |
           test -s docs/semantics.html
           grep -Fq 'I13 GOLDEN CORPUS · 02 SEMANTICS · FROZEN' docs/semantics.html
           grep -Fq '[ | ( ada ) | ]' docs/semantics.html
-          grep -Fq 'rhythm · tempo · pace · timing' docs/semantics.html
-          grep -Fq '9/9 SEMANTIC ROCKS' docs/semantics.html
-          grep -Fq '196418' docs/semantics.html
-          grep -Fq 'E0501' docs/semantics.html
-          grep -Fq 'E0203' docs/semantics.html
-          grep -Fq 'E0202' docs/semantics.html
-      - name: Check executable Ada lens
+          grep -Fq '&lt;FLAY&gt;' docs/semantics.html
+          grep -Fq '196418</strong><span>03_relations start' docs/semantics.html
+          grep -Fq 'FOLLOW INTO FLAY' docs/semantics.html
+      - name: Check Relations FLAY Observatory
+        run: |
+          test -s docs/relations.html
+          grep -Fq 'I13 GOLDEN CORPUS · 03 RELATIONS · FLAY v0.1' docs/relations.html
+          grep -Fq '&lt;flay&gt;' docs/relations.html
+          grep -Fq 'START (0,0) → UP → DOWN → LEFT → RIGHT → CLOSE (0,0)' docs/relations.html
+          grep -Fq 'BLOCKED UNTIL <FLAY> SATISFIED' docs/relations.html
+          grep -Fq 'FLAY SATISFIED · DOWNSTREAM OPEN' docs/relations.html
+          grep -Fq '14930352' docs/relations.html
+      - name: Check executable Ada and FLAY lenses
         run: |
           test -s corpus/golden/02_semantics/ada_lens.i13
           grep -Fq 'def analysis_relation' corpus/golden/02_semantics/ada_lens.i13
-          grep -Fq 'def music_rhythm' corpus/golden/02_semantics/ada_lens.i13
-          grep -Fq 'def music_tempo' corpus/golden/02_semantics/ada_lens.i13
-          grep -Fq 'def music_pace' corpus/golden/02_semantics/ada_lens.i13
-          grep -Fq 'def music_timing' corpus/golden/02_semantics/ada_lens.i13
-          grep -Fq 'def reason_four' corpus/golden/02_semantics/ada_lens.i13
           grep -Fq 'I ADA_LENS_OK <-' corpus/golden/02_semantics/ada_lens.i13
-      - name: Check frozen semantic contract and discovery
+          test -s corpus/golden/03_relations/flay.i13
+          grep -Fq 'def flay_cycle' corpus/golden/03_relations/flay.i13
+          grep -Fq 'def flay_old_chunk' corpus/golden/03_relations/flay.i13
+          grep -Fq 'def flay_new_chunks' corpus/golden/03_relations/flay.i13
+          grep -Fq 'I FLAY_BLOCKED_VALUE <- flay_gate(0, 13)' corpus/golden/03_relations/flay.i13
+          grep -Fq 'I FLAY_OPEN_VALUE <- flay_gate(FLAY_SATISFIED, 13)' corpus/golden/03_relations/flay.i13
+      - name: Check frozen contracts and discovery
         run: |
           grep -Fq 'FROZEN KNOWN GOOD · HIR-GATED · VM/WASM VERIFIED' docs/CORPUS-SEMANTICS.md
-          grep -Fq 'I13-GOLDEN-02-SEMANTICS-RIVER-0.1' docs/CORPUS-SEMANTICS.md
+          grep -Fq 'FROZEN KNOWN GOOD · HIR/VM/WASM CI-GATED' docs/CORPUS-RELATIONS.md
+          grep -Fq 'I13-FLAY-001' docs/CORPUS-RELATIONS.md
           grep -Fq "link.href='semantics.html'" docs/landing.js
-          grep -Fq 'Twenty-seven curated I13 rocks' docs/landing.js
-          grep -Fq 'CORPUS-SEMANTICS.md' docs/landing.js
+          grep -Fq "link.href='relations.html'" docs/landing.js
+          grep -Fq 'Thirty-six curated I13 rocks' docs/landing.js
+          grep -Fq 'CORPUS-RELATIONS.md' docs/landing.js
