@@ -1,0 +1,9 @@
+// I13 GOLDEN CORPUS · 01 SYNTAX · ROCK 00
+// inherited from 00_atoms
+
+I RIVER_IN <- 34
+
+// Same atom vocabulary, looser legal spacing and blank-line shape.
+I    delta    <-    21
+
+I RIVER_OUT <- RIVER_IN + delta
