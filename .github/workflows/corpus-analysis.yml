@@ -1,0 +1,48 @@
+name: I13 golden corpus 04 analysis
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/04_analysis/**'
+      - 'corpus/golden/03_relations/**'
+      - 'scripts/corpus_analysis.js'
+      - '.github/workflows/corpus-analysis.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/04_analysis/**'
+      - 'corpus/golden/03_relations/**'
+      - 'scripts/corpus_analysis.js'
+      - '.github/workflows/corpus-analysis.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  analysis-river:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify 04 analysis after upstream FLAY
+        run: node scripts/corpus_analysis.js target/debug/i13
+      - name: Keep analysis downstream of relations
+        run: |
+          grep -Fq '"layer":"03_relations"' corpus/golden/04_analysis/manifest.json
+          grep -Fq '"handoff":14930352' corpus/golden/04_analysis/manifest.json
+          grep -Fq 'I RIVER_START <- 14930352' corpus/golden/04_analysis/river.i13
+          grep -Fq 'I RIVER_FINAL <- R8_OUT' corpus/golden/04_analysis/river.i13
+      - name: Keep FLAY admission authoritative
+        run: |
+          grep -Fq 'ANALYSIS MAY NOT OPEN ITS OWN GATE.' corpus/golden/04_analysis/README.md
+          grep -Fq 'ANALYSIS MAY NOT REDEFINE FLAY ADMISSION.' corpus/golden/04_analysis/README.md
+          grep -Fq 'ANALYSIS_UPSTREAM_FLAY <- 1' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'ANALYSIS_BLOCKED_ADMITTED <- analysis_admitted(0)' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'ANALYSIS_OPEN_ADMITTED <- analysis_admitted(ANALYSIS_UPSTREAM_FLAY)' corpus/golden/04_analysis/analysis.i13
+      - name: Keep analysis observational
+        run: |
+          grep -Fq 'I ANALYSIS_INPUT <- 13' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'I ANALYSIS_AFTER <- admit_value(ANALYSIS_UPSTREAM_FLAY, ANALYSIS_INPUT)' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'ANALYSIS_AFTER == ANALYSIS_INPUT' corpus/golden/04_analysis/analysis.i13
