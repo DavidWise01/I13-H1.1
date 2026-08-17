@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#04070b">
-<meta name="description" content="I13 compiler observatory: compiler pipeline, VM/Wasm parity, diagnostics, conformance, introspection, trace and debugger status.">
+<meta name="description" content="I13 compiler observatory: pipeline, VM/Wasm parity, diagnostics, conformance, introspection, trace, debugger and I13 bootstrap self-use status.">
 <title>I13 · Compiler Observatory</title>
 <link rel="stylesheet" href="compiler.css">
 </head>
@@ -14,6 +14,7 @@
   <nav aria-label="Compiler observatory navigation">
     <a href="#pipeline" class="active">PIPELINE</a>
     <a href="#components">COMPONENTS</a>
+    <a href="#bootstrap">BOOTSTRAP</a>
     <a href="#runtime-law">LAW</a>
     <a href="#debugger">DEBUGGER</a>
     <a href="workbench.html">WORKBENCH</a>
@@ -26,15 +27,17 @@
     <div>
       <p class="eyebrow">I13 COMPILER OBSERVATORY · KNOWN-GOOD EXECUTABLE SLICE</p>
       <h1>Source to <span>execution.</span></h1>
-      <p class="lead">A visual record of the compiler that currently turns <code>.i13</code> source into validated IVM-13, executes it on the explicit-frame reference VM, and lowers the same execution authority into real WebAssembly.</p>
+      <p class="lead">A visual record of the compiler that turns <code>.i13</code> source into validated IVM-13, executes it on the explicit-frame reference VM, lowers the same execution authority into real WebAssembly, and now uses I13 itself for executable compiler-law probes wherever the language can honestly express them.</p>
       <div class="badge-row">
         <span class="pill good">VM = WASM · KNOWN-GOOD SURFACE</span>
+        <span class="pill good">I13 BOOTSTRAP v0.1 · PASS</span>
         <span class="pill info">TAGGED VALUES FROZEN</span>
         <span class="pill info">DEBUGGER v0.1 FROZEN</span>
         <span class="pill warn">8M STEPS = RUNTIME POLICY</span>
       </div>
       <div class="hero-actions">
         <a class="button primary" href="#pipeline">VIEW COMPILER FLOW</a>
+        <a class="button ghost" href="#bootstrap">VIEW I13 SELF-USE</a>
         <a class="button ghost" href="COMPILER-CANON.md">READ COMPILER CANON</a>
         <a class="button ghost" href="workbench.html">OPEN LIVE WORKBENCH</a>
       </div>
@@ -43,13 +46,15 @@
     <aside class="hero-status" aria-label="Compiler status">
       <div class="status-head">
         <span class="status-led">COMPILER GREEN</span>
-        <span class="commit">debug proof ce3d605</span>
+        <span class="commit">bootstrap proof 0caa78c</span>
       </div>
       <div class="metrics">
         <div class="metric"><strong>15</strong><span>FROZEN IVM OPCODES</span></div>
         <div class="metric"><strong>4096</strong><span>I13 FRAME CEILING</span></div>
         <div class="metric"><strong>29</strong><span>DIFFERENTIAL ATTACKS KNOWN GOOD</span></div>
         <div class="metric"><strong>11/11</strong><span>CONFORMANCE v0.1</span></div>
+        <div class="metric"><strong>5946</strong><span>I13 BOOTSTRAP VM STEPS</span></div>
+        <div class="metric"><strong>1/1</strong><span>BOOTSTRAP VM/WASM GATE</span></div>
       </div>
     </aside>
   </section>
@@ -81,7 +86,7 @@
         <span><b>SPEC</b> · language authority</span>
         <span><b>HIR</b> · semantic authority</span>
         <span><b>IVM-13</b> · execution authority</span>
-        <span><b>DUMP / TRACE / DEBUG</b> · observers</span>
+        <span><b>DUMP / TRACE / DEBUG / BOOTSTRAP</b> · observers + executable witnesses</span>
       </div>
     </div>
   </section>
@@ -121,6 +126,56 @@
         <p>Step, next, continue, source breakpoints and immutable binding/frame/stack inspection on the same VM.</p>
         <a href="COMPILER-DEBUGGER.md">DEBUG LAW →</a>
       </article>
+      <article class="component" data-kind="bootstrap">
+        <small>v0.1 · VM/WASM PASS</small><h3>I13 Bootstrap</h3>
+        <p>The compiler's executable law mirror is written in I13: opcode effects, frame admission, tagged operation gates and Answer modes.</p>
+        <a href="COMPILER-BOOTSTRAP.md">SELF-USE LAW →</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="bootstrap">
+    <div class="section-head">
+      <div><p class="eyebrow">I13-BOOTSTRAP-0.1</p><h2>Use I13 wherever I13 is enough.</h2></div>
+      <p>This phase deliberately moves executable compiler-law logic into <code>examples/compiler_bootstrap.i13</code> without pretending the language can already parse its own source. The host orchestrates; I13 computes and self-tests.</p>
+    </div>
+
+    <div class="geometry-grid">
+      <article class="geometry">
+        <h3>Host boundary</h3>
+        <div class="type-route">
+          <div class="route-card"><strong>RUST / HOST</strong><span>read source · lex · parse · lower · VM · Wasm encoder</span></div>
+          <span class="route-arrow">→</span>
+          <div class="route-card"><strong>COMPILE</strong><span>current authority chain</span></div>
+        </div>
+        <p>Text, collections, filesystem access and compiler construction still require the host because those capabilities do not exist in frozen I13 v0.1.</p>
+      </article>
+      <article class="geometry">
+        <h3>I13 boundary</h3>
+        <div class="type-route">
+          <div class="route-card"><strong>.i13 LAW KERNEL</strong><span>effects · kinds · frame gate · Answer modes</span></div>
+          <span class="route-arrow">⇄</span>
+          <div class="route-card"><strong>VM / WASM</strong><span>same proof outputs</span></div>
+        </div>
+        <p>I13 now computes its bootstrap witness itself. The host only checks the exported results; it does not implement those bootstrap decisions for the test.</p>
+      </article>
+    </div>
+
+    <div class="test-grid">
+      <article class="test-card"><strong>15</strong><h3>Opcode effects mirrored</h3><p>Every frozen IVM opcode has its stack need/net law represented in I13, including variable <code>Call(argc)</code>.</p></article>
+      <article class="test-card"><strong>15638</strong><h3>Law checksum</h3><p>A recursive I13 witness covers all fifteen effect signatures at fixed bootstrap arity 3.</p></article>
+      <article class="test-card"><strong>4095→1</strong><h3>Legal call admission</h3><p>With 4095 active frames, one more I13 frame is admitted to reach the canonical ceiling.</p></article>
+      <article class="test-card"><strong>4096→0</strong><h3>Frame veto</h3><p>At the ceiling, another Call is rejected by the I13 bootstrap mirror.</p></article>
+      <article class="test-card"><strong>17 / -16</strong><h3>Call(16) effect</h3><p>The I13 law kernel computes need 17 and net -16 instead of relying on one hard-coded arity.</p></article>
+      <article class="test-card"><strong>10/10</strong><h3>Wasm proof globals</h3><p>Generated Wasm matched every exported bootstrap proof global and repeated deterministically.</p></article>
+    </div>
+
+    <div class="pipeline-shell">
+      <div class="authority-key">
+        <span><b>SELF-USE</b> · real I13 code executes real compiler-law probes</span>
+        <span><b>NOT SELF-HOSTING</b> · lexer/parser still require text + collections + I/O</span>
+        <span><b>NEXT FRONTIER</b> · smallest bounded text/collection capability that unlocks more compiler code in I13</span>
+      </div>
     </div>
   </section>
 
@@ -167,7 +222,7 @@
   <section class="section" id="evidence">
     <div class="section-head">
       <div><p class="eyebrow">HARDENING EVIDENCE</p><h2>Attack → understand → lock.</h2></div>
-      <p>Torture discovers, policy tests characterize, and conformance freezes accepted behavior. A green workflow is evidence only for the behavior it actually tests.</p>
+      <p>Torture discovers, policy tests characterize, conformance freezes accepted behavior, and bootstrap proves how much of the law can be exercised by I13 itself.</p>
     </div>
     <div class="test-grid">
       <article class="test-card"><strong>29</strong><h3>Differential attacks</h3><p>Arithmetic, control, tagged function flow, arity, binding edges and recursion through the canonical frame fence.</p></article>
@@ -175,6 +230,7 @@
       <article class="test-card"><strong>11/11</strong><h3>Conformance v0.1</h3><p>Whole CLI paths, stable diagnostics, execution results, runtime traps and the I13 frame law remain gated.</p></article>
       <article class="test-card"><strong>8/8</strong><h3>Tagged-value regression</h3><p>Function identity survives globals, arguments, returns and comparisons without falling back into numeric payloads.</p></article>
       <article class="test-card"><strong>1 VM</strong><h3>Trace + debugger</h3><p>Run, trace and debug share the same execution loop. Observers cannot write execution state.</p></article>
+      <article class="test-card"><strong>1/1</strong><h3>I13 bootstrap</h3><p>The I13-coded law kernel passes reference VM and generated Wasm parity, including deterministic rerun.</p></article>
       <article class="test-card probe"><strong>19</strong><h3>explode(19) policy probe</h3><p>Reference VM hits the 8M safety fuse while Wasm completes. Classified as runtime-policy divergence, not semantic defect.</p></article>
     </div>
   </section>
@@ -213,6 +269,7 @@
     <div class="section-head"><div><p class="eyebrow">CANONICAL RECORD</p><h2>Compiler documents.</h2></div><p>These records separate construction history, accepted law and measured evidence.</p></div>
     <div class="docs-grid">
       <a class="doc-link" href="COMPILER-CANON.md">COMPILER-CANON.md</a>
+      <a class="doc-link" href="COMPILER-BOOTSTRAP.md">COMPILER-BOOTSTRAP.md</a>
       <a class="doc-link" href="COMPILER-DIAGNOSTICS.md">COMPILER-DIAGNOSTICS.md</a>
       <a class="doc-link" href="COMPILER-CONFORMANCE.md">COMPILER-CONFORMANCE.md</a>
       <a class="doc-link" href="COMPILER-INTROSPECTION.md">COMPILER-INTROSPECTION.md</a>
