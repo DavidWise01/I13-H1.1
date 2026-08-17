@@ -1,0 +1,17 @@
+def compact(I x) { -> x + 75025 }
+
+def shaped(
+    I x
+)
+{
+    -> (x + 75025)
+}
+
+I RIVER_IN <- 121393
+I COMPACT_RESULT <- compact(RIVER_IN)
+I SHAPED_RESULT <- shaped(
+    RIVER_IN
+)
+I EQUIVALENCE_OK <- COMPACT_RESULT == SHAPED_RESULT
+I RIVER_OUT <- SHAPED_RESULT
+I SEMANTIC_OK <- EQUIVALENCE_OK
