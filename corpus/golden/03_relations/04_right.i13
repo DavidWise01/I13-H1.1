@@ -1,0 +1,13 @@
+// 03 RELATIONS · ROCK 04 · RIGHT
+I RIVER_IN <- 1346269
+
+def at_right(I x, I y) {
+    if x == 1 {
+        if y == 0 { -> 1 }
+    }
+    -> 0
+}
+
+I RIGHT_OK <- at_right(1, 0)
+I RELATION_OK <- RIGHT_OK
+I RIVER_OUT <- RIVER_IN + 832040
