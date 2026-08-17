@@ -7,6 +7,7 @@ on:
       - 'docs/corpus.html'
       - 'docs/semantics.html'
       - 'docs/relations.html'
+      - 'docs/analysis.html'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
@@ -18,6 +19,7 @@ on:
       - 'docs/corpus.html'
       - 'docs/semantics.html'
       - 'docs/relations.html'
+      - 'docs/analysis.html'
       - 'docs/landing.js'
       - 'docs/CORPUS-*.md'
       - 'corpus/golden/**'
@@ -35,7 +37,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check landing JavaScript
         run: node --check docs/landing.js
-      - name: Check four-reach continuity
+      - name: Check five-reach continuity
         run: |
           node - <<'NODE'
           const fs=require('fs');
@@ -43,21 +45,24 @@ jobs:
           const s=JSON.parse(fs.readFileSync('corpus/golden/01_syntax/manifest.json','utf8'));
           const m=JSON.parse(fs.readFileSync('corpus/golden/02_semantics/manifest.json','utf8'));
           const r=JSON.parse(fs.readFileSync('corpus/golden/03_relations/manifest.json','utf8'));
+          const n=JSON.parse(fs.readFileSync('corpus/golden/04_analysis/manifest.json','utf8'));
           if(a.composition.final!==s.inherits.handoff) throw new Error('atoms -> syntax discontinuity');
           if(s.composition.final!==m.inherits.handoff) throw new Error('syntax -> semantics discontinuity');
           if(m.composition.final!==r.inherits.handoff) throw new Error('semantics -> relations discontinuity');
-          if(r.composition.final!==14930352) throw new Error('relations final drift');
-          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final} -> ${r.composition.final}`);
+          if(r.composition.final!==n.inherits.handoff) throw new Error('relations -> analysis discontinuity');
+          if(n.composition.final!==1134903170) throw new Error('analysis final drift');
+          console.log(`RIVER CONTINUITY PASS · ${a.composition.final} -> ${s.composition.final} -> ${m.composition.final} -> ${r.composition.final} -> ${n.composition.final}`);
           NODE
       - name: Check River Observatory
         run: |
           test -s docs/corpus.html
-          grep -Fq '36</strong><span>VERIFIED ROCKS' docs/corpus.html
-          grep -Fq 'CURRENT = 14930352' docs/corpus.html
-          grep -Fq '03 RELATIONS · FLAY · COMPLETE' docs/corpus.html
-          grep -Fq '196418</strong><span>02 final' docs/corpus.html
-          grep -Fq '196418</strong><span>03 start' docs/corpus.html
-          grep -Fq 'RELATIONS / FLAY OBSERVATORY' docs/corpus.html
+          grep -Fq '45</strong><span>VERIFIED ROCKS' docs/corpus.html
+          grep -Fq 'CURRENT = 1134903170' docs/corpus.html
+          grep -Fq '04 ANALYSIS · COMPLETE' docs/corpus.html
+          grep -Fq '14930352</strong><span>03 final' docs/corpus.html
+          grep -Fq '14930352</strong><span>04 start' docs/corpus.html
+          grep -Fq '[ admitted | value ]' docs/corpus.html
+          grep -Fq 'ANALYSIS OBSERVATORY' docs/corpus.html
       - name: Check Semantic Ada Observatory handoff
         run: |
           test -s docs/semantics.html
@@ -66,16 +71,29 @@ jobs:
           grep -Fq '&lt;FLAY&gt;' docs/semantics.html
           grep -Fq '196418</strong><span>03_relations start' docs/semantics.html
           grep -Fq 'FOLLOW INTO FLAY' docs/semantics.html
-      - name: Check Relations FLAY Observatory
+      - name: Check Relations FLAY Observatory handoff
         run: |
           test -s docs/relations.html
-          grep -Fq 'I13 GOLDEN CORPUS · 03 RELATIONS · FLAY v0.1' docs/relations.html
+          grep -Fq 'I13 GOLDEN CORPUS · 03 RELATIONS · FLAY v0.1 · FROZEN' docs/relations.html
           grep -Fq '&lt;flay&gt;' docs/relations.html
           grep -Fq 'START (0,0) → UP → DOWN → LEFT → RIGHT → CLOSE (0,0)' docs/relations.html
           grep -Fq 'BLOCKED UNTIL <FLAY> SATISFIED' docs/relations.html
           grep -Fq 'FLAY SATISFIED · DOWNSTREAM OPEN' docs/relations.html
-          grep -Fq '14930352' docs/relations.html
-      - name: Check executable Ada and FLAY lenses
+          grep -Fq '14930352</strong><span>03_relations final' docs/relations.html
+          grep -Fq '14930352</strong><span>04_analysis start' docs/relations.html
+          grep -Fq 'OPEN ANALYSIS OBSERVATORY' docs/relations.html
+      - name: Check Analysis Observatory
+        run: |
+          test -s docs/analysis.html
+          grep -Fq 'I13 GOLDEN CORPUS · 04 ANALYSIS v0.1 · FROZEN' docs/analysis.html
+          grep -Fq '<FLAY> SATISFIED · ANALYSIS OPEN' docs/analysis.html
+          grep -Fq '[0|0]' docs/analysis.html
+          grep -Fq '[1|0]' docs/analysis.html
+          grep -Fq '[1|x]' docs/analysis.html
+          grep -Fq '9/9 ANALYSIS ROCKS' docs/analysis.html
+          grep -Fq '1134903170' docs/analysis.html
+          grep -Fq '13→13' docs/analysis.html
+      - name: Check executable Ada FLAY and Analysis lenses
         run: |
           test -s corpus/golden/02_semantics/ada_lens.i13
           grep -Fq 'def analysis_relation' corpus/golden/02_semantics/ada_lens.i13
@@ -84,14 +102,22 @@ jobs:
           grep -Fq 'def flay_cycle' corpus/golden/03_relations/flay.i13
           grep -Fq 'def flay_old_chunk' corpus/golden/03_relations/flay.i13
           grep -Fq 'def flay_new_chunks' corpus/golden/03_relations/flay.i13
-          grep -Fq 'I FLAY_BLOCKED_VALUE <- flay_gate(0, 13)' corpus/golden/03_relations/flay.i13
           grep -Fq 'I FLAY_OPEN_VALUE <- flay_gate(FLAY_SATISFIED, 13)' corpus/golden/03_relations/flay.i13
+          test -s corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'def analysis_admitted' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'def measure_rhythm' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'def measure_recurrence' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'I ANALYSIS_OPEN_VALUE <- analysis_profile(ANALYSIS_UPSTREAM_FLAY)' corpus/golden/04_analysis/analysis.i13
+          grep -Fq 'ANALYSIS_AFTER == ANALYSIS_INPUT' corpus/golden/04_analysis/analysis.i13
       - name: Check frozen contracts and discovery
         run: |
           grep -Fq 'FROZEN KNOWN GOOD · HIR-GATED · VM/WASM VERIFIED' docs/CORPUS-SEMANTICS.md
           grep -Fq 'FROZEN KNOWN GOOD · HIR/VM/WASM CI-GATED' docs/CORPUS-RELATIONS.md
+          grep -Fq 'FROZEN KNOWN GOOD · UPSTREAM-FLAY-GATED · HIR/VM/WASM VERIFIED' docs/CORPUS-ANALYSIS.md
           grep -Fq 'I13-FLAY-001' docs/CORPUS-RELATIONS.md
+          grep -Fq 'I13-ANALYSIS-001' docs/CORPUS-ANALYSIS.md
           grep -Fq "link.href='semantics.html'" docs/landing.js
           grep -Fq "link.href='relations.html'" docs/landing.js
-          grep -Fq 'Thirty-six curated I13 rocks' docs/landing.js
-          grep -Fq 'CORPUS-RELATIONS.md' docs/landing.js
+          grep -Fq "link.href='analysis.html'" docs/landing.js
+          grep -Fq 'Forty-five curated I13 rocks' docs/landing.js
+          grep -Fq 'OPEN ANALYSIS' docs/landing.js
