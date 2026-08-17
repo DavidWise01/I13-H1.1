@@ -5,6 +5,7 @@
 //! referent-only subsystems.
 
 pub mod ast;
+pub mod debugger;
 pub mod diagnostic;
 pub mod hir;
 pub mod introspect;
@@ -20,6 +21,7 @@ pub mod validator;
 pub mod vm;
 pub mod wasm;
 
+pub use debugger::{Debugger, PauseReason};
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use hir::HirProgram;
 pub use introspect::{dump as dump_compiler, DumpKind};
