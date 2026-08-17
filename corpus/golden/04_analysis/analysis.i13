@@ -1,0 +1,90 @@
+// I13 GOLDEN CORPUS · 04 ANALYSIS
+// Analysis receives FLAY admission; it may measure but may not admit itself.
+
+def analysis_admitted(I satisfied) {
+    if satisfied == 1 { -> 1 }
+    -> 0
+}
+
+def admit_value(I satisfied, I value) {
+    if satisfied == 1 { -> value }
+    -> 0
+}
+
+def measure_interval(I satisfied, I a, I b) {
+    if satisfied != 1 { -> 0 }
+    if b < a { -> a - b }
+    -> b - a
+}
+
+def measure_direction(I satisfied, I a, I b) {
+    if satisfied != 1 { -> 0 }
+    if a < b { -> 1 }
+    if a > b { -> -1 }
+    -> 0
+}
+
+def measure_rhythm(I satisfied, I a, I b, I c) {
+    if satisfied != 1 { -> 0 }
+    I first <- b - a
+    I second <- c - b
+    if first == second { -> 1 }
+    -> 0
+}
+
+def measure_rate(I satisfied, I change, I units) {
+    if satisfied != 1 { -> 0 }
+    if units == 0 { -> 0 }
+    -> change / units
+}
+
+def measure_coverage(I satisfied, I up, I down, I left, I right) {
+    if satisfied != 1 { -> 0 }
+    I count <- 0
+    count.p <- up
+    count.p <- down
+    count.p <- left
+    count.p <- right
+    -> count
+}
+
+def repeat_sum(I value, I count) {
+    if count == 0 { -> 0 }
+    -> value + repeat_sum(value, count - 1)
+}
+
+def measure_recurrence(I satisfied, I value, I count) {
+    if satisfied != 1 { -> 0 }
+    -> repeat_sum(value, count)
+}
+
+def measure_closure(I satisfied, I sx, I sy, I ex, I ey) {
+    if satisfied != 1 { -> 0 }
+    if sx == ex {
+        if sy == ey { -> 1 }
+    }
+    -> 0
+}
+
+def analysis_profile(I satisfied) {
+    if satisfied != 1 { -> 0 }
+    I score <- 0
+    score.p <- measure_interval(satisfied, 8, 13)
+    score.p <- measure_direction(satisfied, 8, 13)
+    score.p <- measure_rhythm(satisfied, 2, 5, 8)
+    score.p <- measure_rate(satisfied, 12, 3)
+    score.p <- measure_coverage(satisfied, 1, 0, 1, 1)
+    score.p <- measure_recurrence(satisfied, 2, 4)
+    score.p <- measure_closure(satisfied, 0, 0, 0, 0)
+    -> score
+}
+
+// The gate token is supplied by the upstream FLAY reach; CI verifies that reach first.
+I ANALYSIS_UPSTREAM_FLAY <- 1
+I ANALYSIS_BLOCKED_ADMITTED <- analysis_admitted(0)
+I ANALYSIS_BLOCKED_VALUE <- analysis_profile(0)
+I ANALYSIS_OPEN_ADMITTED <- analysis_admitted(ANALYSIS_UPSTREAM_FLAY)
+I ANALYSIS_OPEN_VALUE <- analysis_profile(ANALYSIS_UPSTREAM_FLAY)
+I ANALYSIS_INPUT <- 13
+I ANALYSIS_AFTER <- admit_value(ANALYSIS_UPSTREAM_FLAY, ANALYSIS_INPUT)
+I ANALYSIS_OK <- (ANALYSIS_BLOCKED_ADMITTED == 0) * (ANALYSIS_BLOCKED_VALUE == 0) * (ANALYSIS_OPEN_ADMITTED == 1) * (ANALYSIS_OPEN_VALUE == 23) * (ANALYSIS_AFTER == ANALYSIS_INPUT)
