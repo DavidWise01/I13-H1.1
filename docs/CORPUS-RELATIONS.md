@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 03 Relations / FLAY
 
-Status: **CONSTRUCTED · GATE PENDING**
+Status: **FROZEN KNOWN GOOD · HIR/VM/WASM CI-GATED**
 
 ID: `I13-GOLDEN-03-RELATIONS-FLAY-0.1`
 
@@ -146,7 +146,7 @@ Nine rocks:
 08 recursive new chunks + blocked/open gate
 ```
 
-Every rock must pass HIR introspection, reference VM execution, generated Wasm parity and repeat determinism. The composed `river.i13` must export:
+Every rock passed HIR introspection, reference VM execution, generated Wasm parity and repeat determinism. The composed `river.i13` exports:
 
 ```text
 RIVER_START = 196418
@@ -178,3 +178,7 @@ The Ada lens remains above FLAY:
 ```
 
 `[ | ( ada ) | ]`, `<flay>`, coordinate diagrams and `|s|` are documentary mathematical notation. None are added to the I13 grammar by this component.
+
+## Gate evidence
+
+GitHub Actions run `32063203999`: **success**. The gate verified the nine-rock river, executable `flay.i13`, both recursion modes, blocked/open behavior, mandatory origin closure, cross-layer handoff `196418`, HIR observation, reference VM and generated Wasm.
