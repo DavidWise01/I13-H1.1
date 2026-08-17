@@ -1,6 +1,6 @@
 # I13 Compiler Conformance v0.1
 
-Status: **CONSTRUCTED · CI-GATED**
+Status: **CONSTRUCTED · CI-GATED · DIAGNOSTIC CONTRACT LOCKED**
 
 Conformance ID: `I13-CONFORMANCE-0.1`
 
@@ -41,19 +41,31 @@ execute
 
 compile_error
     source must be rejected during check
-    the expected stable diagnostic code must be present
+    the expected stable diagnostic contract must be present
 
 runtime_error
     source must pass check
-    reference VM must fail with the expected runtime diagnostic
+    reference VM must fail with the expected runtime diagnostic contract
     generated Wasm must trap
 
 resource_error
     source must pass check
     the canonical I13 resource law must reject execution consistently
-    reference VM must emit the expected diagnostic
+    reference VM must emit the expected diagnostic contract
     generated Wasm must trap
 ```
+
+For diagnostic-bearing cases, the contract now includes:
+
+```text
+stable E-code
+phase/category
+expected source line
+source excerpt
+marked source span
+```
+
+This consumes `I13-DIAGNOSTICS-0.1`; conformance does not maintain a second diagnostic taxonomy.
 
 ## v0.1 manifest
 
@@ -65,12 +77,12 @@ C002 nested calls
 C003 osmotic `.p` bind
 C004 recursion depth 256
 C005 whole examples/core.i13 acceptance
-C006 call arity rejection · E0203
-C007 unknown function rejection · E0202
-C008 lexical unexpected-character rejection · E0001
-C009 division-by-zero runtime parity · E0501 / Wasm trap
-C010 Function-as-Number runtime parity · E0501 / Wasm trap
-C011 canonical 4096-frame ceiling · E0503 / Wasm trap
+C006 call arity rejection · E0203 · semantic/semantics
+C007 unknown function rejection · E0202 · semantic/semantics
+C008 lexical unexpected-character rejection · E0001 · lex/syntax
+C009 division-by-zero runtime parity · E0501 · runtime/execution / Wasm trap
+C010 Function-as-Number runtime parity · E0501 · runtime/execution / Wasm trap
+C011 canonical 4096-frame ceiling · E0503 · runtime/resource / Wasm trap
 ```
 
 ## Runtime-policy exclusion
@@ -109,6 +121,8 @@ i13 build                │
    ↓                     │
 Node WebAssembly engine ─┘
 ```
+
+Error cases additionally verify the CLI-rendered source map rather than only searching for an E-code.
 
 The runner is `scripts/compiler_conformance.js`.
 
