@@ -15,6 +15,7 @@ pub mod parser;
 pub mod semantic;
 pub mod source;
 pub mod token;
+pub mod trace;
 pub mod validator;
 pub mod vm;
 pub mod wasm;
@@ -25,6 +26,7 @@ pub use introspect::{dump as dump_compiler, DumpKind};
 pub use parser::parse;
 pub use semantic::check;
 pub use source::{SourceFile, Span};
+pub use trace::{TraceEvent, TraceScope};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CompileOutput {
