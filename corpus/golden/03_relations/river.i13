@@ -1,0 +1,74 @@
+// I13 GOLDEN CORPUS · 03 RELATIONS · COMPOSED RIVER
+// inherits 02_semantics final handoff: 196418
+
+I RIVER_START <- 196418
+
+I R0_IN <- RIVER_START
+I R0_OUT <- R0_IN + 121393
+
+I R1_IN <- R0_OUT
+I R1_OUT <- R1_IN + 196418
+
+I R2_IN <- R1_OUT
+I R2_OUT <- R2_IN + 317811
+
+I R3_IN <- R2_OUT
+I R3_OUT <- R3_IN + 514229
+
+I R4_IN <- R3_OUT
+I R4_OUT <- R4_IN + 832040
+
+I R5_IN <- R4_OUT
+I R5_OUT <- R5_IN + 1346269
+
+I R6_IN <- R5_OUT
+I R6_OUT <- R6_IN + 2178309
+
+I R7_IN <- R6_OUT
+I R7_OUT <- R7_IN + 3524578
+
+I R8_IN <- R7_OUT
+I R8_OUT <- R8_IN + 5702887
+
+def point_ok(I x, I y, I ex, I ey) {
+    if x == ex {
+        if y == ey { -> 1 }
+    }
+    -> 0
+}
+
+def relation_cycle() {
+    if point_ok(0, 0, 0, 0) != 1 { -> 0 }
+    if point_ok(0, 1, 0, 1) != 1 { -> 0 }
+    if point_ok(0, -1, 0, -1) != 1 { -> 0 }
+    if point_ok(-1, 0, -1, 0) != 1 { -> 0 }
+    if point_ok(1, 0, 1, 0) != 1 { -> 0 }
+    if point_ok(0, 0, 0, 0) != 1 { -> 0 }
+    -> 1
+}
+
+def river_selftest() {
+    if RIVER_START != 196418 { -> 0 }
+    if R0_OUT != 317811 { -> 0 }
+    if R1_IN != R0_OUT { -> 0 }
+    if R1_OUT != 514229 { -> 0 }
+    if R2_IN != R1_OUT { -> 0 }
+    if R2_OUT != 832040 { -> 0 }
+    if R3_IN != R2_OUT { -> 0 }
+    if R3_OUT != 1346269 { -> 0 }
+    if R4_IN != R3_OUT { -> 0 }
+    if R4_OUT != 2178309 { -> 0 }
+    if R5_IN != R4_OUT { -> 0 }
+    if R5_OUT != 3524578 { -> 0 }
+    if R6_IN != R5_OUT { -> 0 }
+    if R6_OUT != 5702887 { -> 0 }
+    if R7_IN != R6_OUT { -> 0 }
+    if R7_OUT != 9227465 { -> 0 }
+    if R8_IN != R7_OUT { -> 0 }
+    if R8_OUT != 14930352 { -> 0 }
+    if relation_cycle() != 1 { -> 0 }
+    -> 1
+}
+
+I RIVER_OK <- river_selftest()
+I RIVER_FINAL <- R8_OUT
