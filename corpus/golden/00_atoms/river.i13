@@ -1,0 +1,85 @@
+// I13 GOLDEN CORPUS · 00 ATOMS · RIVER WITNESS
+// documentation flow:
+// 0 |s| 1 |s| 1 |s| 2 |s| 3 |s| 5 |s| 8 |s| 13 |s| 21 |s| 34
+// `|s|` is documentation-only stream notation, not I13 syntax.
+
+// rock 00 · declaration + constant
+I R0_IN <- 0
+I R0_OUT <- 1
+
+// rock 01 · name read
+I R1_IN <- R0_OUT
+I r1 <- R1_IN
+I R1_OUT <- r1
+
+// rock 02 · binop
+I R2_IN <- R1_OUT
+I r2 <- R2_IN
+I R2_OUT <- r2 + 1
+
+// rock 03 · reassignment
+I R3_IN <- R2_OUT
+I r3 <- R3_IN
+r3 <- r3 + 1
+I R3_OUT <- r3
+
+// rock 04 · minimal function passage
+def carry() {
+    -> R3_OUT + 2
+}
+I R4_IN <- R3_OUT
+I R4_OUT <- carry()
+
+// rock 05 · arguments
+def add(I x, I y) {
+    -> x + y
+}
+I R5_IN <- R4_OUT
+I R5_OUT <- add(R5_IN, 3)
+
+// rock 06 · comparison
+I R6_IN <- R5_OUT
+I R6_MATCH <- R6_IN == 8
+I R6_OUT <- R6_IN + 5
+
+// rock 07 · conditional control
+def step(I x) {
+    if x == 13 {
+        -> x + 8
+    }
+    -> 0
+}
+I R7_IN <- R6_OUT
+I R7_OUT <- step(R7_IN)
+
+// rock 08 · osmotic .p
+I R8_IN <- R7_OUT
+I r8 <- R8_IN
+r8.p <- 13
+I R8_OUT <- r8
+
+def river_selftest() {
+    if R0_IN != 0 { -> 0 }
+    if R0_OUT != 1 { -> 0 }
+    if R1_IN != R0_OUT { -> 0 }
+    if R1_OUT != 1 { -> 0 }
+    if R2_IN != R1_OUT { -> 0 }
+    if R2_OUT != 2 { -> 0 }
+    if R3_IN != R2_OUT { -> 0 }
+    if R3_OUT != 3 { -> 0 }
+    if R4_IN != R3_OUT { -> 0 }
+    if R4_OUT != 5 { -> 0 }
+    if R5_IN != R4_OUT { -> 0 }
+    if R5_OUT != 8 { -> 0 }
+    if R6_IN != R5_OUT { -> 0 }
+    if R6_MATCH != 1 { -> 0 }
+    if R6_OUT != 13 { -> 0 }
+    if R7_IN != R6_OUT { -> 0 }
+    if R7_OUT != 21 { -> 0 }
+    if R8_IN != R7_OUT { -> 0 }
+    if R8_OUT != 34 { -> 0 }
+    -> 1
+}
+
+I RIVER_OK <- river_selftest()
+I RIVER_FINAL <- R8_OUT
