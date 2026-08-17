@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · TAGGED WASM VALUE MODEL FROZEN KNOWN-GOOD**
+Status: **FIRST EXECUTABLE VERTICAL SLICE ACHIEVED · TAGGED WASM VALUE MODEL FROZEN · KNOWN-GOOD THROUGH 24 DIFFERENTIAL ATTACKS · ONE OPEN RESOURCE BREAK**
 
 This document freezes only compiler architecture and behavior proven by the compiler conformance path. It does not add language features.
 
@@ -133,7 +133,7 @@ Value::Number(f64)
 Value::Function(function_id)
 ```
 
-Generated Wasm now preserves that distinction as a tagged pair:
+Generated Wasm preserves that distinction as a tagged pair:
 
 ```text
 [ kind:i32 | payload:f64 ]
@@ -178,7 +178,7 @@ Bin / Cmp / If  require NUMBER
 Call            requires FUNCTION
 ```
 
-User functions accept and return tagged value pairs. IVM `Call` lowers through a Wasm table and `call_indirect`, preserving recursion without Rust host recursion.
+User functions accept and return tagged value pairs. IVM `Call` lowers through a Wasm table and `call_indirect`, preserving recursive execution without Rust host recursion.
 
 ## First differential hardening break — CLOSED
 
@@ -202,7 +202,7 @@ Cause: the first Wasm backend flattened `Function(0)` into numeric `0.0` and los
 
 Repair: the Wasm backend now carries tagged `[kind | payload]` values end-to-end and stores `[kind | payload | bound]` separately.
 
-Regression proof now passes all eight ordered attacks:
+Regression proof passes all eight ordered attacks:
 
 ```text
 1. arithmetic precedence                 PASS
@@ -215,7 +215,80 @@ Regression proof now passes all eight ordered attacks:
 8. function used as compare operand      PASS · VM error = Wasm trap
 ```
 
-The original discovery evidence remains in `docs/COMPILER-TORTURE-001.md`; the defect is now regression-locked by `scripts/compiler_torture.sh`.
+The original discovery evidence remains in `docs/COMPILER-TORTURE-001.md`; the defect is regression-locked by `scripts/compiler_torture.sh`.
+
+## Differential hardening expansion — KNOWN GOOD THROUGH ATTACK 24
+
+The second attack sequence added these passing cases:
+
+```text
+9.  function used as If condition          PASS · VM error = Wasm trap
+10. rebound function name called           PASS · VM error = Wasm trap
+11. nested calls                           PASS · OUT=14
+12. global assign before declaration       PASS · VM error = Wasm trap
+13. local assign before declaration        PASS · VM error = Wasm trap
+14. function fallthrough                   PASS · VM error = Wasm trap
+15. nested early return                    PASS · OUT=42
+16. arity-16 tagged ABI                    PASS · OUT=16
+17. recursion 512                          PASS
+18. recursion 1024                         PASS
+19. recursion 1536                         PASS
+20. recursion 2048                         PASS
+21. recursion 2560                         PASS
+22. recursion 3072                         PASS
+23. recursion 3584                         PASS
+24. recursion 4094                         PASS
+```
+
+The last measured successful recursion parity point is therefore:
+
+```text
+count(4094)  VM PASS == Wasm PASS
+```
+
+## Second differential hardening break — OPEN
+
+`I13-WASM-LIMIT-002` is the first new disagreement after the 24 passing attacks.
+
+Failing source:
+
+```i13
+def count(I n) {
+    if n <= 0 { -> 0 }
+    -> 1 + count(n - 1)
+}
+
+I OUT <- count(4095)
+```
+
+Observed behavior:
+
+```text
+Reference VM: E0503 reference VM exceeded 4096 frames
+Generated Wasm: OUT = 4095, kind = NUMBER
+```
+
+The reference VM default configuration owns:
+
+```text
+step_limit  = 8,000,000
+frame_limit = 4096
+```
+
+The reference VM counts its explicit main frame and refuses a recursive push beyond the configured frame boundary. The current Wasm backend preserves IVM values but does not emit an equivalent I13 frame counter; host Wasm recursion therefore continues at a point where the default reference VM has already vetoed execution.
+
+Measured boundary:
+
+```text
+count(4094)  VM PASS   == Wasm PASS
+count(4095)  VM E0503  != Wasm PASS
+```
+
+This is an executable resource-contract mismatch, not a value-tagging defect.
+
+Evidence is frozen in `docs/COMPILER-TORTURE-002.md`; discovery code is in `scripts/compiler_torture_003.sh`.
+
+Until this break is repaired, VM/Wasm parity is claimed only through the measured attack-24 boundary, including recursion through 4094.
 
 ## Compiler-owned Wasm law
 
@@ -289,8 +362,9 @@ REFERENCE VM COMPLETE
 CLI CHECK    COMPLETE
 CLI RUN      COMPLETE
 WASM CODEGEN COMPLETE · TAGGED VALUE MODEL
-VM = WASM    KNOWN-GOOD THROUGH TORTURE-001 REGRESSION SET
+VM = WASM    KNOWN-GOOD THROUGH ATTACK 24 / RECURSION 4094
+OPEN BREAK   I13-WASM-LIMIT-002 @ RECURSION 4095
 CLI BUILD    COMPLETE
 ```
 
-This does **not** mean the language is feature-complete. It means the first full source-to-executable compiler path is known-good inside its tested semantic boundary, including preservation of the current IVM runtime value kinds.
+This does **not** mean the language is feature-complete. It means the source-to-executable compiler path is known-good inside a now-measured semantic and resource boundary, and the next hardening seam is explicitly identified rather than hidden.
