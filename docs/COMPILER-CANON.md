@@ -1,6 +1,6 @@
 # I13 Compiler Canon — Known Good
 
-Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 CONSTRUCTED**
+Status: **EXECUTABLE VERTICAL SLICE · TAGGED VALUE MODEL FROZEN · I13 FRAME LAW FROZEN · STEP POLICY RESOLVED · CONFORMANCE v0.1 · DIAGNOSTICS v0.1 · INTROSPECTION v0.1 · TRACE v0.1 FROZEN**
 
 This document freezes only compiler architecture and behavior proven by the compiler/conformance path. It does not add language features.
 
@@ -254,11 +254,11 @@ The measured passing surface includes:
 
 `explode(19)` remains useful as a runtime-policy probe but is no longer an open semantic parity defect.
 
-## Conformance v0.1 — CANONICAL NEXT COMPONENT
+## Conformance v0.1 — FROZEN
 
 `I13-CONFORMANCE-0.1`
 
-The formal conformance layer is now separate from torture and policy characterization:
+The formal conformance layer is separate from torture and policy characterization:
 
 ```text
 TORTURE      discovers
@@ -284,6 +284,81 @@ resource_error canonical I13 resource-law parity
 The first manifest covers arithmetic, nested calls, osmotic bind, recursion, `examples/core.i13`, arity diagnostics, unknown-function diagnostics, lexical rejection, division-by-zero runtime behavior, tagged Function-as-Number rejection, and the canonical 4096-frame ceiling.
 
 The 8M reference-VM safety fuse is explicitly excluded from semantic conformance.
+
+## Diagnostics + source mapping v0.1 — FROZEN
+
+`I13-DIAGNOSTICS-0.1`
+
+Diagnostics are a compiler contract rather than incidental terminal text. `check`, `run`, and `build` share one renderer with stable E-code, compiler phase/category, file/line/column, source excerpt, and marked source span.
+
+Spans survive:
+
+```text
+source → token → AST → HIR → IVM → validator/VM diagnostic
+```
+
+The full contract lives in `docs/COMPILER-DIAGNOSTICS.md` and is conformance-locked.
+
+## Compiler introspection v0.1 — FROZEN
+
+`I13-INTROSPECTION-0.1`
+
+The CLI exposes deterministic read-only views:
+
+```text
+i13 dump file.i13 --tokens
+i13 dump file.i13 --ast
+i13 dump file.i13 --hir
+i13 dump file.i13 --ivm
+```
+
+The authority law is:
+
+```text
+INTROSPECTION MAY REVEAL AUTHORITY.
+INTROSPECTION MAY NOT DEFINE AUTHORITY.
+```
+
+Dump text is not accepted back into the compiler and cannot become a shadow source/IR format. The full contract lives in `docs/COMPILER-INTROSPECTION.md`.
+
+## Execution tracing v0.1 — FROZEN
+
+`I13-TRACE-0.1`
+
+The CLI exposes:
+
+```text
+i13 trace file.i13
+```
+
+Tracing instruments the existing reference VM loop through a read-only observer. `vm::run` and `vm::run_observed` execute the same implementation; there is no trace interpreter.
+
+Every event observes the real pre-instruction state and includes:
+
+```text
+step
+active frame depth
+main/function scope
+program counter
+opcode
+stack height
+canonical need/net stack effect
+source span
+operation-specific runtime detail
+```
+
+The frozen trace law is:
+
+```text
+TRACE MAY OBSERVE EXECUTION.
+TRACE MAY NOT DEFINE EXECUTION.
+```
+
+Observed execution is regression-required to preserve the exact unobserved `VmResult`, and runtime failures preserve the exact diagnostic while the last emitted event identifies the real failing IVM instruction.
+
+CLI tracing streams events rather than collecting a full execution history in memory.
+
+v0.1 traces the canonical reference VM; it does not redefine Wasm parity or claim to expose host Wasm instructions. The full contract lives in `docs/COMPILER-TRACE.md`.
 
 ## Compiler-owned Wasm law
 
@@ -316,6 +391,8 @@ The accepted compiler path closes these defects:
 - Wasm preserves Number versus Function identity.
 - VM and Wasm share the canonical I13 4096-frame ceiling.
 - reference step metering is explicitly separated from language semantics.
+- compiler layer dumps are observer-only and do not create a fourth authority.
+- runtime tracing observes the real VM loop rather than duplicating execution semantics.
 
 ## Scope freeze during compiler construction
 
@@ -354,13 +431,18 @@ VALIDATOR       COMPLETE
 REFERENCE VM    COMPLETE
 CLI CHECK       COMPLETE
 CLI RUN         COMPLETE
+CLI TRACE       COMPLETE · I13-TRACE-0.1
+CLI DUMP        COMPLETE · TOKENS/AST/HIR/IVM
+CLI BUILD       COMPLETE
 WASM CODEGEN    COMPLETE · TAGGED VALUE MODEL
 FRAME LAW       COMPLETE · I13_FRAME_LIMIT=4096 · VM=WASM
 STEP METER      COMPLETE · deterministic
 8M STEP FUSE    LOCKED RUNTIME POLICY · non-semantic
 VM = WASM       KNOWN-GOOD SEMANTIC SURFACE
-CLI BUILD       COMPLETE
-CONFORMANCE     v0.1 CONSTRUCTED · CI-GATED
+DIAGNOSTICS     v0.1 FROZEN · SOURCE-MAPPED
+CONFORMANCE     v0.1 FROZEN · CI-GATED
+INTROSPECTION   v0.1 FROZEN · OBSERVER-ONLY
+TRACE           v0.1 FROZEN · SINGLE-VM OBSERVER
 ```
 
-This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, and a formal conformance gate that can protect the known-good core while the compiler grows.
+This does **not** mean the language is feature-complete. It means the source-to-executable compiler path now has explicit semantic law, explicit runtime-policy boundaries, differential evidence, formal conformance, source-mapped diagnostics, static compiler introspection, and execution-time introspection while preserving one execution authority.
