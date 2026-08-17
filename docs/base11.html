@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#04070b">
+<meta name="description" content="I13 Base 11 FLAY r0 observatory: recursive five-out/home/five-back traversal, DOWN/UP counters and Vector[voxel[r0]] tracking.">
+<title>I13 · Base 11 FLAY r0</title>
+<link rel="stylesheet" href="compiler.css">
+<style>
+.trip{display:grid;grid-template-columns:repeat(11,1fr);gap:7px;margin-top:18px}.step{border:1px solid var(--line);border-radius:12px;padding:16px 6px;text-align:center;background:#08111a;font:900 11px/1.2 "Cascadia Code",monospace}.step.home{border-color:rgba(255,201,104,.55);color:var(--amber)}.step.out{color:var(--cyan)}.step.back{color:var(--violet)}.counter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.counter{border:1px solid var(--line);border-radius:16px;background:#08111a;padding:18px;text-align:center}.counter strong{display:block;font:900 34px/1 "Cascadia Code",monospace;color:var(--green)}.counter span{display:block;color:var(--muted);font-size:9px;margin-top:8px}.nest{font:900 clamp(12px,1.6vw,18px)/1.75 "Cascadia Code",monospace;white-space:pre-wrap;color:var(--violet);background:#08111a;border:1px solid var(--line);border-radius:16px;padding:20px}.tracker{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center}.tracker>div{border:1px solid var(--line);border-radius:15px;background:#08111a;padding:22px;text-align:center}.tracker strong{display:block;color:var(--cyan);font:900 18px/1 monospace}.tracker span{display:block;color:var(--muted);font-size:10px;margin-top:8px}.arrow{color:var(--green);font:900 24px/1 monospace}.closure{border:1px solid rgba(125,255,165,.5);border-radius:18px;background:#07140d;padding:22px;text-align:center}.closure strong{font:900 clamp(22px,4vw,44px)/1 monospace;color:var(--green)}.closure p{color:var(--muted);font-size:10px}@media(max-width:900px){.trip{grid-template-columns:1fr}.counter-grid{grid-template-columns:1fr 1fr}.tracker{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}}@media(max-width:560px){.counter-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-i">I</span><span>I13 / BASE 11</span></a><nav><a href="#local" class="active">LOCAL 11</a><a href="#nest">NEST</a><a href="#track">TRACK</a><a href="#close">CLOSE</a><a href="logic.html">LOGIC</a><a href="relations.html">FLAY</a><a href="compiler.html">COMPILER</a></nav></header>
+<main>
+<section class="hero"><div><p class="eyebrow">I13 CURRENT WORK · NON-RIVER TRAVERSAL PRIMITIVE</p><h1>Burrow deep. <span>Come home.</span></h1><p class="lead">Base 11 is project shorthand for five outward positions, a local r0 home, and five return positions. Each FLAY arm may recursively contain another FLAY; two counters are enough to audit the journey: DOWN for frames entered and UP for frames unwound.</p><div class="badge-row"><span class="pill info">NOT RADIX-11</span><span class="pill good">r0 = LOCAL HOME</span><span class="pill info">DOWN / UP COUNTERS</span><span class="pill info">Vector[voxel[r0]]</span><span class="pill good">1000-DEEP ARM WITNESS</span></div><div class="hero-actions"><a class="button primary" href="#local">OPEN TRAVERSAL</a><a class="button ghost" href="BASE11-FLAY-R0.md">READ PRIMITIVE</a><a class="button ghost" href="logic.html">BACK TO LOGIC</a></div></div></section>
+<section class="section" id="local"><div class="section-head"><div><p class="eyebrow">LOCAL EXCURSION</p><h2>5 out · r0 · 5 back.</h2></div><p>The eleven positions are a traversal mnemonic. The invariant is the return path, not a new numeric radix.</p></div><div class="trip"><div class="step out">OUT 1</div><div class="step out">OUT 2</div><div class="step out">OUT 3</div><div class="step out">OUT 4</div><div class="step out">OUT 5</div><div class="step home">r0</div><div class="step back">BACK 5</div><div class="step back">BACK 4</div><div class="step back">BACK 3</div><div class="step back">BACK 2</div><div class="step back">BACK 1</div></div></section>
+<section class="section" id="nest"><div class="section-head"><div><p class="eyebrow">RECURSIVE ARM</p><h2>Every arm can FLAY again.</h2></div><p>A top-level arm can contain hundreds or thousands of local five-point traversals without flattening the entire field.</p></div><div class="nest">Flay(
+  flay(
+    flay(
+      ...
+        Vector[
+          voxel[
+            r0
+          ]
+        ]
+      ...
+    )
+  )
+)
+
+DUST → unwind → local r0</div></section>
+<section class="section" id="track"><div class="section-head"><div><p class="eyebrow">COMPACT STATE</p><h2>Track only what matters locally.</h2></div><p>The nesting supplies parentage. The local frame only needs its movement relation, working volume and return invariant.</p></div><div class="tracker"><div><strong>VECTOR</strong><span>how this frame is entered / left</span></div><div class="arrow">→</div><div><strong>VOXEL</strong><span>local working volume</span></div><div class="arrow">→</div><div><strong>r0</strong><span>home / return invariant</span></div></div><div class="counter-grid" style="margin-top:14px"><div class="counter"><strong>5000</strong><span>DOWN · 5 ARMS × 1000</span></div><div class="counter"><strong>5000</strong><span>UP · FULL UNWIND</span></div><div class="counter"><strong>0</strong><span>LIVE DEPTH · DOWN − UP</span></div><div class="counter"><strong>0</strong><span>REQUIRED ? REMAINING</span></div></div></section>
+<section class="section" id="close"><div class="section-head"><div><p class="eyebrow">CLOSURE LAW</p><h2>Home plus balanced counters plus no required questions.</h2></div><p>Dust means nothing further is required for the current purpose/resolution; it does not mean no further question could ever exist.</p></div><div class="closure"><strong>r0 ∧ DOWN=UP ∧ ?=0</strong><p>When all three hold, this traversal closes. The executable witness stays outside the frozen numbered river.</p></div></section>
+</main>
+<footer class="footer"><span>I13 Base 11 · recursive FLAY traversal</span><span><a href="logic.html">LOGIC</a> · <a href="relations.html">FLAY</a> · <a href="compiler.html">COMPILER</a></span></footer>
+</body>
+</html>
