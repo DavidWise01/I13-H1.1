@@ -1,0 +1,6 @@
+// ROCK 00 · SEED
+// river: 0 |s| 1
+// adds: declaration + numeric constant
+
+I RIVER_IN <- 0
+I RIVER_OUT <- 1
