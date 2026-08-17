@@ -1,6 +1,6 @@
 use super::{
     diagnostic::{Diagnostic, DiagnosticCode},
-    ivm::{answer, bin, cmp, Inst, IvmProgram, Op},
+    ivm::{answer, bin, cmp, Inst, IvmProgram, Op, I13_FRAME_LIMIT},
     source::Span,
     validator,
 };
@@ -29,6 +29,9 @@ const OP_I32_CONST: u8 = 0x41;
 const OP_F64_CONST: u8 = 0x44;
 const OP_I32_EQZ: u8 = 0x45;
 const OP_I32_NE: u8 = 0x47;
+const OP_I32_GE_U: u8 = 0x4f;
+const OP_I32_ADD: u8 = 0x6a;
+const OP_I32_SUB: u8 = 0x6b;
 const OP_F64_EQ: u8 = 0x61;
 const OP_F64_NE: u8 = 0x62;
 const OP_F64_LT: u8 = 0x63;
@@ -67,6 +70,8 @@ const OP_F64_CONVERT_I32_S: u8 = 0xb7;
 ///
 /// User functions accept and return tagged value pairs. Calls use a Wasm table and
 /// `call_indirect`, preserving recursion and IVM value identity without Rust host recursion.
+/// An internal I13-owned frame-depth global enforces I13_FRAME_LIMIT independent of
+/// the host WebAssembly engine's native stack capacity.
 pub fn emit(program: &IvmProgram) -> Result<Vec<u8>, Diagnostic> {
     if let Err(mut errors) = validator::validate(program) {
         return Err(errors.remove(0));
@@ -148,7 +153,8 @@ fn emit_table_section(module: &mut Vec<u8>, function_count: usize) {
 
 fn emit_global_section(module: &mut Vec<u8>, global_count: usize) {
     let mut payload = Vec::new();
-    u32_leb((global_count * 3) as u32, &mut payload);
+    // Three user-global planes plus one private I13 execution-frame counter.
+    u32_leb((global_count * 3 + 1) as u32, &mut payload);
 
     // Payload plane: mutable f64.
     for _ in 0..global_count {
@@ -173,6 +179,12 @@ fn emit_global_section(module: &mut Vec<u8>, global_count: usize) {
         i32_const(0, &mut payload);
         payload.push(OP_END);
     }
+
+    // Private frame-depth counter. Main/root is frame 1.
+    payload.push(I32);
+    payload.push(0x01);
+    i32_const(1, &mut payload);
+    payload.push(OP_END);
 
     section(6, payload, module);
 }
@@ -265,6 +277,10 @@ fn emit_main_reset(global_count: usize, out: &mut Vec<u8>) {
         i32_const(0, out);
         global_set(global_bound_index(global_count, slot) as u32, out);
     }
+
+    // The root/main execution frame is always frame 1.
+    i32_const(1, out);
+    global_set(frame_depth_index(global_count) as u32, out);
 }
 
 fn emit_region(
@@ -399,7 +415,7 @@ fn emit_region(
                 out.push(OP_IF);
                 out.push(EMPTY_BLOCK);
             }
-            Op::Call => emit_call(inst, layout, out)?,
+            Op::Call => emit_call(inst, layout, global_count, out)?,
             Op::Block => {
                 out.push(OP_BLOCK);
                 out.push(EMPTY_BLOCK);
@@ -526,7 +542,7 @@ fn emit_checked_div(layout: &LocalLayout, out: &mut Vec<u8>) {
     out.push(OP_F64_DIV);
 }
 
-fn emit_call(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Result<(), Diagnostic> {
+fn emit_call(inst: &Inst, layout: &LocalLayout, global_count: usize, out: &mut Vec<u8>) -> Result<(), Diagnostic> {
     let argc = nonnegative(inst.a, "Call arity", inst)?;
     if argc > layout.scratch_count {
         return Err(backend_error(
@@ -552,6 +568,18 @@ fn emit_call(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Result<(),
     out.push(OP_I32_TRUNC_F64_S);
     local_set(layout.target_i32, out);
 
+    // I13-EXEC-LIMIT-001: main/root counts as frame 1. A Call is legal only
+    // while the current active frame count is strictly below I13_FRAME_LIMIT.
+    global_get(frame_depth_index(global_count) as u32, out);
+    i32_const(I13_FRAME_LIMIT as i32, out);
+    out.push(OP_I32_GE_U);
+    trap_if_nonzero(out);
+
+    global_get(frame_depth_index(global_count) as u32, out);
+    i32_const(1, out);
+    out.push(OP_I32_ADD);
+    global_set(frame_depth_index(global_count) as u32, out);
+
     for index in 0..argc {
         local_get(layout.scratch_kind(index), out);
         local_get(layout.scratch_value(index), out);
@@ -561,6 +589,13 @@ fn emit_call(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Result<(),
     out.push(OP_CALL_INDIRECT);
     u32_leb((argc + 1) as u32, out);
     u32_leb(0, out);
+
+    // Successful return closes exactly one active I13 frame. If the call traps,
+    // this code is not reached; the next i13_run resets the counter to root=1.
+    global_get(frame_depth_index(global_count) as u32, out);
+    i32_const(1, out);
+    out.push(OP_I32_SUB);
+    global_set(frame_depth_index(global_count) as u32, out);
 
     Ok(())
 }
@@ -604,6 +639,10 @@ fn global_kind_index(global_count: usize, slot: usize) -> usize {
 
 fn global_bound_index(global_count: usize, slot: usize) -> usize {
     global_count * 2 + slot
+}
+
+fn frame_depth_index(global_count: usize) -> usize {
+    global_count * 3
 }
 
 #[derive(Debug, Clone)]
