@@ -1,0 +1,7 @@
+// ROCK 01 · NAME
+// river: 1 |s| 1
+// adds: name read / binding lookup
+
+I RIVER_IN <- 1
+I river <- RIVER_IN
+I RIVER_OUT <- river
