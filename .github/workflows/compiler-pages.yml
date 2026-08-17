@@ -14,9 +14,12 @@ on:
       - 'docs/CORPUS-*.md'
       - 'examples/compiler_bootstrap.i13'
       - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
       - 'scripts/corpus_atoms.js'
+      - 'scripts/corpus_syntax.js'
       - '.github/workflows/compiler-bootstrap.yml'
       - '.github/workflows/corpus-atoms.yml'
+      - '.github/workflows/corpus-syntax.yml'
       - '.github/workflows/compiler-pages.yml'
   pull_request:
     paths:
@@ -30,9 +33,12 @@ on:
       - 'docs/CORPUS-*.md'
       - 'examples/compiler_bootstrap.i13'
       - 'corpus/golden/00_atoms/**'
+      - 'corpus/golden/01_syntax/**'
       - 'scripts/corpus_atoms.js'
+      - 'scripts/corpus_syntax.js'
       - '.github/workflows/compiler-bootstrap.yml'
       - '.github/workflows/corpus-atoms.yml'
+      - '.github/workflows/corpus-syntax.yml'
       - '.github/workflows/compiler-pages.yml'
 
 permissions:
@@ -78,17 +84,27 @@ jobs:
         run: |
           test -s docs/corpus.html
           test -s docs/CORPUS-ATOMS.md
+          test -s docs/CORPUS-SYNTAX.md
           test -s corpus/golden/00_atoms/manifest.json
           test -s corpus/golden/00_atoms/river.i13
-          grep -Fq 'I13 GOLDEN CORPUS · 00 ATOMS · RIVER v0.1' docs/corpus.html
-          grep -Fq '9 / 9 ROCKS · PASS' docs/corpus.html
-          grep -Fq 'RIVER_FINAL = 34' docs/corpus.html
-          grep -Fq '0 <span class="s">|s|</span> 1' docs/corpus.html
+          test -s corpus/golden/01_syntax/manifest.json
+          test -s corpus/golden/01_syntax/river.i13
+          grep -Fq '00 ATOMS · 9/9 PASS' docs/corpus.html
+          grep -Fq '01 SYNTAX · 9/9 PASS' docs/corpus.html
+          grep -Fq 'CURRENT HANDOFF = 2584' docs/corpus.html
+          grep -Fq '00_atoms.composition.final' docs/corpus.html
+          grep -Fq '01_syntax.inherits.handoff' docs/corpus.html
+          grep -Fq '02 · SEMANTICS' docs/corpus.html
           grep -Fq 'I13-GOLDEN-00-ATOMS-RIVER-0.1' docs/CORPUS-ATOMS.md
           grep -Fq 'RIVER_OK <- river_selftest()' corpus/golden/00_atoms/river.i13
           grep -Fq '"final":34' corpus/golden/00_atoms/manifest.json
+          grep -Fq 'RIVER_START <- 34' corpus/golden/01_syntax/river.i13
+          grep -Fq 'RIVER_FINAL <- R8_OUT' corpus/golden/01_syntax/river.i13
+          grep -Fq '"handoff": 34' corpus/golden/01_syntax/manifest.json
+          grep -Fq '"final":2584' corpus/golden/01_syntax/manifest.json
           grep -Fq "link.href='corpus.html'" docs/landing.js
           grep -Fq 'OPEN CORPUS RIVER' docs/landing.js
+          grep -Fq '2584' docs/landing.js
       - name: Check landing and workbench discovery
         run: |
           grep -Fq "link.href='compiler.html'" docs/landing.js
