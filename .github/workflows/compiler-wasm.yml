@@ -20,3 +20,33 @@ jobs:
         run: cargo run --quiet --bin i13 -- build examples/core.i13 -o /tmp/i13-core.wasm
       - name: Execute generated Wasm and verify VM parity
         run: node scripts/verify_compiler_wasm.js /tmp/i13-core.wasm CORE_OK=1 ROUTES=56
+      - name: Verify canonical I13 frame ceiling in VM and Wasm
+        run: |
+          cat > /tmp/i13-frame-limit.i13 <<'I13'
+          def count(I n) { if n <= 0 { -> 0 } -> 1 + count(n - 1) }
+          I OUT <- count(4095)
+          I13
+
+          if cargo run --quiet --bin i13 -- run /tmp/i13-frame-limit.i13 >/tmp/i13-frame-vm.out 2>/tmp/i13-frame-vm.err; then
+            echo 'reference VM unexpectedly crossed I13_FRAME_LIMIT'
+            cat /tmp/i13-frame-vm.out
+            exit 1
+          fi
+          grep -Fq 'E0503' /tmp/i13-frame-vm.err
+
+          cargo run --quiet --bin i13 -- build /tmp/i13-frame-limit.i13 -o /tmp/i13-frame-limit.wasm
+          node - /tmp/i13-frame-limit.wasm <<'NODE'
+          const fs = require('fs');
+          const path = process.argv[2];
+          const instance = new WebAssembly.Instance(new WebAssembly.Module(fs.readFileSync(path)), {});
+          try {
+            instance.exports.i13_run();
+            console.error('generated Wasm unexpectedly crossed I13_FRAME_LIMIT');
+            process.exit(1);
+          } catch (error) {
+            if (!(error instanceof WebAssembly.RuntimeError)) {
+              console.error(error);
+              process.exit(2);
+            }
+          }
+          NODE
