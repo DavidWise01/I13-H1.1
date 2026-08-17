@@ -1,0 +1,17 @@
+// 04 ANALYSIS · ROCK 02 · signed direction
+
+def direction(I admitted, I a, I b) {
+    if admitted != 1 { -> 0 }
+    if a < b { -> 1 }
+    if a > b { -> -1 }
+    -> 0
+}
+
+I RIVER_IN <- 39088169
+I FORWARD <- direction(1, 8, 13)
+I BACKWARD <- direction(1, 13, 8)
+I LEVEL <- direction(1, 13, 13)
+I BLOCKED <- direction(0, 8, 13)
+I DIRECTION_OK <- (FORWARD == 1) * (BACKWARD == -1) * (LEVEL == 0) * (BLOCKED == 0)
+I ANALYSIS_OK <- DIRECTION_OK
+I RIVER_OUT <- 63245986
