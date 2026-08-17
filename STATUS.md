@@ -29,6 +29,7 @@ Last parity pass: 2026-08-16.
 - Stage 15.0: one-suite-at-a-time Wasm workbench.
 - Stage 15.1: Pages Origin Hallway: landing -> history -> epistemology -> entrance -> one live workbench.
 - Stage 15.2 / E1: external primer factory attachment with hard `[ y | x ]` partition, independent 8n sides, E1ID closed-loop receipt, `E1.RD-001`, and `E1.CORPUS-001`.
+- Stage 15.3: live Cortex ↔ E1 handoff through an opaque sandboxed service and Wasm-verified request/return capsules.
 
 ## E1 EXTERNAL PRIMER FACTORY — LOCKED
 
@@ -86,6 +87,49 @@ Continuity core:
 
 Canonical spec: `docs/E1-FACTORY.md`. Pages: `docs/e1.html`.
 
+## STAGE 15.3 LIVE E1 HANDOFF — BUILT
+
+```text
+internal/y
+  Cortex request
+       |
+       | Wasm boundary PASS
+       v
+[ y | x ]
+       |
+       | postMessage capsule
+       v
+external/x
+  e1-service.html
+  sandbox="allow-scripts"
+  opaque origin
+       |
+       | bounded prime + parent receipt
+       v
+[ y | x ]
+       |
+       | Wasm return PASS + closed-loop PASS
+       v
+[E1ID]cv
+       |
+       v
+Cortex receives `i13:e1-prime`
+```
+
+Implementation laws:
+
+- E1 service has no `allow-same-origin`.
+- E1 service has no fetch or browser-storage path.
+- workbench and E1 do not inspect each other's DOM.
+- `postMessage` is the only live bridge.
+- request payload is capped at 4096 UTF-8 bytes.
+- full SHA256 request/return values are retained in E1ID; compact nonzero `u32` folds feed the current Wasm ABI.
+- request and return witnesses are present at their respective traversals.
+- no prime is released to Cortex unless both `i13_e1_boundary_verify` and `i13_e1_closed_loop_verify` pass.
+- pending request and last receipt are memory-only; no E1 payload persistence in localStorage.
+
+Canonical spec: `docs/STAGE15.3-E1-HANDOFF.md`.
+
 ## CURATOR 14.9.1 — PAUSED BOUNDARY
 
 Canonical scaffold remains unchanged. Curator may propose but has no corpus commit authority. The future candidate-capsule / commit gate remains separate from E1.
@@ -98,7 +142,7 @@ OCCUPATION != AUTHORITY
 CURATOR COMMIT AUTHORITY = 0
 ```
 
-## PAGES 15.2
+## PAGES 15.3
 
 ```text
 index.html
@@ -106,11 +150,16 @@ index.html
   -> HISTORY
   -> EPISTEMOLOGY
   -> ENTRANCE
-       -> workbench.html -> one live H1.1 machine
-       -> e1.html       -> external E1 factory attachment
+       -> workbench.html
+            -> one live H1.1 machine
+            -> E1 PRIME control
+                 -> opaque e1-service.html sandbox
+                 -> [E1ID]cv return
+       -> e1.html
+            -> external E1 factory inspection page
 ```
 
-E1 is not another internal suite. The landing page links outward to the factory page while the existing workbench/runtime remains the internal machine.
+E1 remains external and secondary. The workbench carries only the bounded handoff control and verified returned prime.
 
 ## STAGE 14 CORPUS CONTRACT
 
@@ -146,6 +195,7 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 - exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled.
 - curator proposal is not corpus commit; a future import/commit gate remains separate.
 - E1 reverse-distillation receipt proves only the implemented structural/boundary conditions; it is not by itself a legal ownership or causal proof.
+- Stage 15.3 does not claim process isolation equivalent to a separate OS process; it implements browser sandbox/origin isolation plus bounded message passing.
 
 ## BUILD GATE
 
@@ -160,5 +210,6 @@ python -m unittest scripts.test_corpus_mesh_stage14_1
 Stage 14.9.1 curator v2 Wasm contract
 Stage 15.1 landing/workbench contract
 E1 boundary Rust tests
+Stage 15.3 opaque-sandbox / message-only handoff contract
 GitHub Pages build
 ```
