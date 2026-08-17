@@ -1,0 +1,36 @@
+// I13 ARCHITECTURAL KEYSTONE · PLATO
+// Documentary model only: Plato is not a river reach and this file does not add syntax.
+// Core distinction: matching payload does not erase epistemic role.
+
+def same_value(I a, I b) {
+    if a == b { -> 1 }
+    -> 0
+}
+
+def return_to_source(I source, I abstraction) {
+    if source == abstraction { -> 1 }
+    -> 0
+}
+
+def premise_position(I sourced, I turned, I returned) {
+    if sourced == 1 {
+        if turned == 1 {
+            if returned == 1 { -> 1 }
+        }
+    }
+    -> 0
+}
+
+// "what am I if not I?" becomes a representation/identity witness.
+I I_SOURCE_VALUE <- 13
+I I_APPEARANCE_VALUE <- 13
+I I_VALUE_MATCH <- same_value(I_SOURCE_VALUE, I_APPEARANCE_VALUE)
+
+// Equal payload, different role. Role is carried separately rather than inferred from value.
+I I_ROLE_MATCH <- 0
+
+// Abstraction must still account for the source when it returns.
+I I_RETURN_MATCH <- return_to_source(I_SOURCE_VALUE, I_APPEARANCE_VALUE)
+I I_POSITION_OK <- premise_position(1, 1, I_RETURN_MATCH)
+
+I PLATO_KEYSTONE_OK <- I_VALUE_MATCH * (I_ROLE_MATCH == 0) * I_RETURN_MATCH * I_POSITION_OK
