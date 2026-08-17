@@ -24,6 +24,7 @@ fn main() {
     };
 
     let source = SourceFile::new(path.clone(), text);
+    let diagnostic_source = source.clone();
     let result = match command {
         "check" => match compile(source) {
             Ok(output) => {
@@ -75,8 +76,11 @@ fn main() {
     };
 
     if let Err(errors) = result {
-        for error in errors {
-            eprintln!("{}:{}:{} {} {}", path, error.span.line, error.span.column, error.code.as_str(), error.message);
+        for (index, error) in errors.iter().enumerate() {
+            if index > 0 {
+                eprintln!();
+            }
+            eprintln!("{}", error.render(&diagnostic_source));
         }
         process::exit(1);
     }
