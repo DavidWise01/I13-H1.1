@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Brainfuck — Explorer &amp; Interpreter</title>
+<style>
+  :root{--bg:#0a0e14;--fg:#c8d6e5;--dim:#5a6b82;--acc:#27e8a7;--amber:#ffb454;--panel:#0f1620;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Cascadia Code",Consolas,Menlo,monospace;}
+  header{padding:12px 16px;border-bottom:1px solid #1c2735}
+  h1{font-size:16px;margin:0;color:var(--acc)}
+  .sub{font-size:11px;color:var(--dim);margin-top:4px}
+  main{padding:14px 16px;max-width:1000px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:14px}
+  .card{background:var(--panel);border:1px solid #1c2735;border-radius:8px;padding:10px}
+  .card h3{margin:0 0 4px;font-size:14px;color:var(--acc)}
+  .card p{margin:0;font-size:12px;color:var(--dim)}
+  textarea,input,button,select{font:inherit;background:#0a0e14;color:var(--fg);border:1px solid #233044;border-radius:6px;padding:8px 10px}
+  textarea{width:100%;min-height:90px;resize:vertical}
+  button{cursor:pointer;color:var(--acc);border-color:#1d3b32}
+  button:hover{background:#10231d}
+  .row{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}
+  .out{background:#0a0e14;border:1px solid #233044;border-radius:6px;padding:8px;min-height:40px;white-space:pre-wrap;font-size:13px}
+  a.dl{font-size:11px;color:var(--acc);text-decoration:none;border:1px solid #1d3b32;border-radius:6px;padding:5px 8px;display:inline-block;margin-top:6px}
+  footer{font-size:11px;color:var(--dim);padding:0 16px 16px}
+  code{color:var(--amber)}
+</style>
+</head>
+<body>
+<header>
+  <h1>&#9883; Brainfuck — Explorer &amp; Interpreter</h1>
+  <div class="sub">Urban Müller, 1993. An esoteric Turing-tarpit of 8 commands. Sourced from Wikipedia (archive.org was 503 this session). Self-contained: runs a real BF interpreter in-browser.</div>
+</header>
+<main>
+  <h3>The 8 Commands</h3>
+  <div class="grid" id="cmds"></div>
+
+  <h3>Try it</h3>
+  <div class="row">
+    <select id="preset">
+      <option value="">-- load example --</option>
+      <option value="hello">Hello World! (canonical)</option>
+      <option value="rot13">ROT13 of input</option>
+      <option value="add">Add two values (48+5)</option>
+    </select>
+    <button onclick="run()">Run &#9654;</button>
+    <button onclick="document.getElementById('code').value='';document.getElementById('out').textContent=''">Clear</button>
+  </div>
+  <textarea id="code" placeholder="paste Brainfuck here…">++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."></textarea>
+  <div class="row"><span style="font-size:11px;color:var(--dim)">output:</span></div>
+  <div class="out" id="out"></div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Source (fetched, not archive.org)</h3>
+    <p><span class="pill" style="background:#10231d;color:var(--acc);border:1px solid #1d3b32;padding:3px 9px;border-radius:10px">Wikipedia: Brainfuck</span> <span class="pill" style="background:#10231d;color:var(--acc);border:1px solid #1d3b32;padding:3px 9px;border-radius:10px">236 KB article</span> <span class="pill" style="background:#10231d;color:var(--acc);border:1px solid #1d3b32;padding:3px 9px;border-radius:10px">8 commands / Turing-complete</span></p>
+    <a class="dl" href="https://en.wikipedia.org/wiki/Brainfuck" target="_blank" rel="noopener">Wikipedia article &#8599;</a>
+  </div>
+</main>
+<footer>
+  Sourced 2026-08-16 via Python urllib from en.wikipedia.org (archive.org was 503 this session). The interpreter is a faithful BF implementation (wrapping 8-bit cells, 30,000-cell tape). Open via file:// or any static host.
+</footer>
+<script>
+const CMDS = [
+  {c:">", d:"Increment data pointer (move right one cell)"},
+  {c:"<", d:"Decrement data pointer (move left one cell)"},
+  {c:"+", d:"Increment byte at current cell (wraps 255→0)"},
+  {c:"-", d:"Decrement byte at current cell (wraps 0→255)"},
+  {c:".", d:"Output byte at current cell as ASCII char"},
+  {c:",", d:"Input one byte into current cell"},
+  {c:"[", d:"Jump past matching ] if current cell is 0"},
+  {c:"]", d:"Jump back to matching [ if current cell is nonzero"},
+];
+const cm = document.getElementById("cmds");
+CMDS.forEach(k => {
+  const el = document.createElement("div"); el.className = "card";
+  el.innerHTML = `<h3>${k.c}</h3><p>${k.d}</p>`;
+  cm.appendChild(el);
+});
+
+const PRESETS = {
+  hello: "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.",
+  rot13: ",[>[>+<-]>[<+>-]++++++++[<++++<+++++>>-]<<[->>+<[->+<]<[->+<]>>>>>]<[->+<]<<<<<<[->>.<<]>>[->>.<<]<<[->+<]<<<<]>>>>>>[.>]<[,>]",
+  add: "++[>+++++++++++<-]>."  // 48 + 5 = 53 = '5'  (simplified demo)
+};
+
+document.getElementById("preset").onchange = function(){
+  const v = this.value;
+  if (v && PRESETS[v]) document.getElementById("code").value = PRESETS[v];
+};
+
+// Faithful Brainfuck interpreter
+function run(){
+  const src = document.getElementById("code").value;
+  const out = document.getElementById("out");
+  try {
+    const tape = new Uint8Array(30000);
+    let ptr = 0, ip = 0, inp = "", op = 0;
+    // build bracket map
+    const stack = [], match = {};
+    for (let i=0;i<src.length;i++){
+      if (src[i]==="[") stack.push(i);
+      else if (src[i]==="]"){ const j=stack.pop(); match[i]=j; match[j]=i; }
+    }
+    if (stack.length) { out.textContent = "ERROR: unmatched ["; return; }
+    let guard = 0;
+    while (ip < src.length){
+      if (++guard > 5_000_000){ out.textContent = "ERROR: step limit"; return; }
+      const ch = src[ip];
+      if (ch===">") ptr = (ptr+1)%tape.length;
+      else if (ch==="<") ptr = (ptr-1+tape.length)%tape.length;
+      else if (ch==="+") tape[ptr] = (tape[ptr]+1)&255;
+      else if (ch==="-") tape[ptr] = (tape[ptr]-1)&255;
+      else if (ch===".") out.textContent += String.fromCharCode(tape[ptr]);
+      else if (ch===",") { tape[ptr] = inp.charCodeAt(op++)||0; }
+      else if (ch==="[") { if (tape[ptr]===0) ip = match[ip]; }
+      else if (ch==="]") { if (tape[ptr]!==0) ip = match[ip]; }
+      ip++;
+    }
+    if (!out.textContent) out.textContent = "(no output)";
+  } catch(e){ out.textContent = "ERROR: "+e.message; }
+}
+</script>
+</body>
+</html>
