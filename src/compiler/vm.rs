@@ -2,6 +2,7 @@ use super::{
     diagnostic::{Diagnostic, DiagnosticCode},
     ivm::{answer, bin, cmp, Inst, IvmProgram, Op, I13_FRAME_LIMIT},
     source::Span,
+    trace::{TraceEvent, TraceScope},
     validator,
 };
 
@@ -49,6 +50,24 @@ impl VmResult {
 /// through the Rust host stack. The canonical active-frame ceiling is owned by
 /// I13/IVM and is shared with generated backends.
 pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnostic> {
+    run_inner(program, config, None)
+}
+
+/// Execute the same reference VM while emitting read-only observations before
+/// each real IVM instruction executes. The observer cannot alter VM state.
+pub fn run_observed(
+    program: &IvmProgram,
+    config: VmConfig,
+    observer: &mut dyn FnMut(&TraceEvent),
+) -> Result<VmResult, Diagnostic> {
+    run_inner(program, config, Some(observer))
+}
+
+fn run_inner(
+    program: &IvmProgram,
+    config: VmConfig,
+    mut observer: Option<&mut dyn FnMut(&TraceEvent)>,
+) -> Result<VmResult, Diagnostic> {
     if let Err(mut errors) = validator::validate(program) {
         return Err(errors.remove(0));
     }
@@ -96,6 +115,20 @@ pub fn run(program: &IvmProgram, config: VmConfig) -> Result<VmResult, Diagnosti
         }
 
         let inst = code[pc].clone();
+        if let Some(sink) = observer.as_deref_mut() {
+            let event = make_trace_event(
+                program,
+                &globals,
+                &frames[depth],
+                frames.len(),
+                scope,
+                pc,
+                steps,
+                &inst,
+            );
+            sink(&event);
+        }
+
         match inst.op {
             Op::Const => {
                 frames[depth].stack.push(Value::Number(inst.imm));
@@ -283,6 +316,191 @@ impl Frame {
             stack: Vec::new(),
             locals: vec![None; local_count],
         }
+    }
+}
+
+fn make_trace_event(
+    program: &IvmProgram,
+    globals: &[Option<Value>],
+    frame: &Frame,
+    frame_depth: usize,
+    scope: FrameScope,
+    pc: usize,
+    step: u64,
+    inst: &Inst,
+) -> TraceEvent {
+    TraceEvent {
+        step,
+        frame_depth,
+        scope: match scope {
+            FrameScope::Main => TraceScope::Main,
+            FrameScope::Function(fid) => TraceScope::Function(fid),
+        },
+        pc,
+        op: inst.op,
+        stack_height: frame.stack.len(),
+        effect: inst.effect(),
+        span: inst.span.clone(),
+        detail: trace_detail(program, globals, frame, inst),
+    }
+}
+
+fn trace_detail(program: &IvmProgram, globals: &[Option<Value>], frame: &Frame, inst: &Inst) -> String {
+    match inst.op {
+        Op::Const => format!("push Number({})", trace_number(inst.imm)),
+        Op::Ask => {
+            if inst.b == 1 {
+                format!(
+                    "read {} -> {}",
+                    trace_global_slot(program, inst.a),
+                    trace_value(program, trace_slot_value(globals, inst.a)),
+                )
+            } else if inst.b == 0 {
+                format!(
+                    "read {} -> {}",
+                    trace_local_slot(inst.a),
+                    trace_value(program, trace_slot_value(&frame.locals, inst.a)),
+                )
+            } else {
+                format!("read invalid-scope={} slot={}", inst.b, inst.a)
+            }
+        }
+        Op::Attr => String::from("unsupported attribute operation"),
+        Op::Ret => format!("return {}", trace_value(program, frame.stack.last().copied())),
+        Op::Answer => {
+            let assign = (inst.b & 1) == 1;
+            let global_scope = ((inst.b >> 1) & 1) == 1;
+            let mode = if assign { "assign" } else { "declare" };
+            let slot = if global_scope {
+                trace_global_slot(program, inst.a)
+            } else {
+                trace_local_slot(inst.a)
+            };
+            format!("{mode} {slot} <- {}", trace_value(program, frame.stack.last().copied()))
+        }
+        Op::Drop => format!("drop {}", trace_value(program, frame.stack.last().copied())),
+        Op::Bin => {
+            let right = trace_stack_from_top(&frame.stack, 0);
+            let left = trace_stack_from_top(&frame.stack, 1);
+            format!(
+                "{} {} {}",
+                trace_value(program, left),
+                trace_bin(inst.a),
+                trace_value(program, right),
+            )
+        }
+        Op::Cmp => {
+            let right = trace_stack_from_top(&frame.stack, 0);
+            let left = trace_stack_from_top(&frame.stack, 1);
+            format!(
+                "{} {} {}",
+                trace_value(program, left),
+                trace_cmp(inst.a),
+                trace_value(program, right),
+            )
+        }
+        Op::If => {
+            let condition = frame.stack.last().copied();
+            let path = match condition {
+                Some(Value::Number(value)) if value == 0.0 => format!("jump:{}", inst.a),
+                Some(Value::Number(_)) => String::from("fallthrough"),
+                _ => String::from("type-check"),
+            };
+            format!("condition={} path={path}", trace_value(program, condition))
+        }
+        Op::Call => {
+            if inst.a < 0 {
+                return format!("call argc={} target=<invalid>", inst.a);
+            }
+            let argc = inst.a as usize;
+            let target = frame
+                .stack
+                .len()
+                .checked_sub(argc + 1)
+                .and_then(|index| frame.stack.get(index).copied());
+            format!("call {} argc={argc}", trace_value(program, target))
+        }
+        Op::Block => String::from("enter block"),
+        Op::Else => format!("jump:{}", inst.a),
+        Op::End => String::from("end block"),
+        Op::Func => format!(
+            "bind {} <- {}",
+            trace_global_slot(program, inst.a),
+            if inst.b >= 0 {
+                trace_value(program, Some(Value::Function(inst.b as usize)))
+            } else {
+                String::from("Function(<invalid>)")
+            },
+        ),
+        Op::Halt => String::from("halt"),
+    }
+}
+
+fn trace_stack_from_top(stack: &[Value], offset: usize) -> Option<Value> {
+    stack.len().checked_sub(offset + 1).and_then(|index| stack.get(index).copied())
+}
+
+fn trace_slot_value(slots: &[Option<Value>], raw: i32) -> Option<Value> {
+    if raw < 0 { None } else { slots.get(raw as usize).copied().flatten() }
+}
+
+fn trace_value(program: &IvmProgram, value: Option<Value>) -> String {
+    match value {
+        Some(Value::Number(value)) => format!("Number({})", trace_number(value)),
+        Some(Value::Function(fid)) => program
+            .functions
+            .get(fid)
+            .map(|function| format!("Function(fn{fid:04}:{})", function.name))
+            .unwrap_or_else(|| format!("Function(fn{fid:04}:<invalid>)")),
+        None => String::from("<empty>"),
+    }
+}
+
+fn trace_global_slot(program: &IvmProgram, raw: i32) -> String {
+    if raw < 0 {
+        return format!("g{raw}:<invalid>");
+    }
+    let slot = raw as usize;
+    program
+        .globals
+        .get(slot)
+        .map(|name| format!("g{slot:04}:{name}"))
+        .unwrap_or_else(|| format!("g{slot:04}:<invalid>"))
+}
+
+fn trace_local_slot(raw: i32) -> String {
+    if raw < 0 { format!("l{raw}:<invalid>") } else { format!("l{:04}", raw as usize) }
+}
+
+fn trace_number(value: f64) -> String {
+    if value == 0.0 && value.is_sign_negative() {
+        String::from("-0")
+    } else if value.fract() == 0.0 && value.is_finite() {
+        format!("{value:.0}")
+    } else {
+        value.to_string()
+    }
+}
+
+fn trace_bin(raw: i32) -> &'static str {
+    match raw {
+        bin::ADD => "Add",
+        bin::SUB => "Sub",
+        bin::MUL => "Mul",
+        bin::DIV => "Div",
+        _ => "InvalidBin",
+    }
+}
+
+fn trace_cmp(raw: i32) -> &'static str {
+    match raw {
+        cmp::LT => "Lt",
+        cmp::GT => "Gt",
+        cmp::LTE => "Lte",
+        cmp::GTE => "Gte",
+        cmp::EQ => "Eq",
+        cmp::NE => "Ne",
+        _ => "InvalidCmp",
     }
 }
 
