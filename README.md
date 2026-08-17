@@ -61,6 +61,14 @@ Locked factory modules:
 
 See [`docs/E1-FACTORY.md`](docs/E1-FACTORY.md) and the live Pages [`e1.html`](https://davidwise01.github.io/I13-H1.1/e1.html).
 
+### Stage 15.3 — live Cortex ↔ E1 handoff
+
+The workbench now carries a bounded `E1 PRIME` control. The external factory worker runs in `e1-service.html` inside an opaque sandbox with `sandbox="allow-scripts"` and **no** `allow-same-origin`. The two sides communicate only through `postMessage` capsules.
+
+Before `y -> x`, the internal workbench loads the current Wasm core and calls `i13_e1_boundary_verify`. On return it verifies the exact parent request and calls both `i13_e1_boundary_verify` and `i13_e1_closed_loop_verify`. Only a closed `[E1ID]cv` return emits the internal `i13:e1-prime` event.
+
+No E1 request/return payload is persisted in localStorage. See [`docs/STAGE15.3-E1-HANDOFF.md`](docs/STAGE15.3-E1-HANDOFF.md).
+
 ## Repository map
 
 ```text
