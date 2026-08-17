@@ -3,15 +3,19 @@ mod compiler;
 
 use std::{env, fs, process};
 
-use compiler::{build_wasm, compile, run, SourceFile};
+use compiler::{build_wasm, compile, run, DumpKind, SourceFile};
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<_>>();
     let command = args.first().map(String::as_str).unwrap_or("");
 
-    let (path, output_path) = match args.as_slice() {
-        [command, path] if matches!(command.as_str(), "check" | "run") => (path.clone(), None),
-        [command, path, flag, output] if command == "build" && flag == "-o" => (path.clone(), Some(output.clone())),
+    let (path, output_path, dump_kind) = match args.as_slice() {
+        [command, path] if matches!(command.as_str(), "check" | "run") => (path.clone(), None, None),
+        [command, path, flag, output] if command == "build" && flag == "-o" => (path.clone(), Some(output.clone()), None),
+        [command, path, flag] if command == "dump" => {
+            let Some(kind) = DumpKind::from_flag(flag) else { usage() };
+            (path.clone(), None, Some(kind))
+        }
         _ => usage(),
     };
 
@@ -72,6 +76,16 @@ fn main() {
             }
             Err(errors) => Err(errors),
         },
+        "dump" => {
+            let kind = dump_kind.expect("dump kind is parsed above");
+            match compiler::dump_compiler(&source, kind) {
+                Ok(text) => {
+                    print!("{text}");
+                    Ok(())
+                }
+                Err(errors) => Err(errors),
+            }
+        }
         _ => unreachable!(),
     };
 
@@ -91,5 +105,6 @@ fn usage() -> ! {
     eprintln!("  i13 check <file.i13>");
     eprintln!("  i13 run <file.i13>");
     eprintln!("  i13 build <file.i13> -o <file.wasm>");
+    eprintln!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm");
     process::exit(2);
 }
