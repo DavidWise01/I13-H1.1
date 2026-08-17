@@ -35,7 +35,7 @@ corpus/golden/
     ↓
 01_syntax
     ↓
-02_semantics (next)
+02_semantics
 ```
 
 The golden river does not restart between folders.
@@ -47,6 +47,10 @@ The golden river does not restart between folders.
                                                                     v
 01 SYNTAX
 34 |s| 55 |s| 89 |s| 144 |s| 233 |s| 377 |s| 610 |s| 987 |s| 1597 |s| 2584
+                                                                    |
+                                                                    v
+02 SEMANTICS
+2584 |s| 4181 |s| 6765 |s| 10946 |s| 17711 |s| 28657 |s| 46368 |s| 75025 |s| 121393 |s| 196418
 ```
 
 `|s|` is corpus documentation notation for stream handoff, not I13 syntax.
@@ -59,7 +63,25 @@ Layer roles:
 02_semantics  meaning of accepted arrangements
 ```
 
-Every golden rock is independently compilable and VM/Wasm verified. Every downstream reach must inherit the upstream composition final exactly. Each reach also contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata.
+`02_semantics` adds HIR checkpoints, VM/Wasm meaning parity, semantic rejection witnesses, and the executable `ada_lens.i13` model. Its documentary mathematical-poetry emblem is:
+
+```text
+[ | ( ada ) | ]
+```
+
+The emblem and `~>` notation are not I13 syntax. They describe a human-readable conceptual funnel that the executable Ada lens models using current I13 primitives:
+
+```text
+semantics
+   ↓
+analysis + music(rhythm, tempo, pace, timing)
+   ↓
+reason
+   ↓
+boolean
+```
+
+Every golden rock is independently compilable when it represents accepted execution, and every downstream reach must inherit the upstream composition final exactly. Each reach contains a composed `river.i13` witness so continuity exists inside I13, not only in host metadata. Rejected semantic programs live as attached bank witnesses rather than pretending to emit a successful handoff.
 
 See:
 
@@ -68,6 +90,9 @@ corpus/golden/00_atoms/README.md
 docs/CORPUS-ATOMS.md
 corpus/golden/01_syntax/README.md
 docs/CORPUS-SYNTAX.md
+corpus/golden/02_semantics/README.md
+docs/CORPUS-SEMANTICS.md
+docs/semantics.html
 ```
 
 ## Stage 14 — admission gate
