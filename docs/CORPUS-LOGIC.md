@@ -1,5 +1,7 @@
 # I13 Golden Corpus · 05 Logic
 
+Status: **FROZEN KNOWN GOOD · UPSTREAM-ANALYSIS-GATED · HIR/VM/WASM VERIFIED · BOOLEAN-DOWNSTREAM**
+
 ID: `I13-GOLDEN-05-LOGIC-0.1`
 
 Canonical law: `I13-LOGIC-001`
@@ -111,6 +113,7 @@ LOGIC_VALID          = 1
 LOGIC_DECISION       = 2
 LOGIC_BLOCKED_VALID  = 0
 LOGIC_BLOCKED_DECISION = -1
+LOGIC_OK             = 1
 ```
 
 ## River
@@ -134,6 +137,10 @@ Nine rocks:
 07 QUEEN
 08 DECISION
 ```
+
+Frozen handoff: `86267571272`.
+
+The `i13/logic-canon` status is published only after upstream Analysis, all nine rocks, HIR, VM, Wasm parity, repeated Wasm execution, Queen recursion, tagged decision, evidence preservation and river continuity pass.
 
 The executable source lives at `corpus/golden/05_logic/`.
 
