@@ -15,6 +15,7 @@ pub mod semantic;
 pub mod source;
 pub mod token;
 pub mod validator;
+pub mod vm;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use hir::HirProgram;
@@ -44,6 +45,13 @@ pub fn compile(source: SourceFile) -> Result<CompileOutput, Vec<Diagnostic>> {
     let ivm = lower_ivm::lower(&hir)?;
     let validation = validator::validate(&ivm)?;
     Ok(CompileOutput { hir, ivm, validation })
+}
+
+/// Reference execution: compile first, then run the validated IVM on the explicit-frame VM.
+pub fn run(source: SourceFile, config: vm::VmConfig) -> Result<(CompileOutput, vm::VmResult), Vec<Diagnostic>> {
+    let output = compile(source)?;
+    let result = vm::run(&output.ivm, config).map_err(|error| vec![error])?;
+    Ok((output, result))
 }
 
 #[cfg(test)]
@@ -115,10 +123,30 @@ mod tests {
     }
 
     #[test]
-    fn core_example_reaches_validated_ivm() {
+    fn reference_vm_executes_arithmetic() {
+        let (output, result) = run(
+            SourceFile::new("test.i13", "I x <- 4 + 2 * 3\n"),
+            vm::VmConfig::default(),
+        ).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "x"), Some(10.0));
+    }
+
+    #[test]
+    fn reference_vm_recurses_without_host_recursion() {
+        let source = SourceFile::new(
+            "test.i13",
+            "def count(I n) { if n <= 0 { -> 0 } -> 1 + count(n - 1) }\nI out <- count(64)\n",
+        );
+        let (output, result) = run(source, vm::VmConfig::default()).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "out"), Some(64.0));
+        assert!(result.max_call_depth >= 64);
+    }
+
+    #[test]
+    fn core_example_executes_on_reference_vm() {
         let source = SourceFile::new("examples/core.i13", include_str!("../../examples/core.i13"));
-        let output = compile(source).unwrap();
-        assert!(!output.ivm.main.is_empty());
-        assert_eq!(output.validation.regions, 1 + output.ivm.functions.len());
+        let (output, result) = run(source, vm::VmConfig::default()).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "CORE_OK"), Some(1.0));
+        assert_eq!(result.global_number(&output.ivm, "ROUTES"), Some(56.0));
     }
 }
