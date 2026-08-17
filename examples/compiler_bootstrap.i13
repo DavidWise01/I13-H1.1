@@ -1,0 +1,234 @@
+// I13 COMPILER BOOTSTRAP v0.1
+//
+// Purpose:
+//   Express as much of the current compiler/runtime law as possible in I13.
+//
+// Authority remains SPEC -> HIR -> IVM. This file is an executable mirror
+// and self-test, not a fourth authority. The host may compile/run/compare it;
+// the law logic below is written in I13.
+
+// ---- frozen IVM opcode ids -----------------------------------------
+I OP_CONST <- 0
+I OP_ASK <- 1
+I OP_ATTR <- 2
+I OP_RET <- 3
+I OP_ANSWER <- 4
+I OP_DROP <- 5
+I OP_BIN <- 6
+I OP_CMP <- 7
+I OP_IF <- 8
+I OP_CALL <- 9
+I OP_BLOCK <- 10
+I OP_ELSE <- 11
+I OP_END <- 12
+I OP_FUNC <- 13
+I OP_HALT <- 14
+I OPCODE_COUNT <- 15
+
+// ---- tagged value kinds --------------------------------------------
+I KIND_NUMBER <- 0
+I KIND_FUNCTION <- 1
+
+// ---- answer modes --------------------------------------------------
+I ANSWER_LOCAL_DECLARE <- 0
+I ANSWER_LOCAL_ASSIGN <- 1
+I ANSWER_GLOBAL_DECLARE <- 2
+I ANSWER_GLOBAL_ASSIGN <- 3
+
+// ---- canonical execution law --------------------------------------
+I FRAME_LIMIT <- 4096
+
+// ---- IVM stack effect mirror ---------------------------------------
+// need(op, argc): values required before instruction execution.
+def stack_need(I op, I argc) {
+    if op == OP_CONST { -> 0 }
+    if op == OP_ASK { -> 0 }
+    if op == OP_ATTR { -> 1 }
+    if op == OP_RET { -> 1 }
+    if op == OP_ANSWER { -> 1 }
+    if op == OP_DROP { -> 1 }
+    if op == OP_BIN { -> 2 }
+    if op == OP_CMP { -> 2 }
+    if op == OP_IF { -> 1 }
+    if op == OP_CALL { -> argc + 1 }
+    if op == OP_BLOCK { -> 0 }
+    if op == OP_ELSE { -> 0 }
+    if op == OP_END { -> 0 }
+    if op == OP_FUNC { -> 0 }
+    if op == OP_HALT { -> 0 }
+    -> 0
+}
+
+// net(op, argc): conceptual IVM stack-height delta.
+def stack_net(I op, I argc) {
+    if op == OP_CONST { -> 1 }
+    if op == OP_ASK { -> 1 }
+    if op == OP_ATTR { -> 0 }
+    if op == OP_RET { -> 0 }
+    if op == OP_ANSWER { -> 0 - 1 }
+    if op == OP_DROP { -> 0 - 1 }
+    if op == OP_BIN { -> 0 - 1 }
+    if op == OP_CMP { -> 0 - 1 }
+    if op == OP_IF { -> 0 - 1 }
+    if op == OP_CALL { -> 0 - argc }
+    if op == OP_BLOCK { -> 0 }
+    if op == OP_ELSE { -> 0 }
+    if op == OP_END { -> 0 }
+    if op == OP_FUNC { -> 0 }
+    if op == OP_HALT { -> 0 }
+    -> 0
+}
+
+// A deterministic numeric encoding used only by this bootstrap witness.
+// +50 keeps the net component positive for the tested arities.
+def effect_signature(I op, I argc) {
+    -> stack_need(op, argc) * 100 + stack_net(op, argc) + 50
+}
+
+def checksum_from(I op, I argc) {
+    if op >= OPCODE_COUNT {
+        -> 0
+    }
+    -> (op + 1) * effect_signature(op, argc) + checksum_from(op + 1, argc)
+}
+
+def law_checksum() {
+    // argc=3 is the fixed bootstrap checksum witness.
+    -> checksum_from(0, 3)
+}
+
+// ---- canonical frame admission ------------------------------------
+// `active` includes root/main. A call is legal iff the callee would keep
+// active I13 frames at or below FRAME_LIMIT.
+def frame_admit_call(I active) {
+    if active < FRAME_LIMIT {
+        -> 1
+    }
+    -> 0
+}
+
+// ---- tagged operation boundaries ----------------------------------
+def number_kind(I kind) {
+    if kind == KIND_NUMBER { -> 1 }
+    -> 0
+}
+
+def function_kind(I kind) {
+    if kind == KIND_FUNCTION { -> 1 }
+    -> 0
+}
+
+def bin_accepts(I left_kind, I right_kind) {
+    if number_kind(left_kind) == 0 { -> 0 }
+    if number_kind(right_kind) == 0 { -> 0 }
+    -> 1
+}
+
+def compare_accepts(I left_kind, I right_kind) {
+    -> bin_accepts(left_kind, right_kind)
+}
+
+def if_accepts(I kind) {
+    -> number_kind(kind)
+}
+
+def call_accepts(I kind) {
+    -> function_kind(kind)
+}
+
+// ---- Answer mode classification -----------------------------------
+def answer_valid(I mode) {
+    if mode == ANSWER_LOCAL_DECLARE { -> 1 }
+    if mode == ANSWER_LOCAL_ASSIGN { -> 1 }
+    if mode == ANSWER_GLOBAL_DECLARE { -> 1 }
+    if mode == ANSWER_GLOBAL_ASSIGN { -> 1 }
+    -> 0
+}
+
+def answer_is_global(I mode) {
+    if mode == ANSWER_GLOBAL_DECLARE { -> 1 }
+    if mode == ANSWER_GLOBAL_ASSIGN { -> 1 }
+    -> 0
+}
+
+// ---- self-test -----------------------------------------------------
+def bootstrap_selftest() {
+    if OPCODE_COUNT != 15 { -> 0 }
+
+    // Frozen opcode effect cases, argc=3 for Call.
+    if stack_need(OP_CONST, 3) != 0 { -> 0 }
+    if stack_net(OP_CONST, 3) != 1 { -> 0 }
+    if stack_need(OP_ASK, 3) != 0 { -> 0 }
+    if stack_net(OP_ASK, 3) != 1 { -> 0 }
+    if stack_need(OP_ATTR, 3) != 1 { -> 0 }
+    if stack_net(OP_ATTR, 3) != 0 { -> 0 }
+    if stack_need(OP_RET, 3) != 1 { -> 0 }
+    if stack_net(OP_RET, 3) != 0 { -> 0 }
+    if stack_need(OP_ANSWER, 3) != 1 { -> 0 }
+    if stack_net(OP_ANSWER, 3) != 0 - 1 { -> 0 }
+    if stack_need(OP_DROP, 3) != 1 { -> 0 }
+    if stack_net(OP_DROP, 3) != 0 - 1 { -> 0 }
+    if stack_need(OP_BIN, 3) != 2 { -> 0 }
+    if stack_net(OP_BIN, 3) != 0 - 1 { -> 0 }
+    if stack_need(OP_CMP, 3) != 2 { -> 0 }
+    if stack_net(OP_CMP, 3) != 0 - 1 { -> 0 }
+    if stack_need(OP_IF, 3) != 1 { -> 0 }
+    if stack_net(OP_IF, 3) != 0 - 1 { -> 0 }
+    if stack_need(OP_CALL, 3) != 4 { -> 0 }
+    if stack_net(OP_CALL, 3) != 0 - 3 { -> 0 }
+    if stack_need(OP_BLOCK, 3) != 0 { -> 0 }
+    if stack_net(OP_BLOCK, 3) != 0 { -> 0 }
+    if stack_need(OP_ELSE, 3) != 0 { -> 0 }
+    if stack_net(OP_ELSE, 3) != 0 { -> 0 }
+    if stack_need(OP_END, 3) != 0 { -> 0 }
+    if stack_net(OP_END, 3) != 0 { -> 0 }
+    if stack_need(OP_FUNC, 3) != 0 { -> 0 }
+    if stack_net(OP_FUNC, 3) != 0 { -> 0 }
+    if stack_need(OP_HALT, 3) != 0 { -> 0 }
+    if stack_net(OP_HALT, 3) != 0 { -> 0 }
+
+    // Call arity is law, not a hard-coded one-arity special case.
+    if stack_need(OP_CALL, 0) != 1 { -> 0 }
+    if stack_net(OP_CALL, 0) != 0 { -> 0 }
+    if stack_need(OP_CALL, 16) != 17 { -> 0 }
+    if stack_net(OP_CALL, 16) != 0 - 16 { -> 0 }
+
+    // Deterministic witness over all 15 effects.
+    if law_checksum() != 15638 { -> 0 }
+
+    // Canonical frame fence.
+    if frame_admit_call(4095) != 1 { -> 0 }
+    if frame_admit_call(4096) != 0 { -> 0 }
+
+    // Tagged operation gates.
+    if bin_accepts(KIND_NUMBER, KIND_NUMBER) != 1 { -> 0 }
+    if bin_accepts(KIND_FUNCTION, KIND_NUMBER) != 0 { -> 0 }
+    if compare_accepts(KIND_NUMBER, KIND_FUNCTION) != 0 { -> 0 }
+    if if_accepts(KIND_NUMBER) != 1 { -> 0 }
+    if if_accepts(KIND_FUNCTION) != 0 { -> 0 }
+    if call_accepts(KIND_FUNCTION) != 1 { -> 0 }
+    if call_accepts(KIND_NUMBER) != 0 { -> 0 }
+
+    // Answer modes remain exactly 0..3.
+    if answer_valid(ANSWER_LOCAL_DECLARE) != 1 { -> 0 }
+    if answer_valid(ANSWER_LOCAL_ASSIGN) != 1 { -> 0 }
+    if answer_valid(ANSWER_GLOBAL_DECLARE) != 1 { -> 0 }
+    if answer_valid(ANSWER_GLOBAL_ASSIGN) != 1 { -> 0 }
+    if answer_valid(4) != 0 { -> 0 }
+    if answer_is_global(ANSWER_LOCAL_ASSIGN) != 0 { -> 0 }
+    if answer_is_global(ANSWER_GLOBAL_ASSIGN) != 1 { -> 0 }
+
+    -> 1
+}
+
+// ---- exported proof globals ---------------------------------------
+I BOOTSTRAP_OK <- bootstrap_selftest()
+I LAW_CHECKSUM <- law_checksum()
+I FRAME_4095 <- frame_admit_call(4095)
+I FRAME_4096 <- frame_admit_call(4096)
+I CALL16_NEED <- stack_need(OP_CALL, 16)
+I CALL16_NET <- stack_net(OP_CALL, 16)
+I NUMBER_BIN_OK <- bin_accepts(KIND_NUMBER, KIND_NUMBER)
+I FUNCTION_BIN_VETO <- bin_accepts(KIND_FUNCTION, KIND_NUMBER)
+I FUNCTION_CALL_OK <- call_accepts(KIND_FUNCTION)
+I NUMBER_CALL_VETO <- call_accepts(KIND_NUMBER)
