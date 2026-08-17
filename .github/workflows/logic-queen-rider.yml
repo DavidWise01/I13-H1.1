@@ -1,0 +1,64 @@
+name: I13 Logic Queen rider
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/golden/logic_queen_rider.i13'
+      - 'docs/LOGIC-FIELD-QUEEN.md'
+      - '.github/workflows/logic-queen-rider.yml'
+  pull_request:
+    paths:
+      - 'corpus/golden/logic_queen_rider.i13'
+      - 'docs/LOGIC-FIELD-QUEEN.md'
+      - '.github/workflows/logic-queen-rider.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  queen-rider:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Check Queen rider witness
+        run: target/debug/i13 check corpus/golden/logic_queen_rider.i13
+      - name: Run Queen rider witness
+        run: |
+          target/debug/i13 run corpus/golden/logic_queen_rider.i13 | tee /tmp/queen.txt
+          grep -Fq 'QUEEN_LOCAL_STATES_OK = 1' /tmp/queen.txt
+          grep -Fq 'QUEEN_COVERAGE_2D = 1' /tmp/queen.txt
+          grep -Fq 'QUEEN_SWEEP_3D = 360' /tmp/queen.txt
+          grep -Fq 'QUEEN_PHASE_ADVANCES = 1' /tmp/queen.txt
+          grep -Fq 'QUEEN_RIDER_OK = 1' /tmp/queen.txt
+      - name: Build and verify Wasm parity
+        run: |
+          target/debug/i13 build corpus/golden/logic_queen_rider.i13 -o /tmp/queen.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/queen.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            instance.exports.i13_run();
+            const expected={
+              QUEEN_LOCAL_STATES_OK:1,
+              QUEEN_COVERAGE_2D:1,
+              QUEEN_SWEEP_3D:360,
+              QUEEN_PHASE_ADVANCES:1,
+              QUEEN_RIDER_OK:1
+            };
+            for(const [name,value] of Object.entries(expected)){
+              const g=instance.exports[`i13.global.${name}`];
+              if(!(g instanceof WebAssembly.Global)||g.value!==value) throw new Error(`${name} mismatch`);
+            }
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Keep Queen inside Logic design, not river
+        run: |
+          grep -Fq 'LOGIC DESIGN PRIMITIVE · NON-RIVER UNTIL 05_LOGIC IS FROZEN' docs/LOGIC-FIELD-QUEEN.md
+          grep -Fq 'Q` means **Queen**' docs/LOGIC-FIELD-QUEEN.md
+          grep -Fq 'GLOBAL POSSIBILITY = 4^n' docs/LOGIC-FIELD-QUEEN.md
