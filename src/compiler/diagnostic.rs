@@ -12,6 +12,9 @@ pub enum DiagnosticCode {
     IvmUnboundName,
     IvmAssignUndeclared,
     IvmValidation,
+    VmRuntime,
+    VmStepLimit,
+    VmCallLimit,
 }
 
 impl DiagnosticCode {
@@ -27,6 +30,9 @@ impl DiagnosticCode {
             Self::IvmUnboundName => "E0301",
             Self::IvmAssignUndeclared => "E0302",
             Self::IvmValidation => "E0401",
+            Self::VmRuntime => "E0501",
+            Self::VmStepLimit => "E0502",
+            Self::VmCallLimit => "E0503",
         }
     }
 }
