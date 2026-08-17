@@ -1,0 +1,55 @@
+name: Stage 15.3 E1 live handoff
+
+on:
+  push:
+    paths:
+      - 'docs/workbench.html'
+      - 'docs/e1-service.html'
+      - 'docs/stages/stage15-3-e1-handoff.js'
+      - 'docs/STAGE15.3-E1-HANDOFF.md'
+      - 'src/e1_boundary.rs'
+      - 'src/lib.rs'
+      - '.github/workflows/stage15-3-e1-handoff.yml'
+  pull_request:
+    paths:
+      - 'docs/workbench.html'
+      - 'docs/e1-service.html'
+      - 'docs/stages/stage15-3-e1-handoff.js'
+      - 'docs/STAGE15.3-E1-HANDOFF.md'
+      - 'src/e1_boundary.rs'
+      - 'src/lib.rs'
+      - '.github/workflows/stage15-3-e1-handoff.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  e1-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check internal handoff JavaScript syntax
+        run: node --check docs/stages/stage15-3-e1-handoff.js
+      - name: Extract and check sandbox service JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('docs/e1-service.html').read_text()
+          js = text.split('<script>',1)[1].split('</script>',1)[0]
+          Path('/tmp/e1-service.js').write_text(js)
+          PY
+          node --check /tmp/e1-service.js
+      - name: Enforce opaque sandbox and message-only service
+        run: |
+          grep -q "setAttribute('sandbox', 'allow-scripts')" docs/stages/stage15-3-e1-handoff.js
+          ! grep -q "allow-same-origin" docs/e1-service.html
+          ! grep -Eq 'fetch\(|localStorage|sessionStorage|indexedDB' docs/e1-service.html
+          grep -q 'postMessage' docs/e1-service.html
+          grep -q 'postMessage' docs/stages/stage15-3-e1-handoff.js
+      - name: Check workbench wiring and Wasm gates
+        run: |
+          grep -q 'stages/stage15-3-e1-handoff.js' docs/workbench.html
+          grep -q 'i13_e1_boundary_verify' docs/stages/stage15-3-e1-handoff.js
+          grep -q 'i13_e1_closed_loop_verify' docs/stages/stage15-3-e1-handoff.js
+          grep -q 'pub extern "C" fn i13_e1_boundary_verify' src/lib.rs
+          grep -q 'pub extern "C" fn i13_e1_closed_loop_verify' src/lib.rs
