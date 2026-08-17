@@ -1,0 +1,2 @@
+def semantic_function() { -> 1 }
+I OUT <- semantic_function + 1
