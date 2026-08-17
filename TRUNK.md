@@ -119,98 +119,33 @@ width = 1, 3, 9, 27, 81
 
 ## H1.0 freeze carried into H1.1
 
-H1.0 froze:
-
-- bounded `[c[(...)]]` Cortex children
-- `c.n` depth context
-- `.()` context-derived fractal width
-- VH1 ternary 1/3/9/27/81 profile
-- numerical `[[5,1,3]]` five-qubit reference model
-- canonical control split `5 -> (2|3) -> 1`
-- odd-width law `N=2k+1`, internal `k`, external `k+1`
-- GPU suite v0.4.1
-
-H1.1 does not mutate H1.0.
+H1.0 froze bounded Cortex children, context width, VH1/VH2 reference laws, the odd-width control split, and the historical GPU suite. H1.1 does not mutate H1.0.
 
 ## H1.1 corpus
 
-The H1.1 corpus begins with technical material across:
-
-- ternary / mixed radix
-- linear algebra / vector / tensor
-- Hamiltonians / integrable systems
-- fractals / chaos
-- Ada Lovelace / Babbage
-- DOS-era software
-- vector / voxel / vogel / VS annotations
-- Sonia / Sonya / Sofya Kovalevskaya technical branch
-
-The current seed corpus is under `corpus/`.
+The H1.1 corpus begins with technical material across ternary/mixed radix, linear algebra, Hamiltonians, fractals/chaos, computing history, vector/voxel/vogel/VS annotations, and the Sonia/Sonya/Sofya Kovalevskaya technical branch. The current seed corpus is under `corpus/`.
 
 ## H1.1 OLOGY — current
 
 OLOGY is currently a **2D discrete navigation surface**.
-
-User axis convention:
 
 ```text
 +x = up
 -x = down
 +y = right
 -y = left
-```
-
-A point is a position vector:
-
-```text
 ln = <x,y>
-```
-
-For the IPv4-sized overlay, H1.1 currently uses the same 32 bits as a two-dimensional surface coordinate:
-
-```text
 u32 = x:16 | y:16
 ```
 
-This is an overlay interpretation, not a claim that IPv4 itself defines Cartesian coordinates.
-
-### Vector -> voxel
-
-Each OLOGY surface vector roots a local voxel:
-
-```text
-<x,y>
-  |
-  v
-voxel(x,y)
-  |
-  +-- local depth / burrow
-```
-
-The 32 bits select the surface root. Local voxel depth is nested state and does **not** consume those 32 bits.
-
-Conceptual total location:
-
-```text
-<x,y ; z>
-```
-
-where `z` is local voxel depth rather than a third global OLOGY navigation axis.
-
-### Queen movement
-
-The spatial Cortex / Queen has two distinct motions:
+Each OLOGY surface vector roots a local voxel. The 32 bits select the surface root; local voxel depth is nested state and does **not** consume those bits.
 
 ```text
 MOVE    : <x,y;z> -> <x+dx,y+dy;z>
 BURROW  : <x,y;z> -> <x,y;z+dz>
 ```
 
-Direction selection and authority remain separate operations.
-
 ## Cortex -> voxel -> Cortex Verifier
-
-Current literal form:
 
 ```text
 [c[v[
@@ -220,23 +155,69 @@ Current literal form:
 ]]cv]
 ```
 
-Directional semantics:
-
-```text
-c[v[       Cortex enters voxel
-()         state in
-{}         local voxel/context
-()         state out
-]]          close/leave voxel
-cv          Cortex Verifier before exit
-```
-
-Current invariant:
-
 ```text
 CORTEX -> VOXEL -> TRANSFORM -> CLOSE -> CV -> CONDITIONAL EXIT
 ```
 
 `v` on ingress means **voxel**. `cv` on egress means **Cortex Verifier**.
 
-This is the current H1.1 trunk boundary.
+## E1 external primer factory — current attachment
+
+E1 is not upstream of I13. It is an external secondary factory called by Cortex when a bounded subagent needs more external capability.
+
+```text
+I13
+  -> Cortex
+     -> subagent
+        -> enough: continue
+        -> needs prime
+             -> [ y | x ]
+             -> E1(primer(factory(module)))
+             -> [E1ID]cv
+             -> Cortex
+  -> continue I13
+```
+
+Hard partition:
+
+```text
+[ y | x ]
+y = internal-only
+x = external-only
+private(y) ∩ private(x) = ∅
+```
+
+Each side owns its own full gearbox:
+
+```text
+y: n -> 2n -> 4n -> 8n
+x: n -> 2n -> 4n -> 8n
+```
+
+No live state crosses. Only bounded witnessed capsules cross. The core verifies the boundary; factory state remains external.
+
+Locked modules:
+
+```text
+E1.RD-001       Reverse Distillation
+E1.CORPUS-001   Corpus Orientation
+```
+
+Reverse distillation law:
+
+```text
+A(B(C(D))) ||| D -> A(B(C))
+ABCD - D = ABC
+```
+
+Corpus orientation uses the Enheduanna first-author object as `(middle|middle)` and four user-defined external calibration anchors around it. The names/tags are calibration metadata only and are not admitted into the Stage 14 corpus.
+
+Continuity core:
+
+```text
+[ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]
+```
+
+Canonical E1 specification: `docs/E1-FACTORY.md`.
+
+This E1 attachment is the current H1.1 trunk boundary.

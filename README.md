@@ -7,7 +7,9 @@ H1.1 is the live development trunk. H1.0 and VH1 reference material remain froze
 ```text
 I-13 source
   -> reader / normalize / I-13 IR
-  -> Cortex
+  -> Cortex / bounded subagent
+       -> enough: continue internally
+       -> needs prime: [ y | x ] -> E1 external primer factory -> [E1ID]cv -> Cortex
   -> Rust core
   -> WebAssembly
   -> JS/WebGPU host
@@ -36,6 +38,29 @@ ln = <x,y>
 - surface movement changes `<x,y>`; burrowing changes local `z` without consuming any of the 32 surface bits.
 - the same 32 bits may be viewed as an IPv4-sized overlay key; this is **not** a claim that IPv4 defines Cartesian coordinates.
 
+## E1 external primer factory
+
+E1 is secondary to I13 and remains outside the internal live-state domain.
+
+```text
+[ y | x ]
+y = internal only
+x = external only
+
+private(y) ∩ private(x) = ∅
+y: n -> 2n -> 4n -> 8n
+x: n -> 2n -> 4n -> 8n
+```
+
+Only bounded witnessed capsules cross. `E1ID` binds request/return lineage and CV closes the return. The Rust/Wasm core implements only the boundary verifier; factory modules remain host-side.
+
+Locked factory modules:
+
+- `E1.RD-001` — Reverse Distillation: recover parent dependency geometry from a bounded derived form.
+- `E1.CORPUS-001` — corpus-orientation calibration field around the Enheduanna middle/middle core. Named literary anchors are external calibration metadata only; their text is not added to `corpus/`.
+
+See [`docs/E1-FACTORY.md`](docs/E1-FACTORY.md) and the live Pages [`e1.html`](https://davidwise01.github.io/I13-H1.1/e1.html).
+
 ## Repository map
 
 ```text
@@ -46,7 +71,7 @@ reference/vh2/       five-qubit CUBI hypothesis reference
 reference/legacy/    historical Wasm/GPU proof artifacts
 examples/            I-13 programs
 corpus/              technical corpus + cross-reference maps
-docs/                one GitHub Pages page: Icarium's 13 words only
+docs/                GitHub Pages hallway, workbench/runtime, and E1 external factory
 ```
 
 See [`STATUS.md`](STATUS.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`TRUNK.md`](TRUNK.md).

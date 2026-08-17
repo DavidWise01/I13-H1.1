@@ -6,6 +6,7 @@ pub mod cortex;
 pub mod corpus;
 pub mod corpus_walker;
 pub mod curator;
+pub mod e1_boundary;
 pub mod ology;
 pub mod pulse;
 pub mod quorum;
@@ -15,6 +16,7 @@ pub use child::{ChildPhase, ChildReceipt, CortexChild};
 pub use cortex::{CortexVerifier, CvContext, CvVerdict, Queen};
 pub use corpus::{fnv1a32 as corpus_fingerprint32, CorpusAddress, CorpusCvContext, CorpusVerifier};
 pub use corpus_walker::{CorpusNeighbor, WalkStep};
+pub use e1_boundary::{E1Boundary, E1Capsule, E1Side, E1Verdict};
 pub use ology::{Direction, OlogyPoint, VoxelCursor, VoxelTransition};
 pub use quorum::OddSplit;
 pub use width::{mixed_width, natural_width, vh1_width};
@@ -79,6 +81,55 @@ pub extern "C" fn i13_vh1_width(depth: u32) -> u32 {
 pub extern "C" fn i13_odd_split(width: u32) -> u64 {
     let Some(s) = OddSplit::resolve(width) else { return 0; };
     ((s.external as u64) << 32) | s.internal as u64
+}
+
+// ---- E1 external primer boundary / Wasm ABI -------------------------------
+
+/// `[ y | x ]`: y=internal-only, x=external-only. A pass means a bounded,
+/// witnessed capsule crossed sides without sharing live mutable state.
+#[no_mangle]
+pub extern "C" fn i13_e1_boundary_verify(
+    from: u32,
+    to: u32,
+    request_hash: u32,
+    payload_hash: u32,
+    parent_hash: u32,
+    witness: u32,
+    shared_live_state: u32,
+) -> u32 {
+    let Ok(from) = E1Side::try_from(from) else { return E1Verdict::Veto as u32; };
+    let Ok(to) = E1Side::try_from(to) else { return E1Verdict::Veto as u32; };
+    E1Boundary::verify(E1Capsule {
+        from,
+        to,
+        request_hash,
+        payload_hash,
+        parent_hash,
+        witness,
+        shared_live_state: shared_live_state != 0,
+    }) as u32
+}
+
+#[no_mangle]
+pub extern "C" fn i13_e1_vortex_width(n: u32) -> u32 {
+    e1_boundary::vortex_width_8n(n).unwrap_or(0)
+}
+
+#[no_mangle]
+pub extern "C" fn i13_e1_closed_loop_verify(
+    request_hash: u32,
+    return_parent_hash: u32,
+    request_witness: u32,
+    return_witness: u32,
+    shared_live_state: u32,
+) -> u32 {
+    e1_boundary::verify_closed_loop(
+        request_hash,
+        return_parent_hash,
+        request_witness,
+        return_witness,
+        shared_live_state != 0,
+    ) as u32
 }
 
 // ---- Stage 14.2 compact corpus / Wasm ABI ---------------------------------
@@ -255,6 +306,15 @@ mod tests {
     fn pulse_strict_boundary_matches_experiment() {
         assert_eq!(pulse::execute_pulse_transition(120.0, 10.0, 2.0), Some(260.0));
         assert_eq!(pulse::execute_pulse_transition(120.0, 8.0, 2.0), None);
+    }
+
+    #[test]
+    fn e1_partition_rejects_contamination() {
+        assert_eq!(i13_e1_boundary_verify(0, 1, 1, 2, 0, 3, 0), E1Verdict::Pass as u32);
+        assert_eq!(i13_e1_boundary_verify(0, 1, 1, 2, 0, 3, 1), E1Verdict::Veto as u32);
+        assert_eq!(i13_e1_boundary_verify(0, 0, 1, 2, 0, 3, 0), E1Verdict::Veto as u32);
+        assert_eq!(i13_e1_vortex_width(8), 64);
+        assert_eq!(i13_e1_closed_loop_verify(42, 42, 7, 9, 0), 1);
     }
 
     #[test]

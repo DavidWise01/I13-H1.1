@@ -28,54 +28,77 @@ Last parity pass: 2026-08-16.
 - Stage 14.9.1: corpus inlet + bounded curator with `{skill}`, `{personas}`, `{occupation}`.
 - Stage 15.0: one-suite-at-a-time Wasm workbench.
 - Stage 15.1: Pages Origin Hallway: landing -> history -> epistemology -> entrance -> one live workbench.
+- Stage 15.2 / E1: external primer factory attachment with hard `[ y | x ]` partition, independent 8n sides, E1ID closed-loop receipt, `E1.RD-001`, and `E1.CORPUS-001`.
 
-## CURATOR 14.9.1
-
-Canonical scaffold:
-
-```text
-[c[v[
-    corpus[
-        curator[
-            [
-                (.),
-                (.),
-                (.),
-                {skill},
-                {personas},
-                {occupation}
-            ]
-        ]
-    ]
-]]cv]
-```
-
-Working interpretation:
+## E1 EXTERNAL PRIMER FACTORY — LOCKED
 
 ```text
-(.) source
-(.) context
-(.) candidate
-
-{skill}      = bounded competence
-{personas}   = bounded interpretive lenses
-{occupation} = bounded session job
+I13 -> Cortex -> subagent
+                  |
+             needs prime
+                  v
+              [ y | x ]
+                  |
+             E1 FACTORY
+             /        \
+       RD-001      CORPUS-001
+             \        /
+                E1ID
+                  |
+                 CV
+                  |
+              [ y | x ]
+                  |
+               Cortex -> I13
 ```
 
-Authority law:
+Partition:
+
+```text
+y = internal-only
+x = external-only
+private(y) ∩ private(x) = ∅
+y: n -> 2n -> 4n -> 8n
+x: n -> 2n -> 4n -> 8n
+```
+
+No live state or shared mutable state crosses. The Rust/Wasm core validates only bounded request/return capsules; the factory remains external.
+
+`E1.RD-001` is reverse distillation: recover parent dependency geometry from a bounded derived form (`ABCD - D = ABC`).
+
+`E1.CORPUS-001` is the locked external calibration field:
+
+```text
+capstone  (top|bottom)    Neal Stephenson / The Fall / technical
+keystone  (top|top)       George Orwell / 1984 / technical,somatic,phonic,doublespeak,triple-listen
+core      (middle|middle) Enheduanna / first author / example,instruction,42
+ucapstone (bottom|top)    Neal Stephenson / Seveneves / unknown,discovered
+ukeystone (bottom|bottom) Aldous Huxley / Brave New World / barbaric,cultured,curated
+```
+
+These are calibration metadata only; no book text is added to `corpus/`.
+
+Continuity core:
+
+```text
+[ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]
+```
+
+Canonical spec: `docs/E1-FACTORY.md`. Pages: `docs/e1.html`.
+
+## CURATOR 14.9.1 — PAUSED BOUNDARY
+
+Canonical scaffold remains unchanged. Curator may propose but has no corpus commit authority. The future candidate-capsule / commit gate remains separate from E1.
 
 ```text
 effective capability = skill ∩ occupation
-
 PERSONA != AUTHORITY
 SKILL != AUTHORITY
 OCCUPATION != AUTHORITY
 CURATOR COMMIT AUTHORITY = 0
 ```
 
-Protocol v2 binds skill, personas, occupation, effective mask, proposal status and witness into the outer curator CV. Legacy v1 proposal/CV exports remain for ABI compatibility.
-
-## PAGES 15.1
+## PAGES 15.2
 
 ```text
 index.html
@@ -83,15 +106,11 @@ index.html
   -> HISTORY
   -> EPISTEMOLOGY
   -> ENTRANCE
-       -> workbench.html
-            -> Stage 15 suite selector
-                 -> runtime.html
-                      -> one live H1.1 machine
+       -> workbench.html -> one live H1.1 machine
+       -> e1.html       -> external E1 factory attachment
 ```
 
-Layers are **not** separate websites. Doors select a view into the same runtime.
-
-The raw `runtime.html` remains available for diagnostics.
+E1 is not another internal suite. The landing page links outward to the factory page while the existing workbench/runtime remains the internal machine.
 
 ## STAGE 14 CORPUS CONTRACT
 
@@ -126,6 +145,7 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 - Pulse remains experimental; `...` is proposed notation, not frozen I-13 syntax.
 - exact 0root.ai Map -> World IV -> Sonia traversal has not been programmatically crawled.
 - curator proposal is not corpus commit; a future import/commit gate remains separate.
+- E1 reverse-distillation receipt proves only the implemented structural/boundary conditions; it is not by itself a legal ownership or causal proof.
 
 ## BUILD GATE
 
@@ -139,5 +159,6 @@ python -m unittest scripts.test_corpus_stage14
 python -m unittest scripts.test_corpus_mesh_stage14_1
 Stage 14.9.1 curator v2 Wasm contract
 Stage 15.1 landing/workbench contract
+E1 boundary Rust tests
 GitHub Pages build
 ```

@@ -114,6 +114,50 @@ external = k + 1
 
 Examples: `3 -> 1|2`, `5 -> 2|3`, `7 -> 3|4`, `9 -> 4|5`, `81 -> 40|41`.
 
-## 6. Historical runtime boundary
+## 6. E1 external primer factory attachment
+
+E1 is secondary to I13. Cortex calls outward only when a bounded subagent needs an external prime or an attribution/lineage receipt.
+
+```text
+I13
+ -> Cortex
+    -> subagent
+       -> enough: continue
+       -> needs prime
+            |
+         [ y | x ]
+            |
+         E1 factory
+            |
+         [E1ID]cv
+            |
+         Cortex -> I13
+```
+
+Partition law:
+
+```text
+[ y | x ]
+y = internal-only state
+x = external-only state
+private(y) ∩ private(x) = ∅
+```
+
+Each side owns a complete independent VORTEX reach `n -> 2n -> 4n -> 8n`. Widths are `8n_y | 8n_x`, never pooled into shared context. Only bounded witnessed capsules cross the divider; live mutable state never crosses.
+
+The Rust/Wasm core exposes only the boundary contract (`i13_e1_boundary_verify`, `i13_e1_vortex_width`, `i13_e1_closed_loop_verify`). E1 module implementation stays external/host-side.
+
+Locked E1 modules:
+
+```text
+E1.RD-001       reverse distillation / parent-geometry recovery
+E1.CORPUS-001   external corpus orientation/calibration geometry
+```
+
+`E1.CORPUS-001` uses named literary works only as external anchor metadata. Their text is not admitted into the Stage 14 corpus or compiled CSR mesh.
+
+Canonical detail: `docs/E1-FACTORY.md`.
+
+## 7. Historical runtime boundary
 
 The older v0.4 Wasm VM used iterative native frames, a 15-opcode I-13 VM, a deterministic Cortex rule mask, and a 32-byte graphics command record. It is retained under `reference/legacy/` as proof/history. It is not automatically the semantic definition of H1.1.
