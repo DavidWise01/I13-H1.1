@@ -1,6 +1,6 @@
 # I13 Golden Corpus · 04 Analysis
 
-Status: **CONSTRUCTED · GATE PENDING**
+Status: **FROZEN KNOWN GOOD · UPSTREAM-FLAY-GATED · HIR/VM/WASM VERIFIED**
 
 ID: `I13-GOLDEN-04-ANALYSIS-0.1`
 
@@ -27,6 +27,7 @@ ANALYSIS MAY MEASURE ADMITTED RELATIONS.
 ANALYSIS MAY DERIVE VALUES FROM ADMITTED RELATIONS.
 ANALYSIS MAY NOT OPEN ITS OWN GATE.
 ANALYSIS MAY NOT REDEFINE FLAY ADMISSION.
+ANALYSIS MAY NOT MUTATE THE ADMITTED RELATION.
 
 A BLOCKED RELATION CARRIES
 ADMITTED = 0.
@@ -102,5 +103,24 @@ ANALYSIS_OK               = 1
 ```
 
 The unchanged `13` witness makes the observational boundary explicit: analysis derives measurements but does not mutate the admitted relation value.
+
+## Gate evidence
+
+GitHub Actions run `32069931782`: **success**.
+
+The gate verified:
+
+```text
+upstream FLAY executes first
+FLAY_SATISFIED = 1
+9 / 9 analysis rocks
+recursive measurement
+blocked / admitted tag distinction
+input 13 remains 13
+HIR introspection
+reference VM
+Wasm parity
+repeat determinism
+```
 
 `|s|`, `<flay>`, coordinate diagrams, and the analysis wall are documentary notation only. They are not I13 grammar.
