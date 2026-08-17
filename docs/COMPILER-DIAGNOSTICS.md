@@ -1,6 +1,6 @@
 # I13 Compiler Diagnostics + Source Mapping v0.1
 
-Status: **CONSTRUCTED · PENDING/CI-GATED KNOWN GOOD**
+Status: **FROZEN KNOWN GOOD · COMPILER TESTED · CONFORMANCE LOCKED**
 
 Component ID: `I13-DIAGNOSTICS-0.1`
 
@@ -131,6 +131,8 @@ marked span
 ```
 
 Compiler tests additionally cover CRLF line extraction and zero-width EOF spans.
+
+The first frozen gate passed all 11 conformance cases and the full compiler/Wasm CI lane after this component was introduced.
 
 ## Non-goals for v0.1
 
