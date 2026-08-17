@@ -1,0 +1,8 @@
+// ROCK 03 · ASSIGN
+// river: 2 |s| 3
+// adds: reassignment
+
+I RIVER_IN <- 2
+I river <- RIVER_IN
+river <- river + 1
+I RIVER_OUT <- river
