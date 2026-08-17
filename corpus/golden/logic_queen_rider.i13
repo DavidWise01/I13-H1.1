@@ -1,0 +1,39 @@
+// I13 LOGIC FIELD · QUEEN RIDER · NON-RIVER PRECURSOR
+// Q = Queen. This witness does not add syntax or freeze 05_logic.
+// Local field: voxel(in,out) x vector(in,out) => four states.
+
+def choice_state(I voxel_in, I vector_in) {
+    if voxel_in == 1 {
+        if vector_in == 1 { -> 0 } // II
+        -> 1                    // IO
+    }
+    if vector_in == 1 { -> 2 } // OI
+    -> 3                        // OO
+}
+
+def queen_coverage2d(I up, I down, I left, I right) {
+    I rays <- 0
+    rays.p <- up
+    rays.p <- down
+    rays.p <- left
+    rays.p <- right
+    -> rays / 4
+}
+
+def queen_phase4d(I t) {
+    -> t + 0.0001
+}
+
+I QUEEN_II <- choice_state(1, 1)
+I QUEEN_IO <- choice_state(1, 0)
+I QUEEN_OI <- choice_state(0, 1)
+I QUEEN_OO <- choice_state(0, 0)
+
+I QUEEN_LOCAL_STATES_OK <- (QUEEN_II == 0) * (QUEEN_IO == 1) * (QUEEN_OI == 2) * (QUEEN_OO == 3)
+I QUEEN_COVERAGE_2D <- queen_coverage2d(1, 1, 1, 1)
+I QUEEN_SWEEP_3D <- 360
+I QUEEN_T0 <- 1
+I QUEEN_T1 <- queen_phase4d(QUEEN_T0)
+I QUEEN_PHASE_ADVANCES <- QUEEN_T1 > QUEEN_T0
+
+I QUEEN_RIDER_OK <- QUEEN_LOCAL_STATES_OK * (QUEEN_COVERAGE_2D == 1) * (QUEEN_SWEEP_3D == 360) * QUEEN_PHASE_ADVANCES
