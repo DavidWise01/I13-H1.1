@@ -97,13 +97,16 @@ Organization of the flayed skills into **TOPIC** (subject cluster) and
 |---|---|---|---|
 | `brainfuck` | esoteric-language | VERIFIED | `brainfuck_explorer.html` |
 | `malbolge` | esoteric-language | VERIFIED | `malbolge_explorer.html` |
+| `p-prime-prime` | esoteric-language | VERIFIED | `p_pp_explorer.html` |
 
-> **E6 = the esolang branch:** the user's "this one lol" pivot (Brainfuck) then
-> Malbolge. Brainfuck ships a *runnable* interpreter (minimal, faithful); Malbolge
-> ships a *reference* only (its self-modifying ternary VM is non-trivial — a wrong
-> runner was attempted and graveyarded; the reference is real spec data). Together
-> they bracket the language-design spectrum: minimal-by-design vs hostile-by-design.
-> Pairs with `pl-foundations` (C++) and `computational-primitive` (sbtcvm).
+> **E6 = the esolang branch:** the user's "this one lol" pivot (Brainfuck) → Malbolge
+> → P′′ (capstone, "lastly this one"). Brainfuck ships a *runnable* interpreter;
+> Malbolge ships a *reference* only (its self-modifying ternary VM is non-trivial —
+> a wrong runner was attempted and graveyarded). P′′ ships a *faithful P′′→BF
+> translator* that runs on the verified BF engine — completing the spectrum:
+> P′′ (1964 academic minimalism, parent of BF) → Brainfuck (minimal, runnable) →
+> Malbolge (hostile, reference). Pairs with `computational-primitive` (sbtcvm / Turing machines)
+> and `pl-foundations` (C++).
 
 ## F. MIND / THOUGHT-CONTROL (topic) — Psychology & Media Studies
 | Skill | Layer | Status | OLOGY branch | Tool |

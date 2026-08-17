@@ -34,13 +34,13 @@
 <body>
 <header>
   <h1>&#9883; I-13 Mesh Compass</h1>
-  <div class="sub">Synthesized FROM the gathered corpus — 20 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
+  <div class="sub">Synthesized FROM the gathered corpus — 21 real flayed skills. Reading ladders are a curated build, not source-derived.</div>
 </header>
 <main>
   <div class="stat">
-    <div><b>20</b><br><span class="sub">skills gathered</span></div>
+    <div><b>21</b><br><span class="sub">skills gathered</span></div>
     <div><b>8</b><br><span class="sub">reading ladders</span></div>
-    <div><b>18</b><br><span class="sub">VERIFIED</span></div>
+    <div><b>19</b><br><span class="sub">VERIFIED</span></div>
     <div><b>1</b><br><span class="sub">CONTESTED</span></div>
     <div><b>1</b><br><span class="sub">CLINICAL</span></div>
   </div>
@@ -48,7 +48,7 @@
   <div class="grid" id="grid"></div>
 </main>
 <footer>
-  Generated 2026-08-17 01:36 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
+  Generated 2026-08-17 02:49 UTC by build_compass.py. Node list extracted programmatically from ology_explorer.html (the flayed corpus). Ladders authored as synthesis. No external fetch; opens via <code>file://</code>.
 </footer>
 <script>
 const SKILLS = [
@@ -231,6 +231,15 @@ const SKILLS = [
     "status": "VERIFIED",
     "tool": "malbolge_explorer.html",
     "note": "Malbolge (Olmstead 1998) — 2nd esoteric-language node; reference-only (merged #37)"
+  },
+  {
+    "n": "p-prime-prime",
+    "topic": "Esoteric Language",
+    "ology": "Esoteric Programming Languages",
+    "layer": "esoteric-language",
+    "status": "VERIFIED",
+    "tool": "p_pp_explorer.html",
+    "note": "P'' (Bohm 1964) — capstone esolang node, parent of Brainfuck; faithful P''->BF translator (merged #39)"
   }
 ];
 const LADDERS = [
@@ -292,9 +301,10 @@ const LADDERS = [
     ]
   },
   {
-    "name": "Esolang Spectrum (minimal → hostile)",
-    "blurb": "Brainfuck (minimal) vs Malbolge (hostile) — language design extremes.",
+    "name": "Esolang Spectrum (ancestor → minimal → hostile)",
+    "blurb": "P'' (1964, parent of Brainfuck) → Brainfuck (minimal) → Malbolge (hostile).",
     "steps": [
+      "p-prime-prime",
       "brainfuck",
       "malbolge",
       "fundamentals-cpp"
