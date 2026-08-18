@@ -5,8 +5,10 @@ on:
     paths:
       - 'docs/workbench.html'
       - 'docs/e1-service.html'
+      - 'docs/e1-tech-001.js'
       - 'docs/stages/stage15-3-e1-handoff.js'
       - 'docs/STAGE15.3-E1-HANDOFF.md'
+      - 'docs/E1-TECH-001.md'
       - 'src/e1_boundary.rs'
       - 'src/lib.rs'
       - '.github/workflows/stage15-3-e1-handoff.yml'
@@ -14,8 +16,10 @@ on:
     paths:
       - 'docs/workbench.html'
       - 'docs/e1-service.html'
+      - 'docs/e1-tech-001.js'
       - 'docs/stages/stage15-3-e1-handoff.js'
       - 'docs/STAGE15.3-E1-HANDOFF.md'
+      - 'docs/E1-TECH-001.md'
       - 'src/e1_boundary.rs'
       - 'src/lib.rs'
       - '.github/workflows/stage15-3-e1-handoff.yml'
@@ -28,8 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check internal handoff JavaScript syntax
-        run: node --check docs/stages/stage15-3-e1-handoff.js
+      - name: Check internal handoff and TECH JavaScript syntax
+        run: |
+          node --check docs/stages/stage15-3-e1-handoff.js
+          node --check docs/e1-tech-001.js
       - name: Extract and check sandbox service JavaScript
         run: |
           python - <<'PY'
@@ -46,10 +52,15 @@ jobs:
           ! grep -Eq 'fetch\(|localStorage|sessionStorage|indexedDB' docs/e1-service.html
           grep -q 'postMessage' docs/e1-service.html
           grep -q 'postMessage' docs/stages/stage15-3-e1-handoff.js
-      - name: Check workbench wiring and Wasm gates
+      - name: Check workbench wiring, Wasm gates, and TECH trits
         run: |
           grep -q 'stages/stage15-3-e1-handoff.js' docs/workbench.html
           grep -q 'i13_e1_boundary_verify' docs/stages/stage15-3-e1-handoff.js
           grep -q 'i13_e1_closed_loop_verify' docs/stages/stage15-3-e1-handoff.js
           grep -q 'pub extern "C" fn i13_e1_boundary_verify' src/lib.rs
           grep -q 'pub extern "C" fn i13_e1_closed_loop_verify' src/lib.rs
+          grep -q 'E1.TECH-001' docs/stages/stage15-3-e1-handoff.js
+          grep -q "'TECH-001'" docs/e1-service.html
+          grep -q 'n1' docs/e1-tech-001.js
+          grep -q 'p0' docs/e1-tech-001.js
+          grep -q 'p1' docs/e1-tech-001.js
