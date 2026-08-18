@@ -1,0 +1,69 @@
+name: E1 BENCH-001 Harbor debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/e1-terminal-bench-debug.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      JOBS_DIR: /tmp/i13-tbench-debug
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Harbor
+        run: python -m pip install -q 'harbor==0.20.0'
+      - name: Run and classify
+        id: run
+        shell: bash
+        run: |
+          rm -rf "${JOBS_DIR}"; mkdir -p "${JOBS_DIR}"
+          set +e
+          harbor run \
+            -d terminal-bench/terminal-bench-2-1 \
+            --agent scripts.harbor_i13_agent:I13HarborAgent \
+            --include-task-name fix-git \
+            --jobs-dir "${JOBS_DIR}" \
+            --n-concurrent 1 \
+            --n-attempts 1 \
+            > /tmp/tbench-debug.log 2>&1
+          rc=$?
+          set -e
+          cat /tmp/tbench-debug.log
+          tail_line=$(grep -v '^[[:space:]]*$' /tmp/tbench-debug.log | tail -n 1 || true)
+          lower=$(tr '[:upper:]' '[:lower:]' < /tmp/tbench-debug.log)
+          kind=other
+          if grep -qiE 'no such option|unknown option|unrecognized.*argument|usage:.*harbor' /tmp/tbench-debug.log; then kind=cli-option; fi
+          if grep -qiE 'import.*error|module.*not found|cannot import|failed to import' /tmp/tbench-debug.log; then kind=agent-import; fi
+          if grep -qiE 'dataset.*(not found|download|resolve|registry)|failed.*dataset' /tmp/tbench-debug.log; then kind=dataset; fi
+          if grep -qiE 'docker|container|image.*(pull|build|error)' /tmp/tbench-debug.log; then kind=docker-task; fi
+          if grep -qiE 'traceback|exception|error:' /tmp/tbench-debug.log && [ "$kind" = other ]; then kind=runtime; fi
+          slug=$(printf '%s' "$tail_line" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g;s/^-+//;s/-+$//' | cut -c1-110)
+          [ -n "$slug" ] || slug=empty
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "DEBUG_RC=$rc DEBUG_KIND=$kind DEBUG_TAIL=$slug"
+      - name: Publish debug contexts
+        if: ${{ always() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rc='${{ steps.run.outputs.rc }}'||'missing';
+            const kind='${{ steps.run.outputs.kind }}'||'missing';
+            const slug='${{ steps.run.outputs.slug }}'||'missing';
+            for(const ctx of [`i13/tbench-debug/rc-${rc}`,`i13/tbench-debug/${kind}`,`i13/tbench-debug/tail-${slug}`]){
+              await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:ctx,description:'diagnostic only'});
+            }
