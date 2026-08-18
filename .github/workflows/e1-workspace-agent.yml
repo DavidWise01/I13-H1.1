@@ -122,6 +122,70 @@ jobs:
           grep -Fq 'already has local changes' /tmp/dirty.txt
           grep -Fq 'r0=1' /tmp/dirty.txt
 
+      - name: Prove full surgical repair cycle on a local clone
+        run: |
+          rm -rf /tmp/i13-self-repair
+          git clone -q --no-hardlinks "$GITHUB_WORKSPACE" /tmp/i13-self-repair
+          git -C /tmp/i13-self-repair config user.email i13@example.invalid
+          git -C /tmp/i13-self-repair config user.name 'I13 Surgical Test'
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('/tmp/i13-self-repair/src/e1_boundary.rs')
+          text = p.read_text()
+          good = 'assert_eq!(vortex_width_8n(1), Some(8));'
+          bad = 'assert_eq!(vortex_width_8n(1), Some(7));'
+          if text.count(good) != 1:
+              raise SystemExit('expected one vortex_width_8n(1) assertion')
+          p.write_text(text.replace(good, bad))
+          PY
+          git -C /tmp/i13-self-repair add src/e1_boundary.rs
+          git -C /tmp/i13-self-repair commit -qm 'inject controlled workspace defect'
+          git -C /tmp/i13-self-repair diff -R HEAD^ HEAD -- src/e1_boundary.rs > /tmp/i13-self-repair.patch
+          test -s /tmp/i13-self-repair.patch
+          test -z "$(git -C /tmp/i13-self-repair status --porcelain -- src/e1_boundary.rs)"
+
+          target/debug/i13-workspace /tmp/i13-self-repair 1 inspect src/e1_boundary.rs | tee /tmp/self-inspect.txt
+          grep -Fq 'vortex_width_8n(1), Some(7)' /tmp/self-inspect.txt
+
+          set +e
+          target/debug/i13-workspace /tmp/i13-self-repair 1 test > /tmp/self-broken-test.txt 2>&1
+          broken=$?
+          set -e
+          test "$broken" -eq 30
+          grep -Fq 'authority=PROCEED' /tmp/self-broken-test.txt
+          grep -Fq 'capability=test' /tmp/self-broken-test.txt
+          grep -Fq 'exit=101' /tmp/self-broken-test.txt
+          grep -Fq 'r0=1' /tmp/self-broken-test.txt
+
+          set +e
+          cat /tmp/i13-self-repair.patch | target/debug/i13-workspace /tmp/i13-self-repair 0 patch > /tmp/self-p0.txt 2>&1
+          p0=$?
+          set -e
+          test "$p0" -eq 21
+          grep -Fq 'authority=FLAY' /tmp/self-p0.txt
+          grep -Fq 'executed=0' /tmp/self-p0.txt
+          grep -Fq 'r0=1' /tmp/self-p0.txt
+          grep -Fq 'vortex_width_8n(1), Some(7)' /tmp/i13-self-repair/src/e1_boundary.rs
+
+          cat /tmp/i13-self-repair.patch | target/debug/i13-workspace /tmp/i13-self-repair 1 patch | tee /tmp/self-p1-patch.txt
+          grep -Fq 'authority=PROCEED' /tmp/self-p1-patch.txt
+          grep -Fq 'capability=patch' /tmp/self-p1-patch.txt
+          grep -Fq 'changed_files=src/e1_boundary.rs' /tmp/self-p1-patch.txt
+          grep -Fq 'diff_check=PASS' /tmp/self-p1-patch.txt
+          grep -Fq 'r0=1' /tmp/self-p1-patch.txt
+          grep -Fq 'vortex_width_8n(1), Some(8)' /tmp/i13-self-repair/src/e1_boundary.rs
+
+          target/debug/i13-workspace /tmp/i13-self-repair 1 test | tee /tmp/self-fixed-test.txt
+          grep -Fq 'authority=PROCEED' /tmp/self-fixed-test.txt
+          grep -Fq 'capability=test' /tmp/self-fixed-test.txt
+          grep -Fq 'exit=0' /tmp/self-fixed-test.txt
+          grep -Fq 'r0=1' /tmp/self-fixed-test.txt
+
+          test "$(git -C /tmp/i13-self-repair diff --name-only)" = 'src/e1_boundary.rs'
+          git -C /tmp/i13-self-repair diff --exit-code HEAD^ -- src/e1_boundary.rs
+          echo 'I13_SURGICAL_SELF_REPAIR_OK=1'
+
       - name: Prove fixed offline build and test capabilities
         run: |
           target/debug/i13-workspace . 1 build | tee /tmp/build.txt
@@ -152,4 +216,4 @@ jobs:
         with:
           script: |
             const ok='${{ job.status }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-workspace',description:ok?'offline Git workspace verified':'offline Git workspace proof failed'})
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-workspace',description:ok?'offline Git workspace + surgical repair verified':'offline Git workspace proof failed'})
