@@ -84,6 +84,7 @@ jobs:
 
       - name: Extract official verifier reward and I13 trace
         id: score
+        if: ${{ always() }}
         run: |
           python - <<'PY'
           import json
@@ -91,20 +92,17 @@ jobs:
           from pathlib import Path
 
           root = Path(os.environ['JOBS_DIR'])
-          reward_files = sorted(root.rglob('reward.txt'))
           reward = None
-          reward_path = None
-          for path in reward_files:
+          reward_source = 'missing'
+          for path in sorted(root.rglob('reward.txt')):
               try:
-                  value = float(path.read_text().strip())
+                  reward = float(path.read_text().strip())
+                  reward_source = str(path)
+                  break
               except Exception:
-                  continue
-              reward = value
-              reward_path = path
-              break
+                  pass
 
           if reward is None:
-              # Fallback for Harbor layouts that materialize reward only in result.json.
               candidates = []
               def walk(obj, path=''):
                   if isinstance(obj, dict):
@@ -122,31 +120,83 @@ jobs:
                   except Exception:
                       pass
               if candidates:
-                  # One-task/one-attempt job: the terminal trial reward is expected
-                  # to be 0 or 1. Prefer the last discovered scalar reward.
-                  _, reward = candidates[-1]
+                  reward_source, reward = candidates[-1]
 
+          trace_symbol = 'missing'
+          trace_reason = 'trace unavailable'
           traces = sorted(root.rglob('i13-bench-trace.json'))
-          print(f'REWARD={reward!r}')
-          print(f'REWARD_PATH={reward_path}')
           if traces:
-              print('--- I13 TRACE ---')
-              print(traces[0].read_text())
-          else:
-              print('I13_TRACE=MISSING')
+              try:
+                  trace = json.loads(traces[0].read_text())
+                  trace_symbol = str(trace.get('trit', {}).get('symbol', 'missing'))
+                  trace_reason = str(trace.get('reason', ''))[:120]
+                  print('--- I13 TRACE ---')
+                  print(json.dumps(trace, indent=2, sort_keys=True))
+              except Exception as exc:
+                  trace_reason = f'trace parse error: {exc}'[:120]
 
-          if reward is None:
-              raise SystemExit('could not locate Harbor verifier reward')
+          harbor_rc = '${{ steps.run_bench.outputs.harbor_rc }}'
+          reward_text = 'missing' if reward is None else str(reward)
+          reward_found = reward is not None
+          harness_ok = harbor_rc == '0' and reward_found
+          passed = reward is not None and reward >= 1.0
 
-          out = Path(os.environ['GITHUB_OUTPUT'])
-          with out.open('a') as f:
-              f.write(f'reward={reward}\n')
-              f.write(f'passed={str(reward >= 1.0).lower()}\n')
+          print(f'HARBOR_RC={harbor_rc}')
+          print(f'REWARD={reward_text}')
+          print(f'REWARD_SOURCE={reward_source}')
+          print(f'TRIT={trace_symbol}')
+          print(f'HARNESS_OK={harness_ok}')
+
+          with Path(os.environ['GITHUB_OUTPUT']).open('a') as f:
+              f.write(f'harbor_rc={harbor_rc or "missing"}\n')
+              f.write(f'reward={reward_text}\n')
+              f.write(f'reward_found={str(reward_found).lower()}\n')
+              f.write(f'harness_ok={str(harness_ok).lower()}\n')
+              f.write(f'passed={str(passed).lower()}\n')
+              f.write(f'trit={trace_symbol}\n')
+              f.write(f'trace_reason={trace_reason.replace(chr(10), " ")}\n')
           PY
+
+      - name: Publish diagnostic status contexts
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const harnessOk = '${{ steps.score.outputs.harness_ok }}' === 'true';
+            const reward = '${{ steps.score.outputs.reward }}' || 'missing';
+            const trit = '${{ steps.score.outputs.trit }}' || 'missing';
+            const harborRc = '${{ steps.score.outputs.harbor_rc }}' || 'missing';
+            for (const item of [
+              {
+                context: `i13/tbench-harness/${harnessOk ? 'ok' : 'fail'}`,
+                state: harnessOk ? 'success' : 'failure',
+                description: `Harbor rc=${harborRc}; reward artifact=${harnessOk ? 'found' : 'missing-or-run-failed'}`
+              },
+              {
+                context: `i13/tbench-reward/${reward}`,
+                state: reward === '1.0' || reward === '1' ? 'success' : 'failure',
+                description: `Official Terminal-Bench verifier reward=${reward}`
+              },
+              {
+                context: `i13/tbench-trit/${trit}`,
+                state: trit === 'missing' ? 'failure' : 'success',
+                description: `I13 terminal task return trit=${trit}`
+              }
+            ]) {
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha,
+                ...item
+              });
+            }
 
       - name: Assert benchmark outcome
         run: |
+          echo "Harbor rc = ${{ steps.score.outputs.harbor_rc }}"
           echo "Terminal-Bench 2.1 / fix-git reward = ${{ steps.score.outputs.reward }}"
+          echo "I13 trit = ${{ steps.score.outputs.trit }}"
+          test "${{ steps.score.outputs.harness_ok }}" = "true"
           if [ "${{ steps.score.outputs.passed }}" != "true" ]; then
             echo 'I13_TBENCH_FIX_GIT_PASS=0'
             exit 1
@@ -159,7 +209,7 @@ jobs:
         with:
           script: |
             const passed = '${{ steps.score.outputs.passed }}' === 'true';
-            const reward = '${{ steps.score.outputs.reward }}' || 'unavailable';
+            const reward = '${{ steps.score.outputs.reward }}' || 'missing';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
