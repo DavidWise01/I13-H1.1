@@ -204,7 +204,7 @@ Native package:
 ```text
 src/workspace.rs                  bounded Git/files/process implementation
 src/bin/i13-workspace.rs          trit-gated CLI
-.docs/E1-WORKSPACE-001.md         canonical attachment contract
+docs/E1-WORKSPACE-001.md          canonical attachment contract
 .github/workflows/e1-workspace-agent.yml
                                   real local-repo proof gate
 ```
