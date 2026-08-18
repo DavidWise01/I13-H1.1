@@ -20,6 +20,7 @@ jobs:
       TB21_SHA: 7131e4375048a0e408a8fb404b5f499d726b695b
       HARBOR_VERSION: '0.20.0'
       JOBS_DIR: /tmp/i13-tbench-jobs
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
 
@@ -52,27 +53,34 @@ jobs:
           python -m pip install "harbor==${HARBOR_VERSION}"
           harbor --version || harbor --help | head -20
 
-      - name: Fetch official Terminal-Bench 2.1 task set
+      - name: Pin and display official Terminal-Bench 2.1 task source
         run: |
           rm -rf /tmp/terminal-bench-2-1
           git clone -q https://github.com/harbor-framework/terminal-bench-2-1.git /tmp/terminal-bench-2-1
           git -C /tmp/terminal-bench-2-1 checkout -q "${TB21_SHA}"
           test -f /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
-          test -f /tmp/terminal-bench-2-1/tasks/fix-git/task.toml
-          printf 'TB21_SHA=%s\n' "$(git -C /tmp/terminal-bench-2-1 rev-parse HEAD)"
+          printf 'TB21_SOURCE_SHA=%s\n' "$(git -C /tmp/terminal-bench-2-1 rev-parse HEAD)"
           cat /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
 
-      - name: Run one official task with current bounded I13
+      - name: Import-check current I13 Harbor adapter
+        run: |
+          python - <<'PY'
+          from scripts.harbor_i13_agent import I13HarborAgent
+          print('I13_HARBOR_IMPORT_OK=1')
+          print(I13HarborAgent.name(), I13HarborAgent.version)
+          PY
+
+      - name: Run one official registered Terminal-Bench 2.1 task
         id: run_bench
         run: |
           rm -rf "${JOBS_DIR}"
           mkdir -p "${JOBS_DIR}"
           set +e
           harbor run \
-            -p /tmp/terminal-bench-2-1/tasks/fix-git \
-            --agent-import-path scripts.harbor_i13_agent:I13HarborAgent \
+            -d terminal-bench/terminal-bench-2-1 \
+            --agent scripts.harbor_i13_agent:I13HarborAgent \
+            --include-task-name fix-git \
             -o "${JOBS_DIR}" \
-            --job-name i13-tb21-fix-git \
             -n 1 \
             -k 1 \
             2>&1 | tee /tmp/i13-tbench-console.txt
