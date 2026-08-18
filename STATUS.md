@@ -1,6 +1,6 @@
 # H1.1 STATUS
 
-Last full parity pass: 2026-08-16. E1.TECH-001 package integrated 2026-08-18; dedicated CI is authoritative for its current proof state.
+Last full parity pass: 2026-08-16. E1.TECH-001 and E1.WORKSPACE-001 integrated 2026-08-18; dedicated CI contexts are authoritative for their proof state.
 
 ## LIVE H1.1
 
@@ -31,6 +31,7 @@ Last full parity pass: 2026-08-16. E1.TECH-001 package integrated 2026-08-18; de
 - Stage 15.2 / E1: external primer factory attachment with hard `[ y | x ]` partition, independent 8n sides, E1ID closed-loop receipt, `E1.RD-001`, and `E1.CORPUS-001`.
 - Stage 15.3: live Cortex ↔ E1 handoff through an opaque sandboxed service and Wasm-verified request/return capsules.
 - `E1.TECH-001`: trit-native technical/surgical/coding prime using direct `n1=-1`, `p0=0`, `p1=+1` authority with an executable I13 semantic mirror.
+- `E1.WORKSPACE-001`: native-only offline Git coding workspace behind TECH `p1`, with bounded read/git/build/test/patch capabilities and receipt return to `r0`.
 
 ## E1 EXTERNAL PRIMER FACTORY — LOCKED
 
@@ -85,6 +86,8 @@ else -> p0
 
 There is no Boolean collapse at this control layer. `p1` advances only to the Cortex capability gate; TECH-001 itself does not touch host files, repositories, shells, networks, or browser storage.
 
+`p1` may now bind to `E1.WORKSPACE-001`, a separate native capability adapter for an already-cloned local Git repository. That adapter remains outside the Wasm surface and returns its own workspace receipt.
+
 `E1.RD-001` is reverse distillation: recover parent dependency geometry from a bounded derived form (`ABCD - D = ABC`).
 
 `E1.CORPUS-001` is the locked external calibration field:
@@ -105,7 +108,7 @@ Continuity core:
 [ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]
 ```
 
-Canonical specs: `docs/E1-FACTORY.md`, `docs/E1-TECH-001.md`. Pages: `docs/e1.html`.
+Canonical specs: `docs/E1-FACTORY.md`, `docs/E1-TECH-001.md`, `docs/E1-WORKSPACE-001.md`. Pages: `docs/e1.html`.
 
 ## STAGE 15.3 LIVE E1 HANDOFF — BUILT
 
@@ -151,7 +154,7 @@ Implementation laws:
 
 Canonical spec: `docs/STAGE15.3-E1-HANDOFF.md`.
 
-## E1.TECH-001 PACKAGE
+## E1.TECH-001 PACKAGE — LOCKED KNOWN GOOD
 
 ```text
 docs/e1-tech-001.js          deterministic host-side trit evaluator
@@ -168,6 +171,69 @@ Surgical lifecycle:
 ```text
 observe -> distinguish -> smallest cut -> verify -> receipt -> r0
 ```
+
+Dedicated proof:
+
+```text
+i13/e1-tech-trit = success
+```
+
+## E1.WORKSPACE-001 — OFFLINE CODING WORKSPACE — LOCKED KNOWN GOOD
+
+```text
+E1.TECH-001 / p1
+      |
+      v
+CORTEX CAPABILITY GATE
+      |
+      v
+i13-workspace <already-cloned Git repo>
+      |
+      +-- read
+      +-- git status / diff
+      +-- cargo build --offline
+      +-- cargo test --offline
+      `-- bounded git apply
+      |
+      v
+workspace receipt -> r0
+```
+
+Native package:
+
+```text
+src/workspace.rs                  bounded Git/files/process implementation
+src/bin/i13-workspace.rs          trit-gated CLI
+.docs/E1-WORKSPACE-001.md         canonical attachment contract
+.github/workflows/e1-workspace-agent.yml
+                                  real local-repo proof gate
+```
+
+The worker is not exported by `src/lib.rs`; the Wasm core keeps no filesystem/process capability.
+
+Patch law:
+
+```text
+<= 64 KiB
+1..4 files
+existing tracked regular files only
+clean target required
+no path escape / .git
+no create/delete/rename/mode/binary patch
+git apply --check
+git apply
+git diff --check
+```
+
+v0.1 deliberately has no arbitrary shell, commit, push, clone, fetch, or pull operation.
+
+Dedicated proof:
+
+```text
+i13/e1-workspace = success
+```
+
+The proof exercises a real temporary Git repository, successful patch, dirty-target veto, path/.git veto, fixed offline Cargo build/test, native trit gate, and a `wasm32-unknown-unknown` library check confirming the host worker is not part of the Wasm surface.
 
 ## CURATOR 14.9.1 — PAUSED BOUNDARY
 
@@ -199,7 +265,7 @@ index.html
             -> external E1 factory inspection page
 ```
 
-E1 remains external and secondary. The workbench carries only the bounded handoff control and verified returned prime.
+E1 remains external and secondary. The workbench carries only the bounded handoff control and verified returned prime. Native local-repository operations happen through `i13-workspace`, not through browser/Wasm authority.
 
 ## STAGE 14 CORPUS CONTRACT
 
@@ -236,7 +302,8 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 - curator proposal is not corpus commit; a future import/commit gate remains separate.
 - E1 reverse-distillation receipt proves only the implemented structural/boundary conditions; it is not by itself a legal ownership or causal proof.
 - Stage 15.3 does not claim process isolation equivalent to a separate OS process; it implements browser sandbox/origin isolation plus bounded message passing.
-- E1.TECH-001 is a trit-native authority/prime layer; actual host mutation still requires a separately bound Cortex capability adapter.
+- E1.WORKSPACE-001 does not claim OS-level network isolation for arbitrary local build scripts/tests; it constrains the worker's own operations and forces Cargo dependency resolution offline.
+- workspace v0.1 does not create/delete/rename files, commit, push, run arbitrary shell commands, or choose/synthesize patches autonomously.
 
 ## BUILD GATE
 
@@ -253,5 +320,6 @@ Stage 15.1 landing/workbench contract
 E1 boundary Rust tests
 Stage 15.3 opaque-sandbox / message-only handoff contract
 E1 TECH-001 JS/I13/Wasm trit conformance
+E1 WORKSPACE-001 native offline Git coding workspace proof
 GitHub Pages build
 ```
