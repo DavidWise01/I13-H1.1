@@ -4,8 +4,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'README.md'
+      - 'STATUS.md'
       - 'docs/E1-TECH-001.md'
       - 'docs/E1-FACTORY.md'
+      - 'docs/STAGE15.3-E1-HANDOFF.md'
       - 'docs/e1-tech-001.js'
       - 'docs/e1-service.html'
       - 'docs/e1-factory.js'
@@ -13,10 +16,14 @@ on:
       - 'docs/stages/stage15-3-e1-handoff.js'
       - 'examples/e1_tech_trit.i13'
       - '.github/workflows/e1-technical-agent.yml'
+      - '.github/workflows/stage15-3-e1-handoff.yml'
   pull_request:
     paths:
+      - 'README.md'
+      - 'STATUS.md'
       - 'docs/E1-TECH-001.md'
       - 'docs/E1-FACTORY.md'
+      - 'docs/STAGE15.3-E1-HANDOFF.md'
       - 'docs/e1-tech-001.js'
       - 'docs/e1-service.html'
       - 'docs/e1-factory.js'
@@ -24,6 +31,7 @@ on:
       - 'docs/stages/stage15-3-e1-handoff.js'
       - 'examples/e1_tech_trit.i13'
       - '.github/workflows/e1-technical-agent.yml'
+      - '.github/workflows/stage15-3-e1-handoff.yml'
 
 permissions:
   contents: read
