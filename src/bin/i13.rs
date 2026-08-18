@@ -14,6 +14,12 @@ fn main() {
     let args = env::args().skip(1).collect::<Vec<_>>();
     let command = args.first().map(String::as_str).unwrap_or("");
 
+    match command {
+        "--version" | "-V" | "version" => return version(),
+        "--help" | "-h" | "help" => return help(),
+        _ => {}
+    }
+
     let (path, output_path, dump_kind) = match args.as_slice() {
         [command, path] if matches!(command.as_str(), "check" | "run" | "trace" | "debug") => (path.clone(), None, None),
         [command, path, flag, output] if command == "build" && flag == "-o" => (path.clone(), Some(output.clone()), None),
@@ -38,11 +44,13 @@ fn main() {
         "check" => match compile(source) {
             Ok(output) => {
                 println!(
-                    "VALID · IVM {} ops · {} region(s) · peak stack {}",
-                    compiler::ivm::OPCODE_COUNT,
+                    "VALID · {} region(s) · peak stack {}",
                     output.validation.regions,
                     output.validation.peak_height,
                 );
+                // axiom XIII: the ledger declares its own scope, so VALID is never misread as "safe".
+                println!("  COVERED     stack balance · control-structure pairing (per region) · call arity · function existence");
+                println!("  NOT COVERED types · termination (runtime ceilings: 4096 frames / 8,000,000 steps) · arithmetic · waste");
                 Ok(())
             }
             Err(errors) => Err(errors),
@@ -213,5 +221,28 @@ fn usage() -> ! {
     eprintln!("  i13 debug <file.i13>");
     eprintln!("  i13 build <file.i13> -o <file.wasm>");
     eprintln!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm");
+    eprintln!("  i13 --version   ·   i13 --help");
     process::exit(2);
+}
+
+fn version() {
+    println!(
+        "i13 {} · IVM {} opcodes (Attr reserved / non-executable) · I-13 by David Lee Wise / ROOT0 / TriPod LLC",
+        env!("CARGO_PKG_VERSION"),
+        compiler::ivm::OPCODE_COUNT,
+    );
+}
+
+fn help() {
+    println!("i13 — the I-13 compiler (H1.1)");
+    println!();
+    println!("usage:");
+    println!("  i13 check <file.i13>            validate; prints VALID + the COVERED/NOT-COVERED ledger");
+    println!("  i13 run <file.i13>              validate then execute; prints declared globals");
+    println!("  i13 trace <file.i13>            run with a step trace");
+    println!("  i13 debug <file.i13>            run under the interactive debugger");
+    println!("  i13 build <file.i13> -o <out>   compile to a self-contained wasm module");
+    println!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm   introspect a stage");
+    println!("  i13 --version                   version + ISA size");
+    println!("  i13 --help                      this message");
 }

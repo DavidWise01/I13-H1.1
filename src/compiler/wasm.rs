@@ -481,6 +481,12 @@ fn emit_numeric_bin(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Res
             out.push(OP_F64_MUL);
         }
         bin::DIV => emit_checked_div(layout, out),
+        bin::MOD => {
+            return Err(backend_error(
+                "modulo (%) is not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
+                inst.span.clone(),
+            ))
+        }
         other => {
             return Err(backend_error(
                 format!("invalid Bin operator {other}"),

@@ -33,6 +33,7 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, Vec<Diagnostic>> {
             b'+' => single(&mut out, TokenKind::Plus, i, line, col, &mut i, &mut col),
             b'*' => single(&mut out, TokenKind::Star, i, line, col, &mut i, &mut col),
             b'/' => single(&mut out, TokenKind::Slash, i, line, col, &mut i, &mut col),
+            b'%' => single(&mut out, TokenKind::Percent, i, line, col, &mut i, &mut col),
             b'<' if i + 1 < bytes.len() && bytes[i + 1] == b'-' => pair(&mut out, TokenKind::Bind, i, line, col, &mut i, &mut col),
             b'-' if i + 1 < bytes.len() && bytes[i + 1] == b'>' => pair(&mut out, TokenKind::ReturnArrow, i, line, col, &mut i, &mut col),
             b'=' if i + 1 < bytes.len() && bytes[i + 1] == b'=' => pair(&mut out, TokenKind::EqEq, i, line, col, &mut i, &mut col),

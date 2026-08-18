@@ -87,6 +87,7 @@ pub mod bin {
     pub const SUB: i32 = 1;
     pub const MUL: i32 = 2;
     pub const DIV: i32 = 3;
+    pub const MOD: i32 = 4;
 }
 
 pub mod cmp {

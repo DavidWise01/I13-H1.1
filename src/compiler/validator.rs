@@ -14,13 +14,13 @@ pub fn validate(program: &IvmProgram) -> Result<ValidationReport, Vec<Diagnostic
     let mut peak = 0;
     let mut errors = Vec::new();
 
-    match validate_region(&program.main) {
+    match validate_region(&program.main, false) {
         Ok(p) => peak = peak.max(p),
         Err(error) => errors.push(error),
     }
 
     for function in &program.functions {
-        match validate_region(&function.code) {
+        match validate_region(&function.code, true) {
             Ok(p) => peak = peak.max(p),
             Err(error) => errors.push(error),
         }
@@ -33,7 +33,7 @@ pub fn validate(program: &IvmProgram) -> Result<ValidationReport, Vec<Diagnostic
     }
 }
 
-fn validate_region(code: &[Inst]) -> Result<i32, Diagnostic> {
+fn validate_region(code: &[Inst], is_function: bool) -> Result<i32, Diagnostic> {
     let mut control = Vec::<Control>::new();
     let mut height = 0i32;
     let mut peak = 0i32;
@@ -123,6 +123,12 @@ fn validate_region(code: &[Inst]) -> Result<i32, Diagnostic> {
 
     if !control.is_empty() {
         return Err(error("unclosed control region", terminal_span(code)));
+    }
+    // return-totality: a function body must not fall through without an explicit Return.
+    // The runtime already dies here; the single-pass validator already computes `live`,
+    // so this moves the failure from run to check for free — no new pass, no new state.
+    if is_function && live {
+        return Err(error("function may fall through without Return (end it with an explicit ->)", terminal_span(code)));
     }
     if live && height != 0 {
         return Err(error(format!("region exits with stack height {height}, expected 0"), terminal_span(code)));

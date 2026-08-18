@@ -222,6 +222,7 @@ impl Emitter<'_> {
                     BinaryOp::Sub => bin::SUB,
                     BinaryOp::Mul => bin::MUL,
                     BinaryOp::Div => bin::DIV,
+                    BinaryOp::Mod => bin::MOD,
                 };
                 self.code.push(inst);
             }

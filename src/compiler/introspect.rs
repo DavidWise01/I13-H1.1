@@ -283,12 +283,12 @@ fn token_text(kind: &TokenKind) -> String {
         TokenKind::Lt => "<".into(), TokenKind::Lte => "<=".into(),
         TokenKind::Gt => ">".into(), TokenKind::Gte => ">=".into(),
         TokenKind::Plus => "+".into(), TokenKind::Minus => "-".into(),
-        TokenKind::Star => "*".into(), TokenKind::Slash => "/".into(),
+        TokenKind::Star => "*".into(), TokenKind::Slash => "/".into(), TokenKind::Percent => "%".into(),
         TokenKind::Newline => "NEWLINE".into(), TokenKind::Eof => "EOF".into(),
     }
 }
 
-fn binary_name(op: BinaryOp) -> &'static str { match op { BinaryOp::Add => "Add", BinaryOp::Sub => "Sub", BinaryOp::Mul => "Mul", BinaryOp::Div => "Div" } }
+fn binary_name(op: BinaryOp) -> &'static str { match op { BinaryOp::Add => "Add", BinaryOp::Sub => "Sub", BinaryOp::Mul => "Mul", BinaryOp::Div => "Div", BinaryOp::Mod => "Mod" } }
 fn compare_name(op: CompareOp) -> &'static str { match op { CompareOp::Eq => "Eq", CompareOp::Ne => "Ne", CompareOp::Lt => "Lt", CompareOp::Lte => "Lte", CompareOp::Gt => "Gt", CompareOp::Gte => "Gte" } }
 fn op_name(op: Op) -> &'static str { match op { Op::Const => "Const", Op::Ask => "Ask", Op::Attr => "Attr", Op::Ret => "Ret", Op::Answer => "Answer", Op::Drop => "Drop", Op::Bin => "Bin", Op::Cmp => "Cmp", Op::If => "If", Op::Call => "Call", Op::Block => "Block", Op::Else => "Else", Op::End => "End", Op::Func => "Func", Op::Halt => "Halt" } }
 fn ivm_bin_name(raw: i32) -> &'static str { match raw { ivm::bin::ADD => "Add", ivm::bin::SUB => "Sub", ivm::bin::MUL => "Mul", ivm::bin::DIV => "Div", _ => "Invalid" } }

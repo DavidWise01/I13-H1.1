@@ -36,7 +36,7 @@ pub enum ExprKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BinaryOp { Add, Sub, Mul, Div }
+pub enum BinaryOp { Add, Sub, Mul, Div, Mod }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CompareOp { Eq, Ne, Lt, Lte, Gt, Gte }

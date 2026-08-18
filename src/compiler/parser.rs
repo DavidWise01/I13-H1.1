@@ -210,6 +210,7 @@ impl Parser {
             TokenKind::Minus => Some((2, Some(BinaryOp::Sub), None)),
             TokenKind::Star => Some((3, Some(BinaryOp::Mul), None)),
             TokenKind::Slash => Some((3, Some(BinaryOp::Div), None)),
+            TokenKind::Percent => Some((3, Some(BinaryOp::Mod), None)),
             _ => None,
         }
     }
