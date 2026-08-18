@@ -91,15 +91,20 @@ impl Parser {
     fn assign_stmt(&mut self) -> Option<Stmt> {
         let (name, start_span) = self.expect_ident("expected assignment target")?;
         let mut attribute = None;
+        let mut index = None;
         let mut end_span = start_span.clone();
         if self.matches(|k| matches!(k, TokenKind::Dot)) {
             let (attr, span) = self.expect_ident("expected attribute after `.`")?;
             attribute = Some(attr);
             end_span = span;
+        } else if self.matches(|k| matches!(k, TokenKind::LBracket)) {
+            let idx = self.expression(0)?;
+            end_span = self.expect_simple(|k| matches!(k, TokenKind::RBracket), "expected `]` after index")?;
+            index = Some(Box::new(idx));
         }
         self.expect_simple(|k| matches!(k, TokenKind::Bind), "expected `<-` in assignment")?;
         let value = self.expression(0)?;
-        let target = AssignTarget { name, attribute, span: start_span.join(&end_span) };
+        let target = AssignTarget { name, attribute, index, span: start_span.join(&end_span) };
         let span = target.span.join(&value.span);
         Some(Stmt { kind: StmtKind::Assign { target, value }, span })
     }
@@ -157,6 +162,20 @@ impl Parser {
                 self.expect_simple(|k| matches!(k, TokenKind::RParen), "expected `)`")?;
                 expr
             }
+            TokenKind::LBracket => {
+                let mut elements = Vec::new();
+                self.skip_newlines();
+                if !self.check(|k| matches!(k, TokenKind::RBracket)) {
+                    loop {
+                        elements.push(self.expression(0)?);
+                        self.skip_newlines();
+                        if !self.matches(|k| matches!(k, TokenKind::Comma)) { break; }
+                        self.skip_newlines();
+                    }
+                }
+                let end = self.expect_simple(|k| matches!(k, TokenKind::RBracket), "expected `]` to close array literal")?;
+                Expr { kind: ExprKind::Array(elements), span: token.span.join(&end) }
+            }
             _ => {
                 self.errors.push(Diagnostic::new(DiagnosticCode::ParseUnexpected, "expected expression", token.span));
                 return None;
@@ -191,6 +210,13 @@ impl Parser {
                 let (name, end) = self.expect_ident("expected attribute name after `.`")?;
                 let span = expr.span.join(&end);
                 expr = Expr { kind: ExprKind::Attribute { base: Box::new(expr), name }, span };
+                continue;
+            }
+            if self.matches(|k| matches!(k, TokenKind::LBracket)) {
+                let index = self.expression(0)?;
+                let end = self.expect_simple(|k| matches!(k, TokenKind::RBracket), "expected `]` after index")?;
+                let span = expr.span.join(&end);
+                expr = Expr { kind: ExprKind::Index { base: Box::new(expr), index: Box::new(index) }, span };
                 continue;
             }
             break;
@@ -228,6 +254,20 @@ impl Parser {
                 (self.tokens.get(self.pos + 2).map(|t| &t.kind), self.tokens.get(self.pos + 3).map(|t| &t.kind)),
                 (Some(TokenKind::Ident(_)), Some(TokenKind::Bind))
             ),
+            Some(TokenKind::LBracket) => {
+                // scan across a balanced [ ... ] then require `<-` : this is an array-element write
+                let mut i = self.pos + 2;
+                let mut depth = 1;
+                while i < self.tokens.len() && depth > 0 {
+                    match &self.tokens[i].kind {
+                        TokenKind::LBracket => depth += 1,
+                        TokenKind::RBracket => depth -= 1,
+                        _ => {}
+                    }
+                    i += 1;
+                }
+                matches!(self.tokens.get(i).map(|t| &t.kind), Some(TokenKind::Bind))
+            }
             _ => false,
         }
     }

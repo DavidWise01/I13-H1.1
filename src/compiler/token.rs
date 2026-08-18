@@ -11,6 +11,8 @@ pub enum TokenKind {
     RBrace,
     LParen,
     RParen,
+    LBracket,
+    RBracket,
     Comma,
     Dot,
     Bind,

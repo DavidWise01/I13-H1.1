@@ -8,7 +8,7 @@ pub struct HirStmt { pub kind: HirStmtKind, pub span: Span }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum HirStmtKind {
-    Assign { declare: bool, osmotic: bool, target: String, attribute: Option<String>, value: HirExpr },
+    Assign { declare: bool, osmotic: bool, target: String, attribute: Option<String>, index: Option<HirExpr>, value: HirExpr },
     Return(HirExpr),
     Expr(HirExpr),
     If { condition: HirExpr, body: Vec<HirStmt> },
@@ -29,6 +29,8 @@ pub enum HirExprKind {
     BinOp { left: Box<HirExpr>, op: ast::BinaryOp, right: Box<HirExpr> },
     Compare { left: Box<HirExpr>, op: ast::CompareOp, right: Box<HirExpr> },
     Call { callee: String, args: Vec<HirExpr> },
+    Array(Vec<HirExpr>),
+    Index { base: Box<HirExpr>, index: Box<HirExpr> },
 }
 
 pub fn lower(program: ast::Program) -> HirProgram {
@@ -43,6 +45,7 @@ fn lower_stmt(stmt: ast::Stmt) -> HirStmt {
             osmotic: false,
             target: name,
             attribute: None,
+            index: None,
             value: lower_expr(value),
         },
         ast::StmtKind::Assign { target, value } => {
@@ -53,6 +56,7 @@ fn lower_stmt(stmt: ast::Stmt) -> HirStmt {
                 osmotic,
                 target: target.name,
                 attribute,
+                index: target.index.map(|e| lower_expr(*e)),
                 value: lower_expr(value),
             }
         }
@@ -80,6 +84,8 @@ fn lower_expr(expr: ast::Expr) -> HirExpr {
         ast::ExprKind::Binary { left, op, right } => HirExprKind::BinOp { left: Box::new(lower_expr(*left)), op, right: Box::new(lower_expr(*right)) },
         ast::ExprKind::Compare { left, op, right } => HirExprKind::Compare { left: Box::new(lower_expr(*left)), op, right: Box::new(lower_expr(*right)) },
         ast::ExprKind::Call { callee, args } => HirExprKind::Call { callee, args: args.into_iter().map(lower_expr).collect() },
+        ast::ExprKind::Array(elements) => HirExprKind::Array(elements.into_iter().map(lower_expr).collect()),
+        ast::ExprKind::Index { base, index } => HirExprKind::Index { base: Box::new(lower_expr(*base)), index: Box::new(lower_expr(*index)) },
     };
     HirExpr { kind, span }
 }

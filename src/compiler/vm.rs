@@ -10,6 +10,8 @@ use super::{
 pub enum Value {
     Number(f64),
     Function(usize),
+    /// A bounded array, held as a handle into the per-run arena (keeps `Value: Copy`).
+    Array(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,6 +42,7 @@ impl VmResult {
         match self.globals.get(slot).copied().flatten()? {
             Value::Number(value) => Some(value),
             Value::Function(_) => None,
+            Value::Array(_) => None,
         }
     }
 }
@@ -141,6 +144,10 @@ fn run_inner(
     let mut steps = 0u64;
     let mut peak_stack = 0usize;
     let mut max_call_depth = 0usize;
+    // Bounded-array store. Array values are handles into this arena; writes are functional
+    // (a write appends a new array), so arrays have value semantics and never alias. Growth is
+    // bounded by the step ceiling.
+    let mut arena: Vec<Vec<f64>> = Vec::new();
 
     loop {
         let depth = frames.len() - 1;
@@ -196,6 +203,55 @@ fn run_inner(
         match inst.op {
             Op::Const => {
                 frames[depth].stack.push(Value::Number(inst.imm));
+                frames[depth].pc += 1;
+            }
+            Op::MakeArray => {
+                let n = inst.a.max(0) as usize;
+                let mut elements = vec![0.0f64; n];
+                for k in (0..n).rev() {
+                    elements[k] = pop_number(&mut frames[depth], &inst)?;
+                }
+                let handle = arena.len();
+                arena.push(elements);
+                frames[depth].stack.push(Value::Array(handle));
+                frames[depth].pc += 1;
+            }
+            Op::Index => {
+                let index = pop_number(&mut frames[depth], &inst)?;
+                let Some(Value::Array(handle)) = frames[depth].stack.pop() else {
+                    return Err(runtime_error("index applied to a non-array value", inst.span));
+                };
+                let array = &arena[handle];
+                let i = index as i64;
+                if i < 0 || i as usize >= array.len() {
+                    return Err(runtime_error(
+                        format!("array index {} out of range 0..{}", i, array.len()),
+                        inst.span,
+                    ));
+                }
+                let value = array[i as usize];
+                frames[depth].stack.push(Value::Number(value));
+                frames[depth].pc += 1;
+            }
+            Op::ArraySet => {
+                let value = pop_number(&mut frames[depth], &inst)?;
+                let index = pop_number(&mut frames[depth], &inst)?;
+                let Some(Value::Array(handle)) = frames[depth].stack.pop() else {
+                    return Err(runtime_error("element assignment to a non-array value", inst.span));
+                };
+                let len = arena[handle].len();
+                let i = index as i64;
+                if i < 0 || i as usize >= len {
+                    return Err(runtime_error(
+                        format!("array index {} out of range 0..{}", i, len),
+                        inst.span,
+                    ));
+                }
+                let mut updated = arena[handle].clone();
+                updated[i as usize] = value;
+                let new_handle = arena.len();
+                arena.push(updated);
+                frames[depth].stack.push(Value::Array(new_handle));
                 frames[depth].pc += 1;
             }
             Op::Ask => {
@@ -444,6 +500,9 @@ fn trace_scope(scope: FrameScope) -> TraceScope {
 fn trace_detail(program: &IvmProgram, globals: &[Option<Value>], frame: &Frame, inst: &Inst) -> String {
     match inst.op {
         Op::Const => format!("push Number({})", trace_number(inst.imm)),
+        Op::MakeArray => format!("make array of {}", inst.a),
+        Op::Index => String::from("index array"),
+        Op::ArraySet => String::from("array element set"),
         Op::Ask => {
             if inst.b == 1 {
                 format!(
@@ -543,6 +602,7 @@ fn trace_slot_value(slots: &[Option<Value>], raw: i32) -> Option<Value> {
 fn trace_value(program: &IvmProgram, value: Option<Value>) -> String {
     match value {
         Some(Value::Number(value)) => format!("Number({})", trace_number(value)),
+        Some(Value::Array(handle)) => format!("Array(#{handle})"),
         Some(Value::Function(fid)) => program
             .functions
             .get(fid)
@@ -621,6 +681,7 @@ fn pop_number(frame: &mut Frame, inst: &Inst) -> Result<f64, Diagnostic> {
     match pop(frame, inst)? {
         Value::Number(value) => Ok(value),
         Value::Function(_) => Err(runtime_error(format!("{:?} requires numeric operands", inst.op), inst.span.clone())),
+        Value::Array(_) => Err(runtime_error(format!("{:?} requires numeric operands, got an array", inst.op), inst.span.clone())),
     }
 }
 

@@ -25,6 +25,8 @@ grows around it as a library.
 | `rng_xorshift.i13` | seeded PRNG (xorshift32) | `^ << >> &` | `xs32(1) = 270369, 67634689, …` |
 | `gcd.i13` | `gcd(a,b)` (Euclid, remainder form) | `%` | `gcd(1071,462) = 21` |
 | `modexp.i13` | `modexp(b,e,m)` (square-and-multiply) | `* %` | `modexp(2,10,1000) = 24` |
+| `array_sum.i13` | sum of a bounded array | `[]` literal + indexed read | `sum([3,1,4,1,5,9,2,6]) = 31` |
+| `array_sieve.i13` | Sieve of Eratosthenes | `[]` + indexed read/write | `8 primes below 20` |
 
 ## Which dart recommendations this closes
 
@@ -49,10 +51,15 @@ and they are what let `rng_xorshift.i13` exist. Semantics: operands are read as 
 
 ## What is deliberately *not* here
 
-Two darts asked for things that are genuine changes to I-13's identity, not additions on top of
-it — **arbitrary-precision integers** (dart 032, past the f64 `2⁵³` ceiling) and a **bounded
-aggregate / array type** (darts 017, 018, 021, 028, and others — the "aggregate wall"). Those
-are architectural decisions for the language's author to make on the record, not library
-functions. This directory holds only what the 13 counted symbols already reach.
+One withheld request remains: **arbitrary-precision integers** (bignum) — asked by darts 032,
+035, 036, 041, for exact arithmetic past the f64 `2⁵³` ceiling. That is a genuine change to
+I-13's value model, an architectural decision for the language's author, not a library function.
+
+The other long-withheld request — a **bounded aggregate / array type** (the "aggregate wall" of
+darts 017, 018, 021, 028) — was **decided and added** by the author on 2026-08-17. It is a real
+interpreter change (three new opcodes, a new value kind), specified in `spec/ARRAY.md`, and is
+what makes `array_sum.i13` and `array_sieve.i13` above run. The `%`, bitwise, and transcendental
+work stayed additions on top of the 13 symbols; the array is the first deliberate expansion of
+what an I-13 *value* can be.
 
 *I-13 by David Lee Wise / ROOT0 / TriPod LLC. Library functions and their verifications assembled by AVAN from the SONNY 5 dart campaign.*

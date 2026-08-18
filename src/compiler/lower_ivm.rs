@@ -121,7 +121,7 @@ struct Emitter<'a> {
 impl Emitter<'_> {
     fn stmt(&mut self, stmt: &HirStmt) {
         match &stmt.kind {
-            HirStmtKind::Assign { declare, osmotic, target, attribute, value } => {
+            HirStmtKind::Assign { declare, osmotic, target, attribute, index, value } => {
                 if attribute.is_some() {
                     self.errors.push(Diagnostic::new(
                         DiagnosticCode::SemanticUnsupportedAttribute,
@@ -138,6 +138,22 @@ impl Emitter<'_> {
                     ));
                     return;
                 };
+
+                if let Some(index_expr) = index {
+                    // array element write:  v[i] <- e   ===   v <- arrayset(ask v, i, e)
+                    self.emit_ask(slot, scope, stmt.span.clone());
+                    self.expr(index_expr);
+                    self.expr(value);
+                    self.code.push(Inst::new(Op::ArraySet, stmt.span.clone()));
+                    let mut answer_inst = Inst::new(Op::Answer, stmt.span.clone());
+                    answer_inst.a = slot as i32;
+                    answer_inst.b = match scope {
+                        Scope::Local => answer::LOCAL_ASSIGN,
+                        Scope::Global => answer::GLOBAL_ASSIGN,
+                    };
+                    self.code.push(answer_inst);
+                    return;
+                }
 
                 if *osmotic {
                     self.emit_ask(slot, scope, stmt.span.clone());
@@ -261,6 +277,19 @@ impl Emitter<'_> {
                 let mut inst = Inst::new(Op::Call, expr.span.clone());
                 inst.a = args.len() as i32;
                 self.code.push(inst);
+            }
+            HirExprKind::Array(elements) => {
+                for element in elements {
+                    self.expr(element);
+                }
+                let mut inst = Inst::new(Op::MakeArray, expr.span.clone());
+                inst.a = elements.len() as i32;
+                self.code.push(inst);
+            }
+            HirExprKind::Index { base, index } => {
+                self.expr(base);
+                self.expr(index);
+                self.code.push(Inst::new(Op::Index, expr.span.clone()));
             }
         }
     }

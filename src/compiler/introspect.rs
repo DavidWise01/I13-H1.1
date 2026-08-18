@@ -181,16 +181,27 @@ fn ast_expr(out: &mut String, expr: &Expr, depth: usize) {
             let _ = writeln!(out, "{pad}Call {callee} argc={} {}", args.len(), span_text(&expr.span));
             for arg in args { ast_expr(out, arg, depth + 1); }
         }
+        ExprKind::Array(elements) => {
+            let _ = writeln!(out, "{pad}Array len={} {}", elements.len(), span_text(&expr.span));
+            for element in elements { ast_expr(out, element, depth + 1); }
+        }
+        ExprKind::Index { base, index } => {
+            let _ = writeln!(out, "{pad}Index {}", span_text(&expr.span));
+            ast_expr(out, base, depth + 1);
+            ast_expr(out, index, depth + 1);
+        }
     }
 }
 
 fn hir_stmt(out: &mut String, stmt: &HirStmt, depth: usize) {
     let pad = indent(depth);
     match &stmt.kind {
-        HirStmtKind::Assign { declare, osmotic, target, attribute, value } => {
+        HirStmtKind::Assign { declare, osmotic, target, attribute, index, value } => {
             let mode = if *declare { "declare" } else if *osmotic { "osmotic" } else { "assign" };
             let suffix = attribute.as_ref().map(|a| format!(".{a}")).unwrap_or_default();
-            let _ = writeln!(out, "{pad}Assign mode={mode} target={target}{suffix} {}", span_text(&stmt.span));
+            let idx = if index.is_some() { "[index]" } else { "" };
+            let _ = writeln!(out, "{pad}Assign mode={mode} target={target}{suffix}{idx} {}", span_text(&stmt.span));
+            if let Some(index) = index { hir_expr(out, index, depth + 1); }
             hir_expr(out, value, depth + 1);
         }
         HirStmtKind::Return(expr) => {
@@ -239,6 +250,15 @@ fn hir_expr(out: &mut String, expr: &HirExpr, depth: usize) {
             let _ = writeln!(out, "{pad}Call {callee} argc={} {}", args.len(), span_text(&expr.span));
             for arg in args { hir_expr(out, arg, depth + 1); }
         }
+        HirExprKind::Array(elements) => {
+            let _ = writeln!(out, "{pad}Array len={} {}", elements.len(), span_text(&expr.span));
+            for element in elements { hir_expr(out, element, depth + 1); }
+        }
+        HirExprKind::Index { base, index } => {
+            let _ = writeln!(out, "{pad}Index {}", span_text(&expr.span));
+            hir_expr(out, base, depth + 1);
+            hir_expr(out, index, depth + 1);
+        }
     }
 }
 
@@ -246,6 +266,9 @@ fn ivm_inst(out: &mut String, program: &IvmProgram, fid: Option<usize>, pc: usiz
     let pad = indent(depth);
     let detail = match inst.op {
         Op::Const => format!("value={}", number(inst.imm)),
+        Op::MakeArray => format!("len={}", inst.a),
+        Op::Index => String::from("array[i]"),
+        Op::ArraySet => String::from("array[i] <- x"),
         Op::Ask => format!("slot={} scope={}", slot_name(program, fid, inst.a, inst.b), scope_name(inst.b)),
         Op::Attr => String::from("unsupported"),
         Op::Ret => String::new(),
@@ -277,6 +300,7 @@ fn token_text(kind: &TokenKind) -> String {
         TokenKind::Number(value) => format!("Number({})", number(*value)),
         TokenKind::LBrace => "{".into(), TokenKind::RBrace => "}".into(),
         TokenKind::LParen => "(".into(), TokenKind::RParen => ")".into(),
+        TokenKind::LBracket => "[".into(), TokenKind::RBracket => "]".into(),
         TokenKind::Comma => ",".into(), TokenKind::Dot => ".".into(),
         TokenKind::Bind => "<-".into(), TokenKind::ReturnArrow => "->".into(),
         TokenKind::EqEq => "==".into(), TokenKind::NotEq => "!=".into(),
@@ -292,7 +316,7 @@ fn token_text(kind: &TokenKind) -> String {
 
 fn binary_name(op: BinaryOp) -> &'static str { match op { BinaryOp::Add => "Add", BinaryOp::Sub => "Sub", BinaryOp::Mul => "Mul", BinaryOp::Div => "Div", BinaryOp::Mod => "Mod", BinaryOp::And => "And", BinaryOp::Or => "Or", BinaryOp::Xor => "Xor", BinaryOp::Shl => "Shl", BinaryOp::Shr => "Shr" } }
 fn compare_name(op: CompareOp) -> &'static str { match op { CompareOp::Eq => "Eq", CompareOp::Ne => "Ne", CompareOp::Lt => "Lt", CompareOp::Lte => "Lte", CompareOp::Gt => "Gt", CompareOp::Gte => "Gte" } }
-fn op_name(op: Op) -> &'static str { match op { Op::Const => "Const", Op::Ask => "Ask", Op::Attr => "Attr", Op::Ret => "Ret", Op::Answer => "Answer", Op::Drop => "Drop", Op::Bin => "Bin", Op::Cmp => "Cmp", Op::If => "If", Op::Call => "Call", Op::Block => "Block", Op::Else => "Else", Op::End => "End", Op::Func => "Func", Op::Halt => "Halt" } }
+fn op_name(op: Op) -> &'static str { match op { Op::Const => "Const", Op::Ask => "Ask", Op::Attr => "Attr", Op::Ret => "Ret", Op::Answer => "Answer", Op::Drop => "Drop", Op::Bin => "Bin", Op::Cmp => "Cmp", Op::If => "If", Op::Call => "Call", Op::Block => "Block", Op::Else => "Else", Op::End => "End", Op::Func => "Func", Op::Halt => "Halt", Op::MakeArray => "MakeArray", Op::Index => "Index", Op::ArraySet => "ArraySet" } }
 fn ivm_bin_name(raw: i32) -> &'static str { match raw { ivm::bin::ADD => "Add", ivm::bin::SUB => "Sub", ivm::bin::MUL => "Mul", ivm::bin::DIV => "Div", _ => "Invalid" } }
 fn ivm_cmp_name(raw: i32) -> &'static str { match raw { ivm::cmp::LT => "Lt", ivm::cmp::GT => "Gt", ivm::cmp::LTE => "Lte", ivm::cmp::GTE => "Gte", ivm::cmp::EQ => "Eq", ivm::cmp::NE => "Ne", _ => "Invalid" } }
 fn scope_name(raw: i32) -> &'static str { if raw == 0 { "local" } else if raw == 1 { "global" } else { "invalid" } }

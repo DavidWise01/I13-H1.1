@@ -1,0 +1,23 @@
+// std/array_sieve.i13 -- the Sieve of Eratosthenes (SONNY 5 dart 017's wall), now cleared.
+// Uses array literal, indexed write (s[j] <- 1), and indexed read (s[i]). Value semantics:
+// each write yields a new array threaded through the recursion.
+def markmult(I s, I i, I j, I n) {
+  if j >= n { -> s }
+  s[j] <- 1
+  -> markmult(s, i, j + i, n)
+}
+def sieve(I s, I i, I n) {
+  if i * i >= n { -> s }
+  I m <- markmult(s, i, i * i, n)
+  -> sieve(m, i + 1, n)
+}
+def count(I s, I i, I n) {
+  if i >= n { -> 0 }
+  I here <- 0
+  if s[i] == 0 { here <- 1 }
+  -> here + count(s, i + 1, n)
+}
+// index 0 and 1 pre-marked as non-prime; length 20
+I base <- [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+I sieved <- sieve(base, 2, 20)
+I primes <- count(sieved, 2, 20)    // 8  (2,3,5,7,11,13,17,19)

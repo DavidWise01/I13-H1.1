@@ -294,6 +294,12 @@ fn emit_region(
 
     for inst in code {
         match inst.op {
+            Op::MakeArray | Op::Index | Op::ArraySet => {
+                return Err(backend_error(
+                    "arrays are not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
+                    inst.span.clone(),
+                ));
+            }
             Op::Const => {
                 i32_const(KIND_NUMBER, out);
                 f64_const(inst.imm, out);

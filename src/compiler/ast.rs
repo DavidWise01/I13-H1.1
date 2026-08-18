@@ -20,7 +20,7 @@ pub enum StmtKind {
 pub struct Param { pub name: String, pub span: Span }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct AssignTarget { pub name: String, pub attribute: Option<String>, pub span: Span }
+pub struct AssignTarget { pub name: String, pub attribute: Option<String>, pub index: Option<Box<Expr>>, pub span: Span }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Expr { pub kind: ExprKind, pub span: Span }
@@ -33,6 +33,8 @@ pub enum ExprKind {
     Binary { left: Box<Expr>, op: BinaryOp, right: Box<Expr> },
     Compare { left: Box<Expr>, op: CompareOp, right: Box<Expr> },
     Call { callee: String, args: Vec<Expr> },
+    Array(Vec<Expr>),
+    Index { base: Box<Expr>, index: Box<Expr> },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

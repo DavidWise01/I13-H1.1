@@ -24,9 +24,12 @@ pub enum Op {
     End = 12,
     Func = 13,
     Halt = 14,
+    MakeArray = 15,
+    Index = 16,
+    ArraySet = 17,
 }
 
-pub const OPCODE_COUNT: usize = 15;
+pub const OPCODE_COUNT: usize = 18;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StackEffect {
@@ -43,6 +46,10 @@ impl Op {
             Self::Answer | Self::Drop | Self::If => StackEffect { need: 1, net: -1 },
             Self::Bin | Self::Cmp => StackEffect { need: 2, net: -1 },
             Self::Call => StackEffect { need: argc + 1, net: -(argc as i32) },
+            // aggregate ops: MakeArray pops `argc` numbers -> 1 array; Index (array,i)->elem; ArraySet (array,i,x)->array
+            Self::MakeArray => StackEffect { need: argc, net: 1 - argc as i32 },
+            Self::Index => StackEffect { need: 2, net: -1 },
+            Self::ArraySet => StackEffect { need: 3, net: -2 },
             Self::Block | Self::Else | Self::End | Self::Func | Self::Halt => StackEffect { need: 0, net: 0 },
         }
     }
@@ -63,7 +70,7 @@ impl Inst {
     }
 
     pub fn effect(&self) -> StackEffect {
-        self.op.effect(if self.op == Op::Call { self.a.max(0) as u32 } else { 0 })
+        self.op.effect(if self.op == Op::Call || self.op == Op::MakeArray { self.a.max(0) as u32 } else { 0 })
     }
 }
 

@@ -128,12 +128,20 @@ mod tests {
     }
 
     #[test]
-    fn canonical_ivm_has_fifteen_ops_and_one_effect_law() {
-        assert_eq!(OPCODE_COUNT, 15);
+    fn canonical_ivm_has_eighteen_ops_and_one_effect_law() {
+        // 15 scalar ops + 3 aggregate ops (MakeArray/Index/ArraySet) added with the bounded array.
+        assert_eq!(OPCODE_COUNT, 18);
         assert_eq!(Op::Const.effect(0).need, 0);
         assert_eq!(Op::Const.effect(0).net, 1);
         assert_eq!(Op::Call.effect(2).need, 3);
         assert_eq!(Op::Call.effect(2).net, -2);
+        // the aggregate ops obey the same single effect law:
+        assert_eq!(Op::MakeArray.effect(3).need, 3);
+        assert_eq!(Op::MakeArray.effect(3).net, -2);
+        assert_eq!(Op::Index.effect(0).need, 2);
+        assert_eq!(Op::Index.effect(0).net, -1);
+        assert_eq!(Op::ArraySet.effect(0).need, 3);
+        assert_eq!(Op::ArraySet.effect(0).net, -2);
     }
 
     #[test]

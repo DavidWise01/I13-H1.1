@@ -74,6 +74,13 @@ fn check_expr(expr: &HirExpr, functions: &BTreeMap<String, usize>, errors: &mut 
                 )),
             }
         }
+        HirExprKind::Array(elements) => {
+            for element in elements { check_expr(element, functions, errors); }
+        }
+        HirExprKind::Index { base, index } => {
+            check_expr(base, functions, errors);
+            check_expr(index, functions, errors);
+        }
         HirExprKind::Name(_) | HirExprKind::Constant(_) => {}
     }
 }

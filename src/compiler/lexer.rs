@@ -28,6 +28,8 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, Vec<Diagnostic>> {
             b'}' => single(&mut out, TokenKind::RBrace, i, line, col, &mut i, &mut col),
             b'(' => single(&mut out, TokenKind::LParen, i, line, col, &mut i, &mut col),
             b')' => single(&mut out, TokenKind::RParen, i, line, col, &mut i, &mut col),
+            b'[' => single(&mut out, TokenKind::LBracket, i, line, col, &mut i, &mut col),
+            b']' => single(&mut out, TokenKind::RBracket, i, line, col, &mut i, &mut col),
             b',' => single(&mut out, TokenKind::Comma, i, line, col, &mut i, &mut col),
             b'.' => single(&mut out, TokenKind::Dot, i, line, col, &mut i, &mut col),
             b'+' => single(&mut out, TokenKind::Plus, i, line, col, &mut i, &mut col),
