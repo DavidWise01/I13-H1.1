@@ -13,10 +13,4 @@ I TECH_P0 <- agent_trit(0, 0)
 I TECH_P1 <- agent_trit(1, 0)
 I TECH_DEBT_REOPENS <- agent_trit(1, 2)
 I TECH_UNKNOWN_WITH_DEBT <- agent_trit(0, 3)
-
-I TECH_OK <-
-    (TECH_N1 == -1) *
-    (TECH_P0 == 0) *
-    (TECH_P1 == 1) *
-    (TECH_DEBT_REOPENS == 0) *
-    (TECH_UNKNOWN_WITH_DEBT == 0)
+I TECH_OK <- (TECH_N1 == -1) * (TECH_P0 == 0) * (TECH_P1 == 1) * (TECH_DEBT_REOPENS == 0) * (TECH_UNKNOWN_WITH_DEBT == 0)
