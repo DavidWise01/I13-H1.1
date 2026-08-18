@@ -1,0 +1,149 @@
+name: E1 TECH surgeon end-to-end diagnosis
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/i13_surgeon.py'
+      - 'src/workspace.rs'
+      - 'src/bin/i13-workspace.rs'
+      - 'src/e1_boundary.rs'
+      - 'docs/E1-WORKSPACE-001.md'
+      - '.github/workflows/e1-surgeon-agent.yml'
+  pull_request:
+    paths:
+      - 'scripts/i13_surgeon.py'
+      - 'src/workspace.rs'
+      - 'src/bin/i13-workspace.rs'
+      - 'src/e1_boundary.rs'
+      - 'docs/E1-WORKSPACE-001.md'
+      - '.github/workflows/e1-surgeon-agent.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  surgeon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish pending surgeon status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/e1-surgeon',description:'diagnosis + patch synthesis proof running'})
+
+      - name: Prime local Cargo cache
+        run: cargo fetch
+
+      - name: Build bounded workspace worker
+        run: cargo build --bin i13-workspace
+
+      - name: Create clean-but-buggy local clone
+        run: |
+          rm -rf /tmp/i13-surgeon-repo
+          git clone -q --no-hardlinks "$GITHUB_WORKSPACE" /tmp/i13-surgeon-repo
+          git -C /tmp/i13-surgeon-repo config user.email i13@example.invalid
+          git -C /tmp/i13-surgeon-repo config user.name 'I13 Surgeon Test'
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/i13-surgeon-repo/src/e1_boundary.rs')
+          text=p.read_text()
+          good='n.checked_mul(8)'
+          bad='n.checked_mul(7)'
+          if text.count(good) != 1:
+              raise SystemExit('expected exactly one 8n implementation multiplier')
+          p.write_text(text.replace(good,bad))
+          PY
+          git -C /tmp/i13-surgeon-repo add src/e1_boundary.rs
+          git -C /tmp/i13-surgeon-repo commit -qm 'inject controlled 8n implementation defect'
+          test -z "$(git -C /tmp/i13-surgeon-repo status --porcelain)"
+
+      - name: Observe failure through p1 TEST only
+        run: |
+          set +e
+          target/debug/i13-workspace /tmp/i13-surgeon-repo 1 test > /tmp/surgeon-failure.txt 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 30
+          grep -Fq 'authority=PROCEED' /tmp/surgeon-failure.txt
+          grep -Fq 'capability=test' /tmp/surgeon-failure.txt
+          grep -Fq 'exit=101' /tmp/surgeon-failure.txt
+          grep -Fq 'r0=1' /tmp/surgeon-failure.txt
+          grep -Fq 'each_side_gets_full_8n_reach' /tmp/surgeon-failure.txt
+          grep -Fq 'left: Some(7)' /tmp/surgeon-failure.txt
+          grep -Fq 'right: Some(8)' /tmp/surgeon-failure.txt
+
+      - name: Synthesize repair from failure + source only
+        run: |
+          python scripts/i13_surgeon.py \
+            --repo /tmp/i13-surgeon-repo \
+            --failure /tmp/surgeon-failure.txt \
+            --out /tmp/surgeon.patch | tee /tmp/surgeon-receipt.json
+          test -s /tmp/surgeon.patch
+          grep -Fq '"symbol": "p1"' /tmp/surgeon-receipt.json
+          grep -Fq '"question_debt": 0' /tmp/surgeon-receipt.json
+          grep -Fq '"observed_factor": 7' /tmp/surgeon-receipt.json
+          grep -Fq '"required_factor": 8' /tmp/surgeon-receipt.json
+          grep -Fq '"definition": "src/e1_boundary.rs"' /tmp/surgeon-receipt.json
+          grep -Fq 'n.checked_mul(8)' /tmp/surgeon.patch
+          ! grep -Fq 'Some(7)' /tmp/surgeon.patch
+          ! grep -Fq 'Some(8)' /tmp/surgeon.patch
+
+      - name: Prove unresolved evidence stays p0 and emits no patch
+        run: |
+          printf 'cargo test failed without a source location\n' > /tmp/unknown-failure.txt
+          rm -f /tmp/unknown.patch
+          set +e
+          python scripts/i13_surgeon.py --repo /tmp/i13-surgeon-repo --failure /tmp/unknown-failure.txt --out /tmp/unknown.patch > /tmp/unknown.json
+          code=$?
+          set -e
+          test "$code" -eq 21
+          grep -Fq '"symbol": "p0"' /tmp/unknown.json
+          grep -Fq '"patch_emitted": false' /tmp/unknown.json
+          test ! -e /tmp/unknown.patch
+
+      - name: Prove p0 cannot execute synthesized cut
+        run: |
+          set +e
+          cat /tmp/surgeon.patch | target/debug/i13-workspace /tmp/i13-surgeon-repo 0 patch > /tmp/surgeon-p0.txt 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 21
+          grep -Fq 'authority=FLAY' /tmp/surgeon-p0.txt
+          grep -Fq 'executed=0' /tmp/surgeon-p0.txt
+          grep -Fq 'r0=1' /tmp/surgeon-p0.txt
+          grep -Fq 'n.checked_mul(7)' /tmp/i13-surgeon-repo/src/e1_boundary.rs
+
+      - name: Apply synthesized patch only through p1 workspace gate
+        run: |
+          cat /tmp/surgeon.patch | target/debug/i13-workspace /tmp/i13-surgeon-repo 1 patch | tee /tmp/surgeon-p1.txt
+          grep -Fq 'authority=PROCEED' /tmp/surgeon-p1.txt
+          grep -Fq 'capability=patch' /tmp/surgeon-p1.txt
+          grep -Fq 'changed_files=src/e1_boundary.rs' /tmp/surgeon-p1.txt
+          grep -Fq 'diff_check=PASS' /tmp/surgeon-p1.txt
+          grep -Fq 'r0=1' /tmp/surgeon-p1.txt
+          grep -Fq 'n.checked_mul(8)' /tmp/i13-surgeon-repo/src/e1_boundary.rs
+
+      - name: Verify full offline suite and exact known-good restoration
+        run: |
+          target/debug/i13-workspace /tmp/i13-surgeon-repo 1 test | tee /tmp/surgeon-fixed.txt
+          grep -Fq 'authority=PROCEED' /tmp/surgeon-fixed.txt
+          grep -Fq 'capability=test' /tmp/surgeon-fixed.txt
+          grep -Fq 'exit=0' /tmp/surgeon-fixed.txt
+          grep -Fq 'r0=1' /tmp/surgeon-fixed.txt
+          test "$(git -C /tmp/i13-surgeon-repo diff --name-only)" = 'src/e1_boundary.rs'
+          git -C /tmp/i13-surgeon-repo diff --exit-code HEAD^ -- src/e1_boundary.rs
+          echo 'I13_SURGEON_SYNTHESIS_OK=1'
+
+      - name: Publish surgeon result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ job.status }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-surgeon',description:ok?'failure->diagnosis->synthesized patch->offline PASS':'surgeon synthesis proof failed'})
