@@ -1,6 +1,6 @@
 # E1.WORKSPACE-001 — Offline Git Coding Workspace
 
-Status: **BUILD CANDIDATE · NATIVE HOST ONLY · NON-RIVER**
+Status: **LOCKED KNOWN GOOD · NATIVE HOST ONLY · NON-RIVER · CI VERIFIED 2026-08-18**
 
 Purpose: bind `E1.TECH-001` `p1` to a real, bounded coding workspace without moving filesystem/process authority into I13, Wasm, or the E1 sandbox.
 
@@ -114,6 +114,33 @@ The worker returns to `r0` on every controlled outcome. Gate-only exits:
 ```
 
 A host command failure returns `30`; structural/input veto returns `2`.
+
+## Verified proof
+
+Dedicated CI context:
+
+```text
+i13/e1-workspace = success
+```
+
+The gate verifies:
+
+```text
+native Rust compile + workspace unit tests
+n1 HOLD executes nothing
+p0 FLAY executes nothing
+p1 PROCEED reaches local Git capability
+bounded UTF-8 read
+path traversal veto
+direct .git access veto
+real git apply against a temporary local repository
+dirty patch-target veto
+fixed cargo build --offline
+fixed cargo test --offline
+Wasm library still compiles without workspace/process exports
+```
+
+`i13/e1-tech-trit` remains independently green; a TECH trit and a workspace receipt are separate evidence layers.
 
 ## Scope
 
