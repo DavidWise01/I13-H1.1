@@ -26,12 +26,19 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 jobs:
   e1-handoff:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Publish pending handoff status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/e1-handoff',description:'Stage 15.3 E1 handoff proof running'})
       - name: Check internal handoff and TECH JavaScript syntax
         run: |
           node --check docs/stages/stage15-3-e1-handoff.js
@@ -64,3 +71,10 @@ jobs:
           grep -q 'n1' docs/e1-tech-001.js
           grep -q 'p0' docs/e1-tech-001.js
           grep -q 'p1' docs/e1-tech-001.js
+      - name: Publish handoff result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ job.status }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-handoff',description:ok?'Stage 15.3 E1 sandbox handoff verified':'Stage 15.3 E1 handoff proof failed'})
