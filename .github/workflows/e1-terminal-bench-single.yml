@@ -1,0 +1,172 @@
+name: E1 BENCH-001 Terminal-Bench 2.1 single task
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/harbor_i13_agent.py'
+      - '.github/workflows/e1-terminal-bench-single.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  terminal-bench-fix-git:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TB21_SHA: 7131e4375048a0e408a8fb404b5f499d726b695b
+      HARBOR_VERSION: '0.20.0'
+      JOBS_DIR: /tmp/i13-tbench-jobs
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Publish pending benchmark status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'pending',
+              context: 'i13/tbench-fix-git',
+              description: 'Terminal-Bench 2.1 fix-git trial running'
+            })
+
+      - name: Verify Docker runtime
+        run: |
+          docker version
+          docker info >/dev/null
+
+      - name: Install pinned Harbor
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "harbor==${HARBOR_VERSION}"
+          harbor --version || harbor --help | head -20
+
+      - name: Fetch official Terminal-Bench 2.1 task set
+        run: |
+          rm -rf /tmp/terminal-bench-2-1
+          git clone -q https://github.com/harbor-framework/terminal-bench-2-1.git /tmp/terminal-bench-2-1
+          git -C /tmp/terminal-bench-2-1 checkout -q "${TB21_SHA}"
+          test -f /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
+          test -f /tmp/terminal-bench-2-1/tasks/fix-git/task.toml
+          printf 'TB21_SHA=%s\n' "$(git -C /tmp/terminal-bench-2-1 rev-parse HEAD)"
+          cat /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
+
+      - name: Run one official task with current bounded I13
+        id: run_bench
+        run: |
+          rm -rf "${JOBS_DIR}"
+          mkdir -p "${JOBS_DIR}"
+          set +e
+          harbor run \
+            -p /tmp/terminal-bench-2-1/tasks/fix-git \
+            --agent-import-path scripts.harbor_i13_agent:I13HarborAgent \
+            -o "${JOBS_DIR}" \
+            --job-name i13-tb21-fix-git \
+            -n 1 \
+            -k 1 \
+            2>&1 | tee /tmp/i13-tbench-console.txt
+          rc=${PIPESTATUS[0]}
+          set -e
+          echo "harbor_rc=${rc}" >> "$GITHUB_OUTPUT"
+          echo "HARBOR_RC=${rc}"
+          find "${JOBS_DIR}" -maxdepth 8 -type f -print | sort || true
+
+      - name: Extract official verifier reward and I13 trace
+        id: score
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['JOBS_DIR'])
+          reward_files = sorted(root.rglob('reward.txt'))
+          reward = None
+          reward_path = None
+          for path in reward_files:
+              try:
+                  value = float(path.read_text().strip())
+              except Exception:
+                  continue
+              reward = value
+              reward_path = path
+              break
+
+          if reward is None:
+              # Fallback for Harbor layouts that materialize reward only in result.json.
+              candidates = []
+              def walk(obj, path=''):
+                  if isinstance(obj, dict):
+                      for k, v in obj.items():
+                          p = f'{path}.{k}' if path else k
+                          if k == 'reward' and isinstance(v, (int, float)):
+                              candidates.append((p, float(v)))
+                          walk(v, p)
+                  elif isinstance(obj, list):
+                      for i, v in enumerate(obj):
+                          walk(v, f'{path}[{i}]')
+              for path in root.rglob('result.json'):
+                  try:
+                      walk(json.loads(path.read_text()))
+                  except Exception:
+                      pass
+              if candidates:
+                  # One-task/one-attempt job: the terminal trial reward is expected
+                  # to be 0 or 1. Prefer the last discovered scalar reward.
+                  _, reward = candidates[-1]
+
+          traces = sorted(root.rglob('i13-bench-trace.json'))
+          print(f'REWARD={reward!r}')
+          print(f'REWARD_PATH={reward_path}')
+          if traces:
+              print('--- I13 TRACE ---')
+              print(traces[0].read_text())
+          else:
+              print('I13_TRACE=MISSING')
+
+          if reward is None:
+              raise SystemExit('could not locate Harbor verifier reward')
+
+          out = Path(os.environ['GITHUB_OUTPUT'])
+          with out.open('a') as f:
+              f.write(f'reward={reward}\n')
+              f.write(f'passed={str(reward >= 1.0).lower()}\n')
+          PY
+
+      - name: Assert benchmark outcome
+        run: |
+          echo "Terminal-Bench 2.1 / fix-git reward = ${{ steps.score.outputs.reward }}"
+          if [ "${{ steps.score.outputs.passed }}" != "true" ]; then
+            echo 'I13_TBENCH_FIX_GIT_PASS=0'
+            exit 1
+          fi
+          echo 'I13_TBENCH_FIX_GIT_PASS=1'
+
+      - name: Publish benchmark result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const passed = '${{ steps.score.outputs.passed }}' === 'true';
+            const reward = '${{ steps.score.outputs.reward }}' || 'unavailable';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: passed ? 'success' : 'failure',
+              context: 'i13/tbench-fix-git',
+              description: passed
+                ? `TB2.1 fix-git PASS reward=${reward}`
+                : `TB2.1 fix-git FAIL reward=${reward}`
+            })
