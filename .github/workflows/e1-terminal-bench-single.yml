@@ -21,9 +21,9 @@ jobs:
       HARBOR_VERSION: '0.20.0'
       JOBS_DIR: /tmp/i13-tbench-jobs
       PYTHONPATH: ${{ github.workspace }}
+
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -33,42 +33,96 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: 'pending',
-              context: 'i13/tbench-fix-git',
-              description: 'Terminal-Bench 2.1 fix-git trial running'
-            })
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/tbench-fix-git',description:'Terminal-Bench 2.1 fix-git trial running'})
 
-      - name: Verify Docker runtime
+      - name: Preflight Docker Harbor source and custom-agent import
+        id: preflight
+        shell: bash
         run: |
-          docker version
-          docker info >/dev/null
+          set +e
 
-      - name: Install pinned Harbor
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "harbor==${HARBOR_VERSION}"
-          harbor --version || harbor --help | head -20
+          docker version >/tmp/tbench-docker.txt 2>&1
+          docker_rc=$?
+          docker info >>/tmp/tbench-docker.txt 2>&1
+          docker_info_rc=$?
+          if [ "$docker_rc" -eq 0 ] && [ "$docker_info_rc" -eq 0 ]; then docker_ok=true; else docker_ok=false; fi
 
-      - name: Pin and display official Terminal-Bench 2.1 task source
-        run: |
+          python -m pip install --upgrade pip >/tmp/tbench-pip.txt 2>&1
+          python -m pip install "harbor==${HARBOR_VERSION}" >>/tmp/tbench-pip.txt 2>&1
+          pip_rc=$?
+          if [ "$pip_rc" -eq 0 ]; then
+            harbor --help >/tmp/tbench-harbor-help.txt 2>&1
+            harbor_rc=$?
+          else
+            harbor_rc=127
+          fi
+          if [ "$pip_rc" -eq 0 ] && [ "$harbor_rc" -eq 0 ]; then harbor_ok=true; else harbor_ok=false; fi
+
           rm -rf /tmp/terminal-bench-2-1
-          git clone -q https://github.com/harbor-framework/terminal-bench-2-1.git /tmp/terminal-bench-2-1
-          git -C /tmp/terminal-bench-2-1 checkout -q "${TB21_SHA}"
-          test -f /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
+          git clone -q https://github.com/harbor-framework/terminal-bench-2-1.git /tmp/terminal-bench-2-1 >/tmp/tbench-source.txt 2>&1
+          clone_rc=$?
+          if [ "$clone_rc" -eq 0 ]; then
+            git -C /tmp/terminal-bench-2-1 checkout -q "${TB21_SHA}" >>/tmp/tbench-source.txt 2>&1
+            checkout_rc=$?
+          else
+            checkout_rc=127
+          fi
+          if [ "$clone_rc" -eq 0 ] && [ "$checkout_rc" -eq 0 ] && [ -f /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md ]; then source_ok=true; else source_ok=false; fi
+
+          if [ "$harbor_ok" = true ]; then
+            python - <<'PY' >/tmp/tbench-import.txt 2>&1
+          from scripts.harbor_i13_agent import I13HarborAgent
+          assert I13HarborAgent.name() == 'i13-tech-workspace'
+          print('I13_HARBOR_IMPORT_OK=1')
+          PY
+            import_rc=$?
+          else
+            import_rc=127
+          fi
+          if [ "$import_rc" -eq 0 ]; then import_ok=true; else import_ok=false; fi
+
+          echo "docker_ok=$docker_ok" >> "$GITHUB_OUTPUT"
+          echo "harbor_ok=$harbor_ok" >> "$GITHUB_OUTPUT"
+          echo "source_ok=$source_ok" >> "$GITHUB_OUTPUT"
+          echo "import_ok=$import_ok" >> "$GITHUB_OUTPUT"
+          echo "docker_rc=$docker_rc" >> "$GITHUB_OUTPUT"
+          echo "pip_rc=$pip_rc" >> "$GITHUB_OUTPUT"
+          echo "harbor_rc=$harbor_rc" >> "$GITHUB_OUTPUT"
+          echo "clone_rc=$clone_rc" >> "$GITHUB_OUTPUT"
+          echo "checkout_rc=$checkout_rc" >> "$GITHUB_OUTPUT"
+          echo "import_rc=$import_rc" >> "$GITHUB_OUTPUT"
+
+          echo "DOCKER_OK=$docker_ok rc=$docker_rc/$docker_info_rc"
+          echo "HARBOR_OK=$harbor_ok pip_rc=$pip_rc harbor_rc=$harbor_rc"
+          echo "SOURCE_OK=$source_ok clone_rc=$clone_rc checkout_rc=$checkout_rc"
+          echo "IMPORT_OK=$import_ok import_rc=$import_rc"
+          cat /tmp/tbench-import.txt 2>/dev/null || true
+          set -e
+
+      - name: Publish preflight status contexts
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rows = [
+              ['docker','${{ steps.preflight.outputs.docker_ok }}','${{ steps.preflight.outputs.docker_rc }}'],
+              ['harbor','${{ steps.preflight.outputs.harbor_ok }}','${{ steps.preflight.outputs.harbor_rc }}'],
+              ['source','${{ steps.preflight.outputs.source_ok }}','${{ steps.preflight.outputs.clone_rc }}'],
+              ['import','${{ steps.preflight.outputs.import_ok }}','${{ steps.preflight.outputs.import_rc }}']
+            ];
+            for (const [name,ok,rc] of rows) {
+              const pass = ok === 'true';
+              await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:pass?'success':'failure',context:`i13/tbench-preflight/${name}-${pass?'ok':'fail'}`,description:`${name} preflight rc=${rc}`});
+            }
+
+      - name: Require benchmark preflight
+        run: |
+          test "${{ steps.preflight.outputs.docker_ok }}" = true
+          test "${{ steps.preflight.outputs.harbor_ok }}" = true
+          test "${{ steps.preflight.outputs.source_ok }}" = true
+          test "${{ steps.preflight.outputs.import_ok }}" = true
           printf 'TB21_SOURCE_SHA=%s\n' "$(git -C /tmp/terminal-bench-2-1 rev-parse HEAD)"
           cat /tmp/terminal-bench-2-1/tasks/fix-git/instruction.md
-
-      - name: Import-check current I13 Harbor adapter
-        run: |
-          python - <<'PY'
-          from scripts.harbor_i13_agent import I13HarborAgent
-          print('I13_HARBOR_IMPORT_OK=1')
-          print(I13HarborAgent.name(), I13HarborAgent.version)
-          PY
 
       - name: Run one official registered Terminal-Bench 2.1 task
         id: run_bench
@@ -87,7 +141,7 @@ jobs:
           rc=${PIPESTATUS[0]}
           set -e
           echo "harbor_rc=${rc}" >> "$GITHUB_OUTPUT"
-          echo "HARBOR_RC=${rc}"
+          echo "HARBOR_RUN_RC=${rc}"
           find "${JOBS_DIR}" -maxdepth 8 -type f -print | sort || true
 
       - name: Extract official verifier reward and I13 trace
@@ -95,117 +149,65 @@ jobs:
         if: ${{ always() }}
         run: |
           python - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
-
           root = Path(os.environ['JOBS_DIR'])
           reward = None
-          reward_source = 'missing'
           for path in sorted(root.rglob('reward.txt')):
               try:
-                  reward = float(path.read_text().strip())
-                  reward_source = str(path)
-                  break
-              except Exception:
-                  pass
-
+                  reward = float(path.read_text().strip()); break
+              except Exception: pass
           if reward is None:
-              candidates = []
-              def walk(obj, path=''):
-                  if isinstance(obj, dict):
-                      for k, v in obj.items():
-                          p = f'{path}.{k}' if path else k
-                          if k == 'reward' and isinstance(v, (int, float)):
-                              candidates.append((p, float(v)))
-                          walk(v, p)
-                  elif isinstance(obj, list):
-                      for i, v in enumerate(obj):
-                          walk(v, f'{path}[{i}]')
+              candidates=[]
+              def walk(obj):
+                  if isinstance(obj,dict):
+                      for k,v in obj.items():
+                          if k=='reward' and isinstance(v,(int,float)): candidates.append(float(v))
+                          walk(v)
+                  elif isinstance(obj,list):
+                      for v in obj: walk(v)
               for path in root.rglob('result.json'):
-                  try:
-                      walk(json.loads(path.read_text()))
-                  except Exception:
-                      pass
-              if candidates:
-                  reward_source, reward = candidates[-1]
-
-          trace_symbol = 'missing'
-          trace_reason = 'trace unavailable'
-          traces = sorted(root.rglob('i13-bench-trace.json'))
+                  try: walk(json.loads(path.read_text()))
+                  except Exception: pass
+              if candidates: reward=candidates[-1]
+          trit='missing'
+          traces=sorted(root.rglob('i13-bench-trace.json'))
           if traces:
               try:
-                  trace = json.loads(traces[0].read_text())
-                  trace_symbol = str(trace.get('trit', {}).get('symbol', 'missing'))
-                  trace_reason = str(trace.get('reason', ''))[:120]
-                  print('--- I13 TRACE ---')
-                  print(json.dumps(trace, indent=2, sort_keys=True))
-              except Exception as exc:
-                  trace_reason = f'trace parse error: {exc}'[:120]
-
-          harbor_rc = '${{ steps.run_bench.outputs.harbor_rc }}'
-          reward_text = 'missing' if reward is None else str(reward)
-          reward_found = reward is not None
-          harness_ok = harbor_rc == '0' and reward_found
-          passed = reward is not None and reward >= 1.0
-
-          print(f'HARBOR_RC={harbor_rc}')
-          print(f'REWARD={reward_text}')
-          print(f'REWARD_SOURCE={reward_source}')
-          print(f'TRIT={trace_symbol}')
-          print(f'HARNESS_OK={harness_ok}')
-
+                  trace=json.loads(traces[0].read_text())
+                  trit=str(trace.get('trit',{}).get('symbol','missing'))
+                  print(json.dumps(trace,indent=2,sort_keys=True))
+              except Exception: pass
+          run_rc='${{ steps.run_bench.outputs.harbor_rc }}' or 'missing'
+          reward_text='missing' if reward is None else str(reward)
+          harness_ok=(run_rc=='0' and reward is not None)
+          passed=(reward is not None and reward>=1.0)
+          print(f'HARBOR_RUN_RC={run_rc} REWARD={reward_text} TRIT={trit} HARNESS_OK={harness_ok}')
           with Path(os.environ['GITHUB_OUTPUT']).open('a') as f:
-              f.write(f'harbor_rc={harbor_rc or "missing"}\n')
-              f.write(f'reward={reward_text}\n')
-              f.write(f'reward_found={str(reward_found).lower()}\n')
-              f.write(f'harness_ok={str(harness_ok).lower()}\n')
-              f.write(f'passed={str(passed).lower()}\n')
-              f.write(f'trit={trace_symbol}\n')
-              f.write(f'trace_reason={trace_reason.replace(chr(10), " ")}\n')
+              f.write(f'run_rc={run_rc}\nreward={reward_text}\nharness_ok={str(harness_ok).lower()}\npassed={str(passed).lower()}\ntrit={trit}\n')
           PY
 
-      - name: Publish diagnostic status contexts
+      - name: Publish benchmark diagnostic contexts
         if: ${{ always() && github.event_name == 'push' }}
         uses: actions/github-script@v7
         with:
           script: |
-            const harnessOk = '${{ steps.score.outputs.harness_ok }}' === 'true';
-            const reward = '${{ steps.score.outputs.reward }}' || 'missing';
-            const trit = '${{ steps.score.outputs.trit }}' || 'missing';
-            const harborRc = '${{ steps.score.outputs.harbor_rc }}' || 'missing';
-            for (const item of [
-              {
-                context: `i13/tbench-harness/${harnessOk ? 'ok' : 'fail'}`,
-                state: harnessOk ? 'success' : 'failure',
-                description: `Harbor rc=${harborRc}; reward artifact=${harnessOk ? 'found' : 'missing-or-run-failed'}`
-              },
-              {
-                context: `i13/tbench-reward/${reward}`,
-                state: reward === '1.0' || reward === '1' ? 'success' : 'failure',
-                description: `Official Terminal-Bench verifier reward=${reward}`
-              },
-              {
-                context: `i13/tbench-trit/${trit}`,
-                state: trit === 'missing' ? 'failure' : 'success',
-                description: `I13 terminal task return trit=${trit}`
-              }
-            ]) {
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.sha,
-                ...item
-              });
-            }
+            const harnessOk='${{ steps.score.outputs.harness_ok }}'==='true';
+            const reward='${{ steps.score.outputs.reward }}'||'missing';
+            const trit='${{ steps.score.outputs.trit }}'||'missing';
+            const rc='${{ steps.score.outputs.run_rc }}'||'missing';
+            const rows=[
+              [`i13/tbench-run-rc/${rc}`, rc==='0'?'success':'failure', `Harbor run rc=${rc}`],
+              [`i13/tbench-harness/${harnessOk?'ok':'fail'}`, harnessOk?'success':'failure', `reward artifact ${harnessOk?'found':'missing'}`],
+              [`i13/tbench-reward/${reward}`, (reward==='1'||reward==='1.0')?'success':'failure', `official verifier reward=${reward}`],
+              [`i13/tbench-trit/${trit}`, trit==='missing'?'failure':'success', `I13 return trit=${trit}`]
+            ];
+            for(const [context,state,description] of rows){await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context,description});}
 
-      - name: Assert benchmark outcome
+      - name: Assert official benchmark outcome
         run: |
-          echo "Harbor rc = ${{ steps.score.outputs.harbor_rc }}"
-          echo "Terminal-Bench 2.1 / fix-git reward = ${{ steps.score.outputs.reward }}"
-          echo "I13 trit = ${{ steps.score.outputs.trit }}"
-          test "${{ steps.score.outputs.harness_ok }}" = "true"
-          if [ "${{ steps.score.outputs.passed }}" != "true" ]; then
+          test "${{ steps.score.outputs.harness_ok }}" = true
+          if [ "${{ steps.score.outputs.passed }}" != true ]; then
             echo 'I13_TBENCH_FIX_GIT_PASS=0'
             exit 1
           fi
@@ -216,15 +218,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const passed = '${{ steps.score.outputs.passed }}' === 'true';
-            const reward = '${{ steps.score.outputs.reward }}' || 'missing';
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: passed ? 'success' : 'failure',
-              context: 'i13/tbench-fix-git',
-              description: passed
-                ? `TB2.1 fix-git PASS reward=${reward}`
-                : `TB2.1 fix-git FAIL reward=${reward}`
-            })
+            const passed='${{ steps.score.outputs.passed }}'==='true';
+            const reward='${{ steps.score.outputs.reward }}'||'missing';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:passed?'success':'failure',context:'i13/tbench-fix-git',description:passed?`TB2.1 fix-git PASS reward=${reward}`:`TB2.1 fix-git FAIL reward=${reward}`});
