@@ -2,6 +2,7 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="robots" content="noindex"><title>E1 bounded service</title></head>
 <body>
+<script src="e1-tech-001.js"></script>
 <script>
 (() => {
   'use strict';
@@ -9,6 +10,7 @@
   const RETURN = 'I13_E1_PRIME_RETURN';
   const MAX_PAYLOAD_BYTES = 4096;
   const encoder = new TextEncoder();
+  const MODULES = Object.freeze(['RD-001','CORPUS-001','TECH-001']);
   const ANCHORS = Object.freeze([
     {role:'capstone',coord:'top|bottom',author:'Neal Stephenson',work:'The Fall',tags:['technical']},
     {role:'keystone',coord:'top|top',author:'George Orwell',work:'1984',tags:['technical','somatic','phonic','doublespeak','triple-listen']},
@@ -28,7 +30,7 @@
     return m?.type === REQUEST
       && m?.version === 1
       && typeof m.id === 'string' && m.id.length <= 128
-      && (m.module === 'RD-001' || m.module === 'CORPUS-001')
+      && MODULES.includes(m.module)
       && typeof m.payload === 'string'
       && encoder.encode(m.payload).length > 0
       && encoder.encode(m.payload).length <= MAX_PAYLOAD_BYTES
@@ -75,6 +77,18 @@
     };
   }
 
+  function technicalPrime(payload) {
+    if (!globalThis.E1Tech001) throw new Error('TECH-001 core unavailable');
+    return globalThis.E1Tech001.evaluate(payload);
+  }
+
+  function runModule(module, payload) {
+    if (module === 'RD-001') return reverseDistill(payload);
+    if (module === 'CORPUS-001') return corpusOrient(payload);
+    if (module === 'TECH-001') return technicalPrime(payload);
+    throw new Error('unknown E1 module');
+  }
+
   addEventListener('message', event => {
     const m = event.data;
     if (!m || m.type !== REQUEST) return;
@@ -82,7 +96,15 @@
       parent.postMessage({type:RETURN,version:1,id:String(m?.id || ''),error:'invalid or unbounded E1 request'}, '*');
       return;
     }
-    const prime = m.module === 'RD-001' ? reverseDistill(m.payload) : corpusOrient(m.payload);
+
+    let prime;
+    try {
+      prime = runModule(m.module, m.payload);
+    } catch (error) {
+      parent.postMessage({type:RETURN,version:1,id:m.id,error:String(error?.message || error)}, '*');
+      return;
+    }
+
     parent.postMessage({
       type:RETURN,
       version:1,
