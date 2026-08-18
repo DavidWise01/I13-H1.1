@@ -140,6 +140,30 @@ fixed cargo test --offline
 Wasm library still compiles without workspace/process exports
 ```
 
+### Full local-clone surgical repair proof
+
+The CI gate also performs a complete repair cycle against a local clone of this repository:
+
+```text
+known-good repo
+  -> local clone
+  -> commit one controlled defect in src/e1_boundary.rs
+  -> p1 TEST observes cargo-test failure and returns r0
+  -> p0 PATCH executes nothing; defect remains
+  -> p1 PATCH applies one tracked-file reverse diff
+  -> git diff --check PASS
+  -> p1 TEST returns exit=0 and r0
+  -> repaired file matches the known-good parent exactly
+```
+
+The controlled defect changes the expected `vortex_width_8n(1)` result from `Some(8)` to `Some(7)`. The worker must observe the failing suite before repair, must not cut under `p0`, and may repair only under `p1`. The first version of this test intentionally exposed an invalid reverse-diff shape (`b/file -> a/file`); the workspace correctly vetoed it. The proof was corrected to generate a normal `a/file -> b/file` repair patch without weakening the workspace policy.
+
+Successful proof marker:
+
+```text
+I13_SURGICAL_SELF_REPAIR_OK=1
+```
+
 `i13/e1-tech-trit` remains independently green; a TECH trit and a workspace receipt are separate evidence layers.
 
 ## Scope
