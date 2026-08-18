@@ -78,7 +78,41 @@ The internal side then:
 
 A failed parent, missing witness, same-side capsule, or contamination flag produces VETO and no prime is released.
 
+A valid E1ID/CV transport and the semantic content of a returned prime are separate facts. In particular, `E1.TECH-001` may return `n1` or `p0` inside a correctly witnessed `PASS` transport receipt.
+
 ## E1 modules exposed by the sandbox
+
+### E1.TECH-001 — Trit-Native Technical Agent
+
+The technical/surgical/coding prime uses direct balanced trit authority:
+
+```text
+n1 = -1 = HOLD / contradicted / boundary
+p0 =  0 = FLAY / witness / unresolved
+p1 = +1 = PROCEED / resolved
+```
+
+Request fields:
+
+```text
+task
+phase = inspect | diagnose | cut | verify | return
+scope
+capability = read | build | test | patch | git
+evidence_trit = -1 | 0 | +1
+question_debt = 0..255
+```
+
+Resolution law:
+
+```text
+if evidence_trit == n1 -> n1
+else if question_debt > 0 -> p0
+else if evidence_trit == p1 -> p1
+else -> p0
+```
+
+`p1` advances only to a Cortex capability gate. The factory itself does not touch host files, repositories, shells, networks, or browser state.
 
 ### E1.RD-001 — Reverse Distillation
 
