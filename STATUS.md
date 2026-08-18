@@ -1,6 +1,6 @@
 # H1.1 STATUS
 
-Last parity pass: 2026-08-16.
+Last full parity pass: 2026-08-16. E1.TECH-001 package integrated 2026-08-18; dedicated CI is authoritative for its current proof state.
 
 ## LIVE H1.1
 
@@ -30,6 +30,7 @@ Last parity pass: 2026-08-16.
 - Stage 15.1: Pages Origin Hallway: landing -> history -> epistemology -> entrance -> one live workbench.
 - Stage 15.2 / E1: external primer factory attachment with hard `[ y | x ]` partition, independent 8n sides, E1ID closed-loop receipt, `E1.RD-001`, and `E1.CORPUS-001`.
 - Stage 15.3: live Cortex ↔ E1 handoff through an opaque sandboxed service and Wasm-verified request/return capsules.
+- `E1.TECH-001`: trit-native technical/surgical/coding prime using direct `n1=-1`, `p0=0`, `p1=+1` authority with an executable I13 semantic mirror.
 
 ## E1 EXTERNAL PRIMER FACTORY — LOCKED
 
@@ -41,16 +42,16 @@ I13 -> Cortex -> subagent
               [ y | x ]
                   |
              E1 FACTORY
-             /        \
-       RD-001      CORPUS-001
-             \        /
-                E1ID
-                  |
-                 CV
-                  |
-              [ y | x ]
-                  |
-               Cortex -> I13
+        /          |          \
+   TECH-001     RD-001     CORPUS-001
+        \          |          /
+                 E1ID
+                   |
+                  CV
+                   |
+               [ y | x ]
+                   |
+                Cortex -> I13
 ```
 
 Partition:
@@ -64,6 +65,25 @@ x: n -> 2n -> 4n -> 8n
 ```
 
 No live state or shared mutable state crosses. The Rust/Wasm core validates only bounded request/return capsules; the factory remains external.
+
+`E1.TECH-001` is the technical/surgical/coding prime:
+
+```text
+n1 = -1 = HOLD / boundary / contradicted
+p0 =  0 = FLAY / witness / unresolved
+p1 = +1 = PROCEED / resolved
+```
+
+Agent-control law:
+
+```text
+if evidence_trit == n1 -> n1
+else if question_debt > 0 -> p0
+else if evidence_trit == p1 -> p1
+else -> p0
+```
+
+There is no Boolean collapse at this control layer. `p1` advances only to the Cortex capability gate; TECH-001 itself does not touch host files, repositories, shells, networks, or browser storage.
 
 `E1.RD-001` is reverse distillation: recover parent dependency geometry from a bounded derived form (`ABCD - D = ABC`).
 
@@ -85,7 +105,7 @@ Continuity core:
 [ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]
 ```
 
-Canonical spec: `docs/E1-FACTORY.md`. Pages: `docs/e1.html`.
+Canonical specs: `docs/E1-FACTORY.md`, `docs/E1-TECH-001.md`. Pages: `docs/e1.html`.
 
 ## STAGE 15.3 LIVE E1 HANDOFF — BUILT
 
@@ -127,8 +147,27 @@ Implementation laws:
 - request and return witnesses are present at their respective traversals.
 - no prime is released to Cortex unless both `i13_e1_boundary_verify` and `i13_e1_closed_loop_verify` pass.
 - pending request and last receipt are memory-only; no E1 payload persistence in localStorage.
+- TECH-001 return state remains a trit even when E1ID/CV transport succeeds; transport PASS is not semantic PROCEED.
 
 Canonical spec: `docs/STAGE15.3-E1-HANDOFF.md`.
+
+## E1.TECH-001 PACKAGE
+
+```text
+docs/e1-tech-001.js          deterministic host-side trit evaluator
+docs/E1-TECH-001.md          compact canonical module contract
+examples/e1_tech_trit.i13    executable I13 semantic mirror
+docs/e1-service.html         opaque sandbox execution path
+docs/e1.html                 factory inspection/demo surface
+.github/workflows/e1-technical-agent.yml
+                              JS + I13 + Wasm + sandbox conformance gate
+```
+
+Surgical lifecycle:
+
+```text
+observe -> distinguish -> smallest cut -> verify -> receipt -> r0
+```
 
 ## CURATOR 14.9.1 — PAUSED BOUNDARY
 
@@ -154,6 +193,7 @@ index.html
             -> one live H1.1 machine
             -> E1 PRIME control
                  -> opaque e1-service.html sandbox
+                 -> TECH-001 / RD-001 / CORPUS-001
                  -> [E1ID]cv return
        -> e1.html
             -> external E1 factory inspection page
@@ -196,6 +236,7 @@ Runtime corpus identity remains the existing 32-bit OLOGY root; no second public
 - curator proposal is not corpus commit; a future import/commit gate remains separate.
 - E1 reverse-distillation receipt proves only the implemented structural/boundary conditions; it is not by itself a legal ownership or causal proof.
 - Stage 15.3 does not claim process isolation equivalent to a separate OS process; it implements browser sandbox/origin isolation plus bounded message passing.
+- E1.TECH-001 is a trit-native authority/prime layer; actual host mutation still requires a separately bound Cortex capability adapter.
 
 ## BUILD GATE
 
@@ -211,5 +252,6 @@ Stage 14.9.1 curator v2 Wasm contract
 Stage 15.1 landing/workbench contract
 E1 boundary Rust tests
 Stage 15.3 opaque-sandbox / message-only handoff contract
+E1 TECH-001 JS/I13/Wasm trit conformance
 GitHub Pages build
 ```
