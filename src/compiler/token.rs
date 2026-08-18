@@ -26,6 +26,11 @@ pub enum TokenKind {
     Star,
     Slash,
     Percent,
+    Amp,
+    Pipe,
+    Caret,
+    Shl,
+    Shr,
     Newline,
     Eof,
 }

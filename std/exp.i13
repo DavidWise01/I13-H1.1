@@ -1,0 +1,11 @@
+// std/exp.i13 -- exp(x) via a bounded Taylor series in Horner form.
+// Pure I-13: + - * / and bounded recursion. Fulfils the transcendental-library
+// recommend (darts 009/031/033) with ZERO new alphabet symbols and no compiler change.
+// exp(1) = 2.718281828459045 ; exp(2) = 7.389056098930174
+def exp_h(I x, I k, I n) {
+  if k >= n { -> 1 }
+  -> 1 + x / k * exp_h(x, k + 1, n)
+}
+def exp(I x) { -> exp_h(x, 1, 20) }
+I e1 <- exp(1)
+I e2 <- exp(2)

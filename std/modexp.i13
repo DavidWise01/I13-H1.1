@@ -1,0 +1,11 @@
+// std/modexp.i13 -- modular exponentiation by square-and-multiply (Rabin-Miller core, dart 032).
+// Uses the merged % operator; O(log e). modexp(2,10,1000)=24, modexp(3,13,100)=23
+def modexp(I base, I e, I m) {
+  if e == 0 { -> 1 }
+  I r <- e % 2
+  I h <- modexp((base * base) % m, (e - r) / 2, m)
+  if r == 1 { -> (h * base) % m }
+  -> h
+}
+I a <- modexp(2, 10, 1000)
+I b <- modexp(3, 13, 100)

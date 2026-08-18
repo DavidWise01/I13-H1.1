@@ -1,0 +1,10 @@
+// std/sqrt.i13 -- square root by Newton's method (from SONNY 5 dart 026).
+// Pure I-13: + - * / and bounded recursion. No new primitive. sqrt(2)=1.4142135623730951
+def newton(I x, I guess, I n) {
+  if n == 0 { -> guess }
+  I next <- (guess + x / guess) / 2
+  -> newton(x, next, n - 1)
+}
+def sqrt(I x) { -> newton(x, 1, 40) }
+I r2 <- sqrt(2)
+I r1e6 <- sqrt(1000000)

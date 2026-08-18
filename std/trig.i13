@@ -1,0 +1,15 @@
+// std/trig.i13 -- sin(x) and cos(x) via bounded Taylor (Horner form).
+// Pure I-13: + - * / and bounded recursion. sin(1)=0.8414709848078965, cos(1)=0.5403023058681398
+// (accurate for |x| within a few radians; range-reduce mod 2*pi for large x).
+def sin_h(I x2, I k, I n) {
+  if k >= n { -> 1 }
+  -> 1 - x2 / (k * (k + 1)) * sin_h(x2, k + 2, n)
+}
+def cos_h(I x2, I k, I n) {
+  if k >= n { -> 1 }
+  -> 1 - x2 / (k * (k + 1)) * cos_h(x2, k + 2, n)
+}
+def sin(I x) { -> x * sin_h(x * x, 2, 24) }
+def cos(I x) { -> cos_h(x * x, 1, 24) }
+I s <- sin(1)
+I c <- cos(1)

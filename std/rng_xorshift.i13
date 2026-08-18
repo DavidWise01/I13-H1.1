@@ -1,0 +1,11 @@
+// std/rng_xorshift.i13 -- Marsaglia's xorshift32 PRNG.
+// Uses the NEW bitwise operators (^ << >> &) integrated for darts 001/029.
+// Masks to 32 bits with & 4294967295. xs32(1)=270369, then 67634689, ...
+def xs32(I x) {
+  I m <- 4294967295
+  I a <- (x ^ (x << 13)) & m
+  I b <- (a ^ (a >> 17)) & m
+  -> (b ^ (b << 5)) & m
+}
+I r1 <- xs32(1)
+I r2 <- xs32(r1)

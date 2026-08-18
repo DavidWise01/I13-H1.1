@@ -88,6 +88,11 @@ pub mod bin {
     pub const MUL: i32 = 2;
     pub const DIV: i32 = 3;
     pub const MOD: i32 = 4;
+    pub const AND: i32 = 5;
+    pub const OR: i32 = 6;
+    pub const XOR: i32 = 7;
+    pub const SHL: i32 = 8;
+    pub const SHR: i32 = 9;
 }
 
 pub mod cmp {

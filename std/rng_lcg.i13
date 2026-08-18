@@ -1,0 +1,8 @@
+// std/rng_lcg.i13 -- seeded PRNG, the MINSTD linear congruential generator.
+// Pure I-13: uses * and % (the merged modulo). No bitwise needed. Deterministic:
+// same seed -> same stream, in the open. Fulfils the seeded-PRNG recommend (darts 004/030).
+// lcg(1)=16807, then 282475249, 1622650073, ...   period 2^31-2
+def lcg(I state) { -> (16807 * state) % 2147483647 }
+I r1 <- lcg(1)
+I r2 <- lcg(r1)
+I r3 <- lcg(r2)

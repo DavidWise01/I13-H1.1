@@ -487,6 +487,12 @@ fn emit_numeric_bin(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Res
                 inst.span.clone(),
             ))
         }
+        bin::AND | bin::OR | bin::XOR | bin::SHL | bin::SHR => {
+            return Err(backend_error(
+                "bitwise operators (& | ^ << >>) are not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
+                inst.span.clone(),
+            ))
+        }
         other => {
             return Err(backend_error(
                 format!("invalid Bin operator {other}"),

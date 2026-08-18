@@ -1,0 +1,13 @@
+// std/ln.i13 -- natural log via ln(x) = 2*atanh((x-1)/(x+1)), bounded series.
+// Pure I-13: + - * / and bounded recursion. ln(2)=0.6931471805599453, ln(10)=2.302585092992665
+// (converges for all x>0; more terms are needed as x moves far from 1).
+def atanh_s(I y, I ypow, I j, I n) {
+  if j >= n { -> 0 }
+  -> ypow / (2 * j + 1) + atanh_s(y, ypow * y * y, j + 1, n)
+}
+def ln(I x) {
+  I y <- (x - 1) / (x + 1)
+  -> 2 * atanh_s(y, y, 0, 60)
+}
+I l2 <- ln(2)
+I l10 <- ln(10)

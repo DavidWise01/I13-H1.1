@@ -211,6 +211,11 @@ impl Parser {
             TokenKind::Star => Some((3, Some(BinaryOp::Mul), None)),
             TokenKind::Slash => Some((3, Some(BinaryOp::Div), None)),
             TokenKind::Percent => Some((3, Some(BinaryOp::Mod), None)),
+            TokenKind::Shl => Some((3, Some(BinaryOp::Shl), None)),
+            TokenKind::Shr => Some((3, Some(BinaryOp::Shr), None)),
+            TokenKind::Amp => Some((2, Some(BinaryOp::And), None)),
+            TokenKind::Caret => Some((2, Some(BinaryOp::Xor), None)),
+            TokenKind::Pipe => Some((2, Some(BinaryOp::Or), None)),
             _ => None,
         }
     }

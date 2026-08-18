@@ -256,6 +256,14 @@ fn run_inner(
                         return Err(runtime_error("modulo by zero", inst.span));
                     }
                     bin::MOD => left % right,
+                    // bitwise ops read the operands as 64-bit integers (f64 -> i64 saturates:
+                    // NaN -> 0, out-of-range -> clamp), operate, and return the f64. Exact for
+                    // integer values within +/-2^53; fractional parts are truncated toward zero.
+                    bin::AND => ((left as i64) & (right as i64)) as f64,
+                    bin::OR => ((left as i64) | (right as i64)) as f64,
+                    bin::XOR => ((left as i64) ^ (right as i64)) as f64,
+                    bin::SHL => (left as i64).wrapping_shl((right as i64 & 63) as u32) as f64,
+                    bin::SHR => (left as i64).wrapping_shr((right as i64 & 63) as u32) as f64,
                     other => return Err(runtime_error(format!("invalid Bin operator {other}"), inst.span)),
                 };
                 frames[depth].stack.push(Value::Number(value));
@@ -576,6 +584,12 @@ fn trace_bin(raw: i32) -> &'static str {
         bin::SUB => "Sub",
         bin::MUL => "Mul",
         bin::DIV => "Div",
+        bin::MOD => "Mod",
+        bin::AND => "And",
+        bin::OR => "Or",
+        bin::XOR => "Xor",
+        bin::SHL => "Shl",
+        bin::SHR => "Shr",
         _ => "InvalidBin",
     }
 }
