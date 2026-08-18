@@ -387,6 +387,7 @@ fn render_value(program: &IvmProgram, value: Option<Value>) -> String {
     match value {
         Some(Value::Number(value)) => format!("Number({})", number(value)),
         Some(Value::Array(handle)) => format!("Array(#{handle})"),
+        Some(Value::Bignum(handle)) => format!("Bignum(#{handle})"),
         Some(Value::Function(fid)) => program
             .functions
             .get(fid)

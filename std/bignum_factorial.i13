@@ -1,0 +1,8 @@
+// std/bignum_factorial.i13 -- exact factorial via bignum (past f64's 2^53 range).
+// big(1) promotes to a bignum; acc*n propagates (n is promoted). 25! and 100! are exact.
+def fact(I n, I acc) {
+  if n <= 1 { -> acc }
+  -> fact(n - 1, acc * n)
+}
+I f25 <- fact(25, big(1))     // 15511210043330985984000000
+I f100 <- fact(100, big(1))   // 158 digits, exact

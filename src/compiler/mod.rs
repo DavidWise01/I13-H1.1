@@ -5,6 +5,7 @@
 //! referent-only subsystems.
 
 pub mod ast;
+pub mod bignum;
 pub mod debugger;
 pub mod diagnostic;
 pub mod hir;
@@ -128,9 +129,11 @@ mod tests {
     }
 
     #[test]
-    fn canonical_ivm_has_eighteen_ops_and_one_effect_law() {
-        // 15 scalar ops + 3 aggregate ops (MakeArray/Index/ArraySet) added with the bounded array.
-        assert_eq!(OPCODE_COUNT, 18);
+    fn canonical_ivm_has_nineteen_ops_and_one_effect_law() {
+        // 15 scalar ops + 3 aggregate ops (array) + 1 promotion op (ToBig, for bignum).
+        assert_eq!(OPCODE_COUNT, 19);
+        assert_eq!(Op::ToBig.effect(0).need, 1);
+        assert_eq!(Op::ToBig.effect(0).net, 0);
         assert_eq!(Op::Const.effect(0).need, 0);
         assert_eq!(Op::Const.effect(0).net, 1);
         assert_eq!(Op::Call.effect(2).need, 3);

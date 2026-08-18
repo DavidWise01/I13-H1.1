@@ -27,6 +27,9 @@ grows around it as a library.
 | `modexp.i13` | `modexp(b,e,m)` (square-and-multiply) | `* %` | `modexp(2,10,1000) = 24` |
 | `array_sum.i13` | sum of a bounded array | `[]` literal + indexed read | `sum([3,1,4,1,5,9,2,6]) = 31` |
 | `array_sieve.i13` | Sieve of Eratosthenes | `[]` + indexed read/write | `8 primes below 20` |
+| `bignum_factorial.i13` | exact factorial | `big()` + `*` | `100!` exact (158 digits) |
+| `bignum_pow2.i13` | 2⁶⁴−1 exactly | `big()` + `* -` | `18446744073709551615` (dart 036's Hanoi count) |
+| `bignum_modexp.i13` | modular exponentiation | `big()` + `* %` | `7^128 mod 1000000009 = 293482507` |
 
 ## Which dart recommendations this closes
 
@@ -51,9 +54,15 @@ and they are what let `rng_xorshift.i13` exist. Semantics: operands are read as 
 
 ## What is deliberately *not* here
 
-One withheld request remains: **arbitrary-precision integers** (bignum) — asked by darts 032,
-035, 036, 041, for exact arithmetic past the f64 `2⁵³` ceiling. That is a genuine change to
-I-13's value model, an architectural decision for the language's author, not a library function.
+**Arbitrary-precision integers (bignum)** — asked by darts 032, 035, 041, 047 for exact
+arithmetic past the f64 `2⁵³` ceiling — were **decided and added** by the author on 2026-08-17
+(the `big()` intrinsic + type-dispatching arithmetic; a self-contained `BigInt`, no dependency;
+spec `spec/BIGNUM.md`). `100!` and `2⁶⁴−1` are now exact. It is the second value-model expansion
+after the array; both were the author's calls, made on the record.
+
+The remaining converged request is **multiple return** (a tuple/pair) — named by darts 045
+(quicksort) and 048 (union-find), whose in-place partition / path compression want a function to
+hand back two values at once. That, too, is an author-level decision, not a library function.
 
 The other long-withheld request — a **bounded aggregate / array type** (the "aggregate wall" of
 darts 017, 018, 021, 028) — was **decided and added** by the author on 2026-08-17. It is a real

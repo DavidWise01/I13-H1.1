@@ -207,7 +207,9 @@ fn main() {
 
 fn print_numeric_globals(program: &compiler::ivm::IvmProgram, execution: &compiler::vm::VmResult) {
     for (slot, name) in program.globals.iter().enumerate() {
-        if let Some(compiler::vm::Value::Number(value)) = execution.globals.get(slot).copied().flatten() {
+        if let Some(Some(text)) = execution.bignum_globals.get(slot) {
+            println!("{name} = {text}");
+        } else if let Some(compiler::vm::Value::Number(value)) = execution.globals.get(slot).copied().flatten() {
             println!("{name} = {value}");
         }
     }

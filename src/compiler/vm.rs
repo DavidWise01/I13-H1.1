@@ -1,4 +1,5 @@
 use super::{
+    bignum::BigInt,
     diagnostic::{Diagnostic, DiagnosticCode},
     ivm::{answer, bin, cmp, Inst, IvmProgram, Op, I13_FRAME_LIMIT},
     source::Span,
@@ -12,6 +13,8 @@ pub enum Value {
     Function(usize),
     /// A bounded array, held as a handle into the per-run arena (keeps `Value: Copy`).
     Array(usize),
+    /// An arbitrary-precision integer, held as a handle into the per-run bignum arena.
+    Bignum(usize),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -31,6 +34,9 @@ impl Default for VmConfig {
 #[derive(Debug, Clone, PartialEq)]
 pub struct VmResult {
     pub globals: Vec<Option<Value>>,
+    /// Per-global decimal strings for bignum-valued globals (resolved before the arena is dropped,
+    /// since a `Value::Bignum` handle is only meaningful during the run). `None` for non-bignum slots.
+    pub bignum_globals: Vec<Option<String>>,
     pub steps: u64,
     pub peak_stack: usize,
     pub max_call_depth: usize,
@@ -43,6 +49,7 @@ impl VmResult {
             Value::Number(value) => Some(value),
             Value::Function(_) => None,
             Value::Array(_) => None,
+            Value::Bignum(_) => None,
         }
     }
 }
@@ -148,6 +155,9 @@ fn run_inner(
     // (a write appends a new array), so arrays have value semantics and never alias. Growth is
     // bounded by the step ceiling.
     let mut arena: Vec<Vec<f64>> = Vec::new();
+    // Bignum store. Arbitrary-precision integers are handles into this arena; values are
+    // functional (each operation appends a new one), so bignums never alias, like arrays.
+    let mut bigs: Vec<BigInt> = Vec::new();
 
     loop {
         let depth = frames.len() - 1;
@@ -297,9 +307,47 @@ fn run_inner(
                 pop(&mut frames[depth], &inst)?;
                 frames[depth].pc += 1;
             }
+            Op::ToBig => {
+                let n = pop_number(&mut frames[depth], &inst)?;
+                let big = BigInt::from_f64_exact(n)
+                    .ok_or_else(|| runtime_error("big() requires an integer value", inst.span.clone()))?;
+                let handle = bigs.len();
+                bigs.push(big);
+                frames[depth].stack.push(Value::Bignum(handle));
+                frames[depth].pc += 1;
+            }
             Op::Bin => {
-                let right = pop_number(&mut frames[depth], &inst)?;
-                let left = pop_number(&mut frames[depth], &inst)?;
+                let right = pop(&mut frames[depth], &inst)?;
+                let left = pop(&mut frames[depth], &inst)?;
+                if matches!(left, Value::Bignum(_)) || matches!(right, Value::Bignum(_)) {
+                    // arbitrary-precision path: either operand a bignum promotes both.
+                    let a = value_to_big(left, &bigs, &inst)?;
+                    let b = value_to_big(right, &bigs, &inst)?;
+                    let result = match inst.a {
+                        bin::ADD => a.add(&b),
+                        bin::SUB => a.sub(&b),
+                        bin::MUL => a.mul(&b),
+                        bin::DIV => {
+                            a.divmod(&b).ok_or_else(|| runtime_error("division by zero", inst.span.clone()))?.0
+                        }
+                        bin::MOD => {
+                            a.divmod(&b).ok_or_else(|| runtime_error("modulo by zero", inst.span.clone()))?.1
+                        }
+                        _ => {
+                            return Err(runtime_error(
+                                "bitwise operators are not defined on bignum values",
+                                inst.span,
+                            ))
+                        }
+                    };
+                    let handle = bigs.len();
+                    bigs.push(result);
+                    frames[depth].stack.push(Value::Bignum(handle));
+                    frames[depth].pc += 1;
+                    continue;
+                }
+                let left = number_of(left, &inst)?;
+                let right = number_of(right, &inst)?;
                 let value = match inst.a {
                     bin::ADD => left + right,
                     bin::SUB => left - right,
@@ -326,16 +374,32 @@ fn run_inner(
                 frames[depth].pc += 1;
             }
             Op::Cmp => {
-                let right = pop_number(&mut frames[depth], &inst)?;
-                let left = pop_number(&mut frames[depth], &inst)?;
-                let truth = match inst.a {
-                    cmp::LT => left < right,
-                    cmp::GT => left > right,
-                    cmp::LTE => left <= right,
-                    cmp::GTE => left >= right,
-                    cmp::EQ => left == right,
-                    cmp::NE => left != right,
-                    other => return Err(runtime_error(format!("invalid Cmp operator {other}"), inst.span)),
+                let right = pop(&mut frames[depth], &inst)?;
+                let left = pop(&mut frames[depth], &inst)?;
+                let truth = if matches!(left, Value::Bignum(_)) || matches!(right, Value::Bignum(_)) {
+                    use std::cmp::Ordering;
+                    let ord = value_to_big(left, &bigs, &inst)?.cmp(&value_to_big(right, &bigs, &inst)?);
+                    match inst.a {
+                        cmp::LT => ord == Ordering::Less,
+                        cmp::GT => ord == Ordering::Greater,
+                        cmp::LTE => ord != Ordering::Greater,
+                        cmp::GTE => ord != Ordering::Less,
+                        cmp::EQ => ord == Ordering::Equal,
+                        cmp::NE => ord != Ordering::Equal,
+                        other => return Err(runtime_error(format!("invalid Cmp operator {other}"), inst.span)),
+                    }
+                } else {
+                    let left = number_of(left, &inst)?;
+                    let right = number_of(right, &inst)?;
+                    match inst.a {
+                        cmp::LT => left < right,
+                        cmp::GT => left > right,
+                        cmp::LTE => left <= right,
+                        cmp::GTE => left >= right,
+                        cmp::EQ => left == right,
+                        cmp::NE => left != right,
+                        other => return Err(runtime_error(format!("invalid Cmp operator {other}"), inst.span)),
+                    }
                 };
                 frames[depth].stack.push(Value::Number(if truth { 1.0 } else { 0.0 }));
                 frames[depth].pc += 1;
@@ -419,7 +483,14 @@ fn run_inner(
         }
     }
 
-    Ok(RunOutcome::Completed(VmResult { globals, steps, peak_stack, max_call_depth }))
+    let bignum_globals = globals
+        .iter()
+        .map(|g| match g {
+            Some(Value::Bignum(handle)) => Some(bigs[*handle].to_decimal_string()),
+            _ => None,
+        })
+        .collect();
+    Ok(RunOutcome::Completed(VmResult { globals, bignum_globals, steps, peak_stack, max_call_depth }))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -500,6 +571,7 @@ fn trace_scope(scope: FrameScope) -> TraceScope {
 fn trace_detail(program: &IvmProgram, globals: &[Option<Value>], frame: &Frame, inst: &Inst) -> String {
     match inst.op {
         Op::Const => format!("push Number({})", trace_number(inst.imm)),
+        Op::ToBig => String::from("promote to bignum"),
         Op::MakeArray => format!("make array of {}", inst.a),
         Op::Index => String::from("index array"),
         Op::ArraySet => String::from("array element set"),
@@ -603,6 +675,7 @@ fn trace_value(program: &IvmProgram, value: Option<Value>) -> String {
     match value {
         Some(Value::Number(value)) => format!("Number({})", trace_number(value)),
         Some(Value::Array(handle)) => format!("Array(#{handle})"),
+        Some(Value::Bignum(handle)) => format!("Bignum(#{handle})"),
         Some(Value::Function(fid)) => program
             .functions
             .get(fid)
@@ -677,11 +750,28 @@ fn pop(frame: &mut Frame, inst: &Inst) -> Result<Value, Diagnostic> {
     frame.stack.pop().ok_or_else(|| runtime_error(format!("stack underflow at {:?}", inst.op), inst.span.clone()))
 }
 
+fn number_of(value: Value, inst: &Inst) -> Result<f64, Diagnostic> {
+    match value {
+        Value::Number(n) => Ok(n),
+        _ => Err(runtime_error(format!("{:?} requires numeric operands", inst.op), inst.span.clone())),
+    }
+}
+
+fn value_to_big(value: Value, bigs: &[BigInt], inst: &Inst) -> Result<BigInt, Diagnostic> {
+    match value {
+        Value::Bignum(handle) => Ok(bigs[handle].clone()),
+        Value::Number(n) => BigInt::from_f64_exact(n)
+            .ok_or_else(|| runtime_error("cannot use a non-integer number as a bignum", inst.span.clone())),
+        _ => Err(runtime_error(format!("{:?} requires numeric operands", inst.op), inst.span.clone())),
+    }
+}
+
 fn pop_number(frame: &mut Frame, inst: &Inst) -> Result<f64, Diagnostic> {
     match pop(frame, inst)? {
         Value::Number(value) => Ok(value),
         Value::Function(_) => Err(runtime_error(format!("{:?} requires numeric operands", inst.op), inst.span.clone())),
         Value::Array(_) => Err(runtime_error(format!("{:?} requires numeric operands, got an array", inst.op), inst.span.clone())),
+        Value::Bignum(_) => Err(runtime_error(format!("{:?} requires a plain number here, got a bignum", inst.op), inst.span.clone())),
     }
 }
 

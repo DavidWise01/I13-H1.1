@@ -1,0 +1,10 @@
+// std/bignum_modexp.i13 -- modular exponentiation at a big modulus (the Rabin-Miller / Diffie-
+// Hellman engine, darts 032/035). Square-and-multiply, all in bignum.
+def modexp(I base, I e, I m) {
+  if e <= 0 { -> big(1) }
+  I r <- e % 2
+  I h <- modexp((base * base) % m, (e - r) / 2, m)
+  if r == 1 { -> (h * base) % m }
+  -> h
+}
+I dh <- modexp(big(7), 128, big(1000000009))   // 293482507

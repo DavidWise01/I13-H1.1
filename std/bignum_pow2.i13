@@ -1,0 +1,8 @@
+// std/bignum_pow2.i13 -- 2^64 - 1 exactly (the Tower of Hanoi 64-disk count, SONNY 5 dart 036,
+// which overflowed f64's exact range). Bignum gives all the digits.
+def pow2(I acc, I k) {
+  if k <= 0 { -> acc }
+  -> pow2(acc * big(2), k - 1)
+}
+I two64 <- pow2(big(1), 64)
+I hanoi64 <- two64 - big(1)   // 18446744073709551615
