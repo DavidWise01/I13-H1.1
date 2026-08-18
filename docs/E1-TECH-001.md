@@ -115,6 +115,33 @@ Cortex
 
 The factory remains external. No shared mutable state crosses. A valid E1/CV transport receipt and the TECH trit are separate facts: a capsule may close correctly while carrying `n1` or `p0`.
 
+## Native coding workspace attachment
+
+`E1.WORKSPACE-001` binds the `p1` Cortex capability gate to an already-cloned local Git repository through the native `i13-workspace` worker.
+
+```text
+E1.TECH-001 / p1
+      |
+      v
+CORTEX CAPABILITY GATE
+      |
+      v
+i13-workspace <offline clone>
+      |
+      +-- read
+      +-- git status / diff
+      +-- cargo build --offline
+      +-- cargo test --offline
+      `-- bounded git apply
+      |
+      v
+receipt -> r0
+```
+
+The worker is intentionally not exported from `src/lib.rs`; Wasm receives no filesystem or process capability. `n1` and `p0` stop before workspace execution. v0.1 has no arbitrary shell, commit, push, clone, fetch, pull, file creation/deletion/rename, or direct `.git` access.
+
+Canonical attachment: `docs/E1-WORKSPACE-001.md`.
+
 ## Executable reference
 
 `examples/e1_tech_trit.i13` mirrors the authority law in the current I13 surface using direct numeric trits `-1 / 0 / +1`. This adds no language syntax and does not modify the frozen numbered corpus river.
@@ -138,4 +165,10 @@ Wasm build + validation
 VM/Wasm parity twice
 opaque E1 sandbox wiring
 no fetch/browser-storage path in E1 service
+```
+
+The native workspace attachment has its own independent proof context:
+
+```text
+i13/e1-workspace
 ```
