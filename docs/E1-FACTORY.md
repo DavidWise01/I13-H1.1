@@ -1,6 +1,6 @@
 # E1 External Primer Factory — canonical attachment
 
-Status: **CANON / LOCKED 2026-08-16**
+Status: **CANON / LOCKED 2026-08-18**
 
 E1 is secondary to I13. I13/Cortex runs first. Cortex may request E1 only when a bounded subagent needs an external prime, an external assembly, or an attribution/lineage receipt.
 
@@ -147,7 +147,58 @@ Continuity core:
 
 Forward and reverse closure are compared around the middle/middle core. A new object is oriented by structural relations such as `toward`, `away`, `between`, `crosses`, and `nested`; numeric similarity scores are not required.
 
-## 5. Full stack
+## 5. E1.TECH-001 — Trit-Native Technical Agent [LOCKED]
+
+Purpose: assemble a bounded technical/surgical/coding prime. TECH does not mutate host state; it returns a direct trit authority state to Cortex.
+
+```text
+n1 = -1 = boundary / contradicted / HOLD
+p0 =  0 = witness / unresolved / FLAY
+p1 = +1 = resolved / PROCEED
+```
+
+The control plane is trit-native. It is not collapsed to Boolean.
+
+```text
+if evidence_trit == n1 -> n1
+else if question_debt > 0 -> p0
+else if evidence_trit == p1 -> p1
+else -> p0
+```
+
+Bounded request fields:
+
+```text
+task
+phase       = inspect | diagnose | cut | verify | return
+scope
+capability  = read | build | test | patch | git
+evidence_trit = -1 | 0 | +1
+question_debt = 0..255
+```
+
+Surgical law:
+
+```text
+OBSERVE BEFORE MUTATION.
+A PLAUSIBLE DIAGNOSIS IS NOT AUTHORITY TO CUT.
+CUT ONLY THE SMALLEST BOUNDARY SUPPORTED BY EVIDENCE.
+VERIFY AGAINST THE SAME BOUNDARY.
+RETURN A WITNESSED RECEIPT.
+```
+
+`p1` advances only to the Cortex capability gate. It does not bypass filesystem, repository, shell, network, host, or CV policy. A correct E1ID/CV transport may carry `n1`, `p0`, or `p1`; transport integrity and agent authority are separate facts.
+
+Executable mirrors:
+
+```text
+docs/e1-tech-001.js
+examples/e1_tech_trit.i13
+```
+
+Full module spec: `docs/E1-TECH-001.md`.
+
+## 6. Full stack
 
 ```text
                          I13
@@ -165,9 +216,9 @@ Forward and reverse closure are compared around the middle/middle core. A new ob
               +-----------+-----------+
               |      E1 FACTORY       |
               |                       |
+              | E1.TECH-001           |
               | E1.RD-001             |
               | E1.CORPUS-001         |
-              | future primers...     |
               +-----------+-----------+
                           |
                        E1ID
@@ -178,10 +229,14 @@ Forward and reverse closure are compared around the middle/middle core. A new ob
                           |
                        CORTEX
                           |
-                         I13
+             TECH p1? ----+---- n1/p0
+                |                 |
+         capability gate       HOLD/FLAY
+                |                 |
+                +-------- r0 -----+
 ```
 
-## 6. Internal implementation boundary
+## 7. Internal implementation boundary
 
 The Rust/Wasm core implements only the boundary contract:
 
@@ -192,4 +247,4 @@ The Rust/Wasm core implements only the boundary contract:
 - provide independent `8n` width per side;
 - verify that a return names the request it closes.
 
-The factory modules and their calibration metadata remain host-side/external.
+The factory modules remain host-side/external. `E1.TECH-001` uses direct numeric trits `-1 / 0 / +1`; this adds no I13 syntax, no new IVM opcode, and no numbered-river reach.
