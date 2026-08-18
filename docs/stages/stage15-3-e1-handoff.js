@@ -9,7 +9,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '15.3.0';
+  const VERSION = '15.3.1';
   const WASM_URL = 'assets/i13_h1_1.wasm.b64';
   const SERVICE_URL = 'e1-service.html';
   const MAX_PAYLOAD_BYTES = 4096;
@@ -120,12 +120,12 @@
         #i13-e1-handoff-dock .e1-law{color:#94a3b8;margin:6px 0}.e1-law code{color:#fbbf24}.e1-link{color:#67e8f9}
       </style>
       <div class="e1-head"><b>15.3 · CORTEX → E1 → CV</b><span class="e1-part">[ y | x ]</span><button type="button" data-e1-close>×</button></div>
-      <div class="e1-law">Internal request console only. External factory runs in <code>sandbox="allow-scripts"</code> with no same-origin capability.</div>
-      <label>MODULE<select data-e1-module><option value="RD-001">E1.RD-001 · REVERSE DISTILLATION</option><option value="CORPUS-001">E1.CORPUS-001 · CORPUS ORIENTATION</option></select></label>
-      <textarea data-e1-request placeholder="bounded Cortex request — no live state"></textarea>
+      <div class="e1-law">Internal request console only. External factory runs in <code>sandbox="allow-scripts"</code> with no same-origin capability. TECH control remains <code>n1 / p0 / p1</code>.</div>
+      <label>MODULE<select data-e1-module><option value="TECH-001">E1.TECH-001 · TRIT TECHNICAL AGENT</option><option value="RD-001">E1.RD-001 · REVERSE DISTILLATION</option><option value="CORPUS-001">E1.CORPUS-001 · CORPUS ORIENTATION</option></select></label>
+      <textarea data-e1-request placeholder='TECH-001 JSON: {"task":"...","phase":"diagnose","scope":"...","capability":"test","evidence_trit":0,"question_debt":1}'></textarea>
       <div class="e1-actions"><button type="button" data-e1-prime>PRIME THROUGH E1</button><button type="button" data-e1-clear>CLEAR RECEIPT</button><a class="e1-link" href="e1.html" target="_blank" rel="noopener">factory page ↗</a></div>
       <span data-e1-status data-phase="ready">BOOTING · internal Wasm verifier</span>
-      <pre data-e1-out>{ "stage": "15.3", "boundary": "[ y | x ]" }</pre>
+      <pre data-e1-out>{ "stage": "15.3", "boundary": "[ y | x ]", "tech": "n1 | p0 | p1" }</pre>
     `;
     document.body.appendChild(dock);
     state.dock = dock;
@@ -296,7 +296,11 @@
       }
     };
     state.lastReceipt = receipt;
-    setOutput(receipt, 'PASS · [E1ID]cv closed x → y; Cortex may continue');
+    const tech = message.prime?.module === 'E1.TECH-001' ? message.prime.trit : null;
+    const verdict = tech
+      ? `PASS · [E1ID]cv closed · TECH ${tech.symbol} ${tech.authority}`
+      : 'PASS · [E1ID]cv closed x → y; Cortex may continue';
+    setOutput(receipt, verdict);
     window.dispatchEvent(new CustomEvent('i13:e1-prime', {detail:receipt}));
   }
 
