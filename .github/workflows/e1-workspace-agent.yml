@@ -1,0 +1,155 @@
+name: E1 WORKSPACE-001 offline coding agent
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/workspace.rs'
+      - 'src/bin/i13-workspace.rs'
+      - 'docs/E1-WORKSPACE-001.md'
+      - 'docs/E1-TECH-001.md'
+      - 'README.md'
+      - 'STATUS.md'
+      - '.github/workflows/e1-workspace-agent.yml'
+  pull_request:
+    paths:
+      - 'src/workspace.rs'
+      - 'src/bin/i13-workspace.rs'
+      - 'docs/E1-WORKSPACE-001.md'
+      - 'docs/E1-TECH-001.md'
+      - 'README.md'
+      - 'STATUS.md'
+      - '.github/workflows/e1-workspace-agent.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish pending workspace status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/e1-workspace',description:'offline Git workspace proof running'})
+
+      - name: Prime local Cargo cache for offline worker proof
+        run: cargo fetch
+
+      - name: Compile and unit-test native workspace
+        run: |
+          cargo test --bin i13-workspace
+          cargo build --bin i13-workspace
+
+      - name: Prove trit gate executes only p1
+        run: |
+          set +e
+          target/debug/i13-workspace . -1 status > /tmp/n1.txt 2>&1
+          n1=$?
+          target/debug/i13-workspace . 0 status > /tmp/p0.txt 2>&1
+          p0=$?
+          set -e
+          test "$n1" -eq 20
+          test "$p0" -eq 21
+          grep -Fq 'authority=HOLD' /tmp/n1.txt
+          grep -Fq 'executed=0' /tmp/n1.txt
+          grep -Fq 'authority=FLAY' /tmp/p0.txt
+          grep -Fq 'executed=0' /tmp/p0.txt
+          target/debug/i13-workspace . 1 status | tee /tmp/p1.txt
+          grep -Fq 'authority=PROCEED' /tmp/p1.txt
+          grep -Fq 'executed=1' /tmp/p1.txt
+
+      - name: Prove bounded read and path veto
+        run: |
+          target/debug/i13-workspace . 1 inspect Cargo.toml | tee /tmp/read.txt
+          grep -Fq '[package]' /tmp/read.txt
+          set +e
+          target/debug/i13-workspace . 1 inspect ../outside > /tmp/escape.txt 2>&1
+          escape=$?
+          target/debug/i13-workspace . 1 inspect .git/config > /tmp/gitmeta.txt 2>&1
+          gitmeta=$?
+          set -e
+          test "$escape" -eq 2
+          test "$gitmeta" -eq 2
+          grep -Fq 'r0=1' /tmp/escape.txt
+          grep -Fq 'r0=1' /tmp/gitmeta.txt
+
+      - name: Prove real local Git patch and dirty-target veto
+        run: |
+          rm -rf /tmp/i13-agent-repo
+          mkdir -p /tmp/i13-agent-repo
+          git -C /tmp/i13-agent-repo init -q
+          git -C /tmp/i13-agent-repo config user.email i13@example.invalid
+          git -C /tmp/i13-agent-repo config user.name 'I13 Workspace CI'
+          printf 'alpha\nbeta\n' > /tmp/i13-agent-repo/a.txt
+          git -C /tmp/i13-agent-repo add a.txt
+          git -C /tmp/i13-agent-repo commit -qm seed
+
+          cat <<'PATCH' | target/debug/i13-workspace /tmp/i13-agent-repo 1 patch | tee /tmp/patch.txt
+          diff --git a/a.txt b/a.txt
+          --- a/a.txt
+          +++ b/a.txt
+          @@ -1,2 +1,2 @@
+          -alpha
+          +gamma
+           beta
+          PATCH
+          grep -Fq 'gamma' /tmp/i13-agent-repo/a.txt
+          grep -Fq 'changed_files=a.txt' /tmp/patch.txt
+          grep -Fq 'diff_check=PASS' /tmp/patch.txt
+
+          git -C /tmp/i13-agent-repo checkout -- a.txt
+          printf 'dirty\n' > /tmp/i13-agent-repo/a.txt
+          set +e
+          cat <<'PATCH' | target/debug/i13-workspace /tmp/i13-agent-repo 1 patch > /tmp/dirty.txt 2>&1
+          diff --git a/a.txt b/a.txt
+          --- a/a.txt
+          +++ b/a.txt
+          @@ -1,2 +1,2 @@
+          -alpha
+          +gamma
+           beta
+          PATCH
+          dirty=$?
+          set -e
+          test "$dirty" -eq 2
+          grep -Fq 'already has local changes' /tmp/dirty.txt
+          grep -Fq 'r0=1' /tmp/dirty.txt
+
+      - name: Prove fixed offline build and test capabilities
+        run: |
+          target/debug/i13-workspace . 1 build | tee /tmp/build.txt
+          grep -Fq 'capability=build' /tmp/build.txt
+          grep -Fq 'program=cargo build --offline --bin i13' /tmp/build.txt
+          target/debug/i13-workspace . 1 test | tee /tmp/test.txt
+          grep -Fq 'capability=test' /tmp/test.txt
+          grep -Fq 'program=cargo test --offline --all-targets' /tmp/test.txt
+
+      - name: Prove Wasm core remains filesystem-free
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo check --lib --target wasm32-unknown-unknown
+          ! grep -Fq 'pub mod workspace' src/lib.rs
+          ! grep -Fq 'i13-workspace' src/lib.rs
+
+      - name: Enforce v0.1 capability boundary
+        run: |
+          grep -Fq 'No commit or push capability exists in v0.1.' docs/E1-WORKSPACE-001.md
+          grep -Fq 'MAX_PATCH_FILES: usize = 4' src/workspace.rs
+          grep -Fq 'MAX_PATCH_BYTES: usize = 64 * 1024' src/workspace.rs
+          grep -Fq 'GIT_TERMINAL_PROMPT' src/workspace.rs
+          grep -Fq 'CARGO_NET_OFFLINE' src/workspace.rs
+
+      - name: Publish workspace result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ job.status }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-workspace',description:ok?'offline Git workspace verified':'offline Git workspace proof failed'})
