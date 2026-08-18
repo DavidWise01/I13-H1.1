@@ -1,6 +1,6 @@
 # E1.TECH-001 — Trit-Native Technical Agent
 
-Status: **CANON CANDIDATE · NON-RIVER · E1 FACTORY MODULE**
+Status: **LOCKED KNOWN GOOD · NON-RIVER · JS/I13/WASM VERIFIED 2026-08-18**
 
 Purpose: assemble a bounded technical/surgical/coding prime outside the I13 live-state domain. The module does not mutate host state. It returns a trit-native authority state to Cortex; host capabilities remain separately gated.
 
@@ -118,3 +118,24 @@ The factory remains external. No shared mutable state crosses. A valid E1/CV tra
 ## Executable reference
 
 `examples/e1_tech_trit.i13` mirrors the authority law in the current I13 surface using direct numeric trits `-1 / 0 / +1`. This adds no language syntax and does not modify the frozen numbered corpus river.
+
+## Verified proof
+
+Dedicated CI context:
+
+```text
+i13/e1-tech-trit = success
+```
+
+The gate verifies:
+
+```text
+JS core syntax + trit conformance
+invalid trit veto
+I13 check + HIR witness
+reference VM exact globals
+Wasm build + validation
+VM/Wasm parity twice
+opaque E1 sandbox wiring
+no fetch/browser-storage path in E1 service
+```
