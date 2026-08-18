@@ -51,9 +51,31 @@
     status.className = `status ${verdict.includes('PASS') ? 'pass' : verdict.includes('VETO') ? 'veto' : ''}`;
   }
 
+  function techPrime(payload) {
+    if (!globalThis.E1Tech001) throw new Error('E1.TECH-001 core unavailable');
+    return globalThis.E1Tech001.evaluate(payload);
+  }
+
+  moduleEl.addEventListener('change', () => {
+    if (moduleEl.value === 'TECH-001') {
+      requestEl.value = JSON.stringify({
+        task:'repair one failing parser test',
+        phase:'diagnose',
+        scope:'parser/expression',
+        capability:'test',
+        evidence_trit:0,
+        question_debt:1,
+      }, null, 2);
+    }
+  });
+
   send.addEventListener('click', async () => {
     const payload = requestEl.value.trim();
     if (!payload) return show({error:'empty bounded request'}, 'VETO · request has no payload');
+    if (moduleEl.value === 'TECH-001') {
+      try { globalThis.E1Tech001.normalize(payload); }
+      catch (error) { return show({error:String(error?.message || error)}, 'VETO · invalid TECH-001 request'); }
+    }
     const request = {
       boundary:'[ y | x ]',
       from:'internal/channel/I13/cortex/subagent',
@@ -74,9 +96,19 @@
 
   ret.addEventListener('click', async () => {
     if (!pending) return show({error:'no pending request'}, 'VETO · no request to close');
-    const prime = pending.module === 'RD-001'
-      ? {module:'E1.RD-001', law:'ABCD - D = ABC', operation:'recover parent geometry from bounded derived form', private_state_exported:false}
-      : {module:'E1.CORPUS-001', operation:'orient against fixed external calibration geometry', anchors:ANCHORS, continuity:'[ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]', corpus_ingest:false};
+    let prime;
+    try {
+      if (pending.module === 'RD-001') {
+        prime = {module:'E1.RD-001', law:'ABCD - D = ABC', operation:'recover parent geometry from bounded derived form', private_state_exported:false};
+      } else if (pending.module === 'CORPUS-001') {
+        prime = {module:'E1.CORPUS-001', operation:'orient against fixed external calibration geometry', anchors:ANCHORS, continuity:'[ a+ [[ () ]] c- ] || [ c+ [[ () ]] a- ]', corpus_ingest:false};
+      } else {
+        prime = techPrime(pending.payload);
+      }
+    } catch (error) {
+      return show({error:String(error?.message || error)}, 'VETO · factory module rejected request');
+    }
+
     const return_hash = await sha256(stable(prime));
     const e1id = {
       phase:'return',
@@ -92,7 +124,10 @@
       shared_live_state:false,
       cv:'PASS',
     };
-    show({prime,E1ID:e1id}, 'PASS · [E1ID]cv closed x → y; I13 may continue');
+    const verdict = prime.module === 'E1.TECH-001'
+      ? `PASS · [E1ID]cv closed · ${prime.trit.symbol} ${prime.trit.authority}`
+      : 'PASS · [E1ID]cv closed x → y; I13 may continue';
+    show({prime,E1ID:e1id}, verdict);
     pending = null;
     ret.disabled = true;
   });
