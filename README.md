@@ -56,16 +56,21 @@ Only bounded witnessed capsules cross. `E1ID` binds request/return lineage and C
 
 Locked factory modules:
 
+- `E1.TECH-001` — trit-native technical/surgical/coding prime. Agent authority remains `n1=-1` HOLD, `p0=0` FLAY, `p1=+1` PROCEED; `p1` advances only to a separate Cortex capability gate.
 - `E1.RD-001` — Reverse Distillation: recover parent dependency geometry from a bounded derived form.
 - `E1.CORPUS-001` — corpus-orientation calibration field around the Enheduanna middle/middle core. Named literary anchors are external calibration metadata only; their text is not added to `corpus/`.
 
-See [`docs/E1-FACTORY.md`](docs/E1-FACTORY.md) and the live Pages [`e1.html`](https://davidwise01.github.io/I13-H1.1/e1.html).
+TECH-001 has both a host implementation (`docs/e1-tech-001.js`) and an executable I13 semantic mirror (`examples/e1_tech_trit.i13`). It adds no new I13 syntax, opcode, or numbered corpus reach.
+
+See [`docs/E1-FACTORY.md`](docs/E1-FACTORY.md), [`docs/E1-TECH-001.md`](docs/E1-TECH-001.md), and the live Pages [`e1.html`](https://davidwise01.github.io/I13-H1.1/e1.html).
 
 ### Stage 15.3 — live Cortex ↔ E1 handoff
 
-The workbench now carries a bounded `E1 PRIME` control. The external factory worker runs in `e1-service.html` inside an opaque sandbox with `sandbox="allow-scripts"` and **no** `allow-same-origin`. The two sides communicate only through `postMessage` capsules.
+The workbench carries a bounded `E1 PRIME` control. The external factory worker runs in `e1-service.html` inside an opaque sandbox with `sandbox="allow-scripts"` and **no** `allow-same-origin`. The two sides communicate only through `postMessage` capsules.
 
 Before `y -> x`, the internal workbench loads the current Wasm core and calls `i13_e1_boundary_verify`. On return it verifies the exact parent request and calls both `i13_e1_boundary_verify` and `i13_e1_closed_loop_verify`. Only a closed `[E1ID]cv` return emits the internal `i13:e1-prime` event.
+
+For `E1.TECH-001`, transport closure and agent authority remain separate: a valid `[E1ID]cv` receipt may carry `n1`, `p0`, or `p1`.
 
 No E1 request/return payload is persisted in localStorage. See [`docs/STAGE15.3-E1-HANDOFF.md`](docs/STAGE15.3-E1-HANDOFF.md).
 
@@ -77,7 +82,7 @@ spec/                live semantics and frozen-boundary notes
 reference/vh1/       frozen ternary/Hamiltonian reference
 reference/vh2/       five-qubit CUBI hypothesis reference
 reference/legacy/    historical Wasm/GPU proof artifacts
-examples/            I-13 programs
+examples/            I-13 programs, including E1 TECH trit witness
 corpus/              technical corpus + cross-reference maps
 docs/                GitHub Pages hallway, workbench/runtime, and E1 external factory
 ```
