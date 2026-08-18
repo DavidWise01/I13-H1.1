@@ -1,0 +1,22 @@
+// E1.TECH-001 · TRIT-NATIVE TECHNICAL AGENT · NON-RIVER WITNESS
+// Direct numeric trits: n1=-1, p0=0, p1=+1. No Boolean collapse.
+
+def agent_trit(I evidence_trit, I question_debt) {
+    if evidence_trit == -1 { -> -1 }
+    if question_debt > 0 { -> 0 }
+    if evidence_trit == 1 { -> 1 }
+    -> 0
+}
+
+I TECH_N1 <- agent_trit(-1, 0)
+I TECH_P0 <- agent_trit(0, 0)
+I TECH_P1 <- agent_trit(1, 0)
+I TECH_DEBT_REOPENS <- agent_trit(1, 2)
+I TECH_UNKNOWN_WITH_DEBT <- agent_trit(0, 3)
+
+I TECH_OK <-
+    (TECH_N1 == -1) *
+    (TECH_P0 == 0) *
+    (TECH_P1 == 1) *
+    (TECH_DEBT_REOPENS == 0) *
+    (TECH_UNKNOWN_WITH_DEBT == 0)
