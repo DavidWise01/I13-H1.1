@@ -141,7 +141,7 @@ jobs:
           PY
           git -C /tmp/i13-self-repair add src/e1_boundary.rs
           git -C /tmp/i13-self-repair commit -qm 'inject controlled workspace defect'
-          git -C /tmp/i13-self-repair diff -R HEAD^ HEAD -- src/e1_boundary.rs > /tmp/i13-self-repair.patch
+          git -C /tmp/i13-self-repair diff HEAD HEAD^ -- src/e1_boundary.rs > /tmp/i13-self-repair.patch
           test -s /tmp/i13-self-repair.patch
           test -z "$(git -C /tmp/i13-self-repair status --porcelain -- src/e1_boundary.rs)"
 
