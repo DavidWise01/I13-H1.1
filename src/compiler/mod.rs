@@ -16,6 +16,7 @@ pub mod lower_ivm;
 pub mod parser;
 pub mod semantic;
 pub mod source;
+pub mod spotlog;
 pub mod token;
 pub mod trace;
 pub mod validator;
@@ -176,6 +177,26 @@ mod tests {
         let (output, result) = run(source, vm::VmConfig::default()).unwrap();
         assert_eq!(result.global_number(&output.ivm, "out"), Some(64.0));
         assert!(result.max_call_depth >= 64);
+    }
+
+    #[test]
+    fn spot_log_nests_dominant_frames_and_subordinate_spots() {
+        // I = dominant frame (outside); i = subordinate spot (inside). A call opens a deeper I.
+        let output = compile(SourceFile::new(
+            "spotlog.i13",
+            "def sq(I n) { -> n * n }\nI b <- sq(3)\n",
+        )).unwrap();
+        let mut log = spotlog::SpotLog::new();
+        let mut observer = |event: &TraceEvent| log.observe(&output.ivm, event);
+        let execution = vm::run_observed(&output.ivm, vm::VmConfig::default(), &mut observer).unwrap();
+        let text = log.finish(execution.peak_stack);
+        // the outermost dominant scope sits flush-left; a nested frame is entered deeper inside.
+        assert!(text.contains("I  main   depth 0"));
+        assert!(text.contains("I  ENTER fn0000:sq   depth 1"));
+        assert!(text.contains("I  LEAVE fn0000:sq"));
+        // subordinate spots are lowercase i and indented inside their frame.
+        assert!(text.contains("\n   i  0001"));
+        assert!(text.contains("balance held to the last spot"));
     }
 
     #[test]

@@ -21,7 +21,7 @@ fn main() {
     }
 
     let (path, output_path, dump_kind) = match args.as_slice() {
-        [command, path] if matches!(command.as_str(), "check" | "run" | "trace" | "debug") => (path.clone(), None, None),
+        [command, path] if matches!(command.as_str(), "check" | "run" | "trace" | "debug" | "log") => (path.clone(), None, None),
         [command, path, flag, output] if command == "build" && flag == "-o" => (path.clone(), Some(output.clone()), None),
         [command, path, flag] if command == "dump" => {
             let Some(kind) = DumpKind::from_flag(flag) else { usage() };
@@ -82,6 +82,33 @@ fn main() {
                             execution.steps,
                             execution.peak_stack,
                             execution.max_call_depth,
+                        );
+                        print_numeric_globals(&output.ivm, &execution);
+                        Ok(())
+                    }
+                    Err(error) => Err(vec![error]),
+                }
+            }
+            Err(errors) => Err(errors),
+        },
+        "log" => match compile(source) {
+            Ok(output) => {
+                let config = compiler::vm::VmConfig::default();
+                let mut log = compiler::spotlog::SpotLog::new();
+                let mut observer = |event: &compiler::TraceEvent| {
+                    log.observe(&output.ivm, event);
+                };
+                match compiler::vm::run_observed(&output.ivm, config, &mut observer) {
+                    Ok(execution) => {
+                        let text = log.finish(execution.peak_stack);
+                        let target = "i13log.txt";
+                        if let Err(error) = fs::write(target, &text) {
+                            eprintln!("{target}: {error}");
+                            process::exit(2);
+                        }
+                        println!(
+                            "LOGGED · {} spot(s) aware -> {} · deepest inside {} · peak stack {}",
+                            execution.steps, target, execution.max_call_depth, execution.peak_stack,
                         );
                         print_numeric_globals(&output.ivm, &execution);
                         Ok(())
@@ -220,6 +247,7 @@ fn usage() -> ! {
     eprintln!("  i13 check <file.i13>");
     eprintln!("  i13 run <file.i13>");
     eprintln!("  i13 trace <file.i13>");
+    eprintln!("  i13 log <file.i13>");
     eprintln!("  i13 debug <file.i13>");
     eprintln!("  i13 build <file.i13> -o <file.wasm>");
     eprintln!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm");
@@ -242,6 +270,7 @@ fn help() {
     println!("  i13 check <file.i13>            validate; prints VALID + the COVERED/NOT-COVERED ledger");
     println!("  i13 run <file.i13>              validate then execute; prints declared globals");
     println!("  i13 trace <file.i13>            run with a step trace");
+    println!("  i13 log <file.i13>              run and write i13log.txt: a spot-awareness log (I = frame/outside, i = spot/inside)");
     println!("  i13 debug <file.i13>            run under the interactive debugger");
     println!("  i13 build <file.i13> -o <out>   compile to a self-contained wasm module");
     println!("  i13 dump <file.i13> --tokens|--ast|--hir|--ivm   introspect a stage");
