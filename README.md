@@ -10,6 +10,7 @@ I-13 source
   -> Cortex / bounded subagent
        -> enough: continue internally
        -> needs prime: [ y | x ] -> E1 external primer factory -> [E1ID]cv -> Cortex
+       -> p1 capability: native i13-workspace -> local Git clone -> receipt -> r0
   -> Rust core
   -> WebAssembly
   -> JS/WebGPU host
@@ -74,17 +75,42 @@ For `E1.TECH-001`, transport closure and agent authority remain separate: a vali
 
 No E1 request/return payload is persisted in localStorage. See [`docs/STAGE15.3-E1-HANDOFF.md`](docs/STAGE15.3-E1-HANDOFF.md).
 
+### E1.WORKSPACE-001 — offline local Git coding workspace
+
+`p1` may now advance to a native-only worker for an already-cloned repository:
+
+```text
+E1.TECH-001 / p1
+   -> Cortex capability gate
+   -> i13-workspace <local clone>
+   -> read | git | build | test | patch
+   -> receipt
+   -> r0
+```
+
+The worker is **not** exported from `src/lib.rs` and therefore is not part of the Wasm surface. v0.1 permits only:
+
+- bounded UTF-8 file inspection inside the repo;
+- local `git status` / `git diff`;
+- `cargo build --offline --bin i13`;
+- `cargo test --offline --all-targets`;
+- bounded `git apply` patches to 1–4 existing, tracked, clean regular files.
+
+It rejects path traversal, direct `.git` access, dirty patch targets, binary/create/delete/rename/mode patches, arbitrary shell commands, commit/push, and network Git operations.
+
+See [`docs/E1-WORKSPACE-001.md`](docs/E1-WORKSPACE-001.md).
+
 ## Repository map
 
 ```text
-src/                 live H1.1 Rust/Wasm reference core
+src/                 live H1.1 Rust/Wasm reference core + native workspace worker
 spec/                live semantics and frozen-boundary notes
 reference/vh1/       frozen ternary/Hamiltonian reference
 reference/vh2/       five-qubit CUBI hypothesis reference
 reference/legacy/    historical Wasm/GPU proof artifacts
 examples/            I-13 programs, including E1 TECH trit witness
 corpus/              technical corpus + cross-reference maps
-docs/                GitHub Pages hallway, workbench/runtime, and E1 external factory
+docs/                GitHub Pages hallway, workbench/runtime, E1 factory, workspace contract
 ```
 
 See [`STATUS.md`](STATUS.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`TRUNK.md`](TRUNK.md).
