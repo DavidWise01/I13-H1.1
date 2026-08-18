@@ -262,6 +262,12 @@ impl Emitter<'_> {
                 self.code.push(inst);
             }
             HirExprKind::Call { callee, args } => {
+                // `big(x)` is an intrinsic, not a user function: promote a number to a bignum.
+                if callee == "big" && args.len() == 1 {
+                    self.expr(&args[0]);
+                    self.code.push(Inst::new(Op::ToBig, expr.span.clone()));
+                    return;
+                }
                 let Some(&slot) = self.globals.get(callee) else {
                     self.errors.push(Diagnostic::new(
                         DiagnosticCode::SemanticUnknownFunction,

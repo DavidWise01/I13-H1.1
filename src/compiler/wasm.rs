@@ -300,6 +300,12 @@ fn emit_region(
                     inst.span.clone(),
                 ));
             }
+            Op::ToBig => {
+                return Err(backend_error(
+                    "bignum (big) is not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
+                    inst.span.clone(),
+                ));
+            }
             Op::Const => {
                 i32_const(KIND_NUMBER, out);
                 f64_const(inst.imm, out);

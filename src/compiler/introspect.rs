@@ -266,6 +266,7 @@ fn ivm_inst(out: &mut String, program: &IvmProgram, fid: Option<usize>, pc: usiz
     let pad = indent(depth);
     let detail = match inst.op {
         Op::Const => format!("value={}", number(inst.imm)),
+        Op::ToBig => String::from("promote to bignum"),
         Op::MakeArray => format!("len={}", inst.a),
         Op::Index => String::from("array[i]"),
         Op::ArraySet => String::from("array[i] <- x"),
@@ -316,7 +317,7 @@ fn token_text(kind: &TokenKind) -> String {
 
 fn binary_name(op: BinaryOp) -> &'static str { match op { BinaryOp::Add => "Add", BinaryOp::Sub => "Sub", BinaryOp::Mul => "Mul", BinaryOp::Div => "Div", BinaryOp::Mod => "Mod", BinaryOp::And => "And", BinaryOp::Or => "Or", BinaryOp::Xor => "Xor", BinaryOp::Shl => "Shl", BinaryOp::Shr => "Shr" } }
 fn compare_name(op: CompareOp) -> &'static str { match op { CompareOp::Eq => "Eq", CompareOp::Ne => "Ne", CompareOp::Lt => "Lt", CompareOp::Lte => "Lte", CompareOp::Gt => "Gt", CompareOp::Gte => "Gte" } }
-fn op_name(op: Op) -> &'static str { match op { Op::Const => "Const", Op::Ask => "Ask", Op::Attr => "Attr", Op::Ret => "Ret", Op::Answer => "Answer", Op::Drop => "Drop", Op::Bin => "Bin", Op::Cmp => "Cmp", Op::If => "If", Op::Call => "Call", Op::Block => "Block", Op::Else => "Else", Op::End => "End", Op::Func => "Func", Op::Halt => "Halt", Op::MakeArray => "MakeArray", Op::Index => "Index", Op::ArraySet => "ArraySet" } }
+fn op_name(op: Op) -> &'static str { match op { Op::Const => "Const", Op::Ask => "Ask", Op::Attr => "Attr", Op::Ret => "Ret", Op::Answer => "Answer", Op::Drop => "Drop", Op::Bin => "Bin", Op::Cmp => "Cmp", Op::If => "If", Op::Call => "Call", Op::Block => "Block", Op::Else => "Else", Op::End => "End", Op::Func => "Func", Op::Halt => "Halt", Op::MakeArray => "MakeArray", Op::Index => "Index", Op::ArraySet => "ArraySet", Op::ToBig => "ToBig" } }
 fn ivm_bin_name(raw: i32) -> &'static str { match raw { ivm::bin::ADD => "Add", ivm::bin::SUB => "Sub", ivm::bin::MUL => "Mul", ivm::bin::DIV => "Div", _ => "Invalid" } }
 fn ivm_cmp_name(raw: i32) -> &'static str { match raw { ivm::cmp::LT => "Lt", ivm::cmp::GT => "Gt", ivm::cmp::LTE => "Lte", ivm::cmp::GTE => "Gte", ivm::cmp::EQ => "Eq", ivm::cmp::NE => "Ne", _ => "Invalid" } }
 fn scope_name(raw: i32) -> &'static str { if raw == 0 { "local" } else if raw == 1 { "global" } else { "invalid" } }

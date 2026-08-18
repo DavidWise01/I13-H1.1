@@ -27,9 +27,10 @@ pub enum Op {
     MakeArray = 15,
     Index = 16,
     ArraySet = 17,
+    ToBig = 18,
 }
 
-pub const OPCODE_COUNT: usize = 18;
+pub const OPCODE_COUNT: usize = 19;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StackEffect {
@@ -50,6 +51,8 @@ impl Op {
             Self::MakeArray => StackEffect { need: argc, net: 1 - argc as i32 },
             Self::Index => StackEffect { need: 2, net: -1 },
             Self::ArraySet => StackEffect { need: 3, net: -2 },
+            // big(x): consume a number, produce a bignum (promotion)
+            Self::ToBig => StackEffect { need: 1, net: 0 },
             Self::Block | Self::Else | Self::End | Self::Func | Self::Halt => StackEffect { need: 0, net: 0 },
         }
     }

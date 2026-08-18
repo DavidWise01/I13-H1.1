@@ -72,6 +72,7 @@ pub fn render_event(program: &IvmProgram, event: &TraceEvent) -> String {
 fn op_name(op: Op) -> &'static str {
     match op {
         Op::Const => "Const",
+        Op::ToBig => "ToBig",
         Op::MakeArray => "MakeArray",
         Op::Index => "Index",
         Op::ArraySet => "ArraySet",

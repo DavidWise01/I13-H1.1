@@ -60,6 +60,16 @@ fn check_expr(expr: &HirExpr, functions: &BTreeMap<String, usize>, errors: &mut 
         }
         HirExprKind::Call { callee, args } => {
             for arg in args { check_expr(arg, functions, errors); }
+            if callee == "big" {
+                if args.len() != 1 {
+                    errors.push(Diagnostic::new(
+                        DiagnosticCode::SemanticArityMismatch,
+                        format!("intrinsic `big` expects 1 argument, but this call provides {}", args.len()),
+                        expr.span.clone(),
+                    ));
+                }
+                return;
+            }
             match functions.get(callee) {
                 Some(expected) if *expected != args.len() => errors.push(Diagnostic::new(
                     DiagnosticCode::SemanticArityMismatch,
