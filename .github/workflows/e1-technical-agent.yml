@@ -1,0 +1,112 @@
+name: E1 TECH-001 trit-native technical agent
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/E1-TECH-001.md'
+      - 'docs/E1-FACTORY.md'
+      - 'docs/e1-tech-001.js'
+      - 'docs/e1-service.html'
+      - 'docs/e1-factory.js'
+      - 'docs/e1.html'
+      - 'docs/stages/stage15-3-e1-handoff.js'
+      - 'examples/e1_tech_trit.i13'
+      - '.github/workflows/e1-technical-agent.yml'
+  pull_request:
+    paths:
+      - 'docs/E1-TECH-001.md'
+      - 'docs/E1-FACTORY.md'
+      - 'docs/e1-tech-001.js'
+      - 'docs/e1-service.html'
+      - 'docs/e1-factory.js'
+      - 'docs/e1.html'
+      - 'docs/stages/stage15-3-e1-handoff.js'
+      - 'examples/e1_tech_trit.i13'
+      - '.github/workflows/e1-technical-agent.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  tech-trit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish pending TECH status
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/e1-tech-trit',description:'E1 TECH-001 trit proof running'})
+      - name: Check trit-native JavaScript core
+        run: |
+          node --check docs/e1-tech-001.js
+          node - <<'NODE'
+          require('./docs/e1-tech-001.js');
+          const T=globalThis.E1Tech001;
+          const base={task:'repair parser',phase:'diagnose',scope:'parser/expression',capability:'test'};
+          const cases=[
+            [{...base,evidence_trit:-1,question_debt:0},'n1',-1,'HOLD'],
+            [{...base,evidence_trit:0,question_debt:0},'p0',0,'FLAY'],
+            [{...base,evidence_trit:1,question_debt:2},'p0',0,'FLAY'],
+            [{...base,evidence_trit:1,question_debt:0},'p1',1,'PROCEED'],
+          ];
+          for(const [input,symbol,value,authority] of cases){
+            const out=T.evaluate(input);
+            if(out.trit.symbol!==symbol||out.trit.value!==value||out.trit.authority!==authority) throw new Error(JSON.stringify({input,out}));
+          }
+          let veto=false;
+          try{T.evaluate({...base,evidence_trit:2,question_debt:0});}catch(_){veto=true;}
+          if(!veto) throw new Error('invalid trit admitted');
+          console.log('TECH_JS_OK=1');
+          NODE
+      - name: Build I13 compiler CLI
+        run: cargo build --bin i13
+      - name: Verify I13 trit witness
+        run: |
+          target/debug/i13 check examples/e1_tech_trit.i13
+          target/debug/i13 dump examples/e1_tech_trit.i13 --hir | tee /tmp/e1-tech.hir
+          grep -Fq 'Call agent_trit argc=2' /tmp/e1-tech.hir
+          target/debug/i13 run examples/e1_tech_trit.i13 | tee /tmp/e1-tech.txt
+          grep -Fq 'TECH_N1 = -1' /tmp/e1-tech.txt
+          grep -Fq 'TECH_P0 = 0' /tmp/e1-tech.txt
+          grep -Fq 'TECH_P1 = 1' /tmp/e1-tech.txt
+          grep -Fq 'TECH_DEBT_REOPENS = 0' /tmp/e1-tech.txt
+          grep -Fq 'TECH_UNKNOWN_WITH_DEBT = 0' /tmp/e1-tech.txt
+          grep -Fq 'TECH_OK = 1' /tmp/e1-tech.txt
+      - name: Verify I13 Wasm parity twice
+        run: |
+          target/debug/i13 build examples/e1_tech_trit.i13 -o /tmp/e1-tech.wasm
+          node - <<'NODE'
+          const fs=require('fs');
+          (async()=>{
+            const bytes=fs.readFileSync('/tmp/e1-tech.wasm');
+            if(!WebAssembly.validate(bytes)) throw new Error('invalid wasm');
+            const {instance}=await WebAssembly.instantiate(bytes,{});
+            const expected={TECH_N1:-1,TECH_P0:0,TECH_P1:1,TECH_DEBT_REOPENS:0,TECH_UNKNOWN_WITH_DEBT:0,TECH_OK:1};
+            const verify=()=>{for(const [name,value] of Object.entries(expected)){const g=instance.exports[`i13.global.${name}`];if(!(g instanceof WebAssembly.Global)||g.value!==value)throw new Error(`${name} mismatch: ${g?.value}`);}};
+            instance.exports.i13_run(); verify();
+            instance.exports.i13_run(); verify();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Verify E1 sandbox and trit wiring
+        run: |
+          grep -Fq "'TECH-001'" docs/e1-service.html
+          grep -Fq 'e1-tech-001.js' docs/e1-service.html
+          grep -Fq 'E1.TECH-001' docs/stages/stage15-3-e1-handoff.js
+          grep -Fq 'n1 = -1' docs/E1-TECH-001.md
+          grep -Fq 'p0 =  0' docs/E1-TECH-001.md
+          grep -Fq 'p1 = +1' docs/E1-TECH-001.md
+          grep -Fq 'No Boolean collapse' docs/E1-TECH-001.md
+          ! grep -Eq 'fetch\(|localStorage|sessionStorage|indexedDB' docs/e1-service.html
+          grep -Fq "setAttribute('sandbox', 'allow-scripts')" docs/stages/stage15-3-e1-handoff.js
+      - name: Publish TECH result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ job.status }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/e1-tech-trit',description:ok?'E1 TECH-001 JS/I13/Wasm verified':'E1 TECH-001 proof failed'})
