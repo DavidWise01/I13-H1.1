@@ -25,6 +25,7 @@ pub enum TokenKind {
     Minus,
     Star,
     Slash,
+    Percent,
     Newline,
     Eof,
 }

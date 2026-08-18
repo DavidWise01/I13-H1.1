@@ -252,6 +252,10 @@ fn run_inner(
                         return Err(runtime_error("division by zero", inst.span));
                     }
                     bin::DIV => left / right,
+                    bin::MOD if right == 0.0 => {
+                        return Err(runtime_error("modulo by zero", inst.span));
+                    }
+                    bin::MOD => left % right,
                     other => return Err(runtime_error(format!("invalid Bin operator {other}"), inst.span)),
                 };
                 frames[depth].stack.push(Value::Number(value));
