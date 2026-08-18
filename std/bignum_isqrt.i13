@@ -1,0 +1,28 @@
+// std/bignum_isqrt.i13 -- integer square root over bignum: floor(sqrt(n)).
+// Newton's method with integer division. NO compiler change -- pure bignum
+// add/div/compare, the value kind already on the trunk (spec/BIGNUM.md).
+// The want was surfaced by dart 057 (Gauss-Legendre): high-precision pi via
+// the AGM needs a square root at bignum scale. isqrt is that root, in I-13.
+//
+// isqrt_step recurses x -> (x + n/x)/2 until the sequence stops decreasing;
+// started from x = n (an overestimate for n >= 1) it lands on floor(sqrt(n)).
+def isqrt_step(I n, I x) {
+  I y <- (x + n / x) / 2
+  if y < x { -> isqrt_step(n, y) }
+  -> x
+}
+def isqrt(I n) {
+  if n < big(2) { -> n }
+  -> isqrt_step(n, n)
+}
+
+// build big perfect / non-perfect squares by MULTIPLYING (large literals can't
+// be exact in f64, so big numbers are constructed, not typed).
+I k     <- big(1000000000)          // 10^9, exact in f64
+I p18   <- k * k                    // 10^18  (a perfect square)
+I p36   <- p18 * p18                // 10^36  (a perfect square)
+
+I r18   <- isqrt(p18)               // 1000000000
+I r36   <- isqrt(p36)               // 1000000000000000000
+I r2    <- isqrt(p36 + p36)         // floor(sqrt(2)*10^18) = 1414213562373095048
+I rnear <- isqrt(p18 + big(500))    // 1000000000  (500 short of the next square)

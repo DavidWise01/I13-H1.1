@@ -30,6 +30,7 @@ grows around it as a library.
 | `bignum_factorial.i13` | exact factorial | `big()` + `*` | `100!` exact (158 digits) |
 | `bignum_pow2.i13` | 2⁶⁴−1 exactly | `big()` + `* -` | `18446744073709551615` (dart 036's Hanoi count) |
 | `bignum_modexp.i13` | modular exponentiation | `big()` + `* %` | `7^128 mod 1000000009 = 293482507` |
+| `bignum_isqrt.i13` | integer square root `floor(sqrt(n))` | `big()` + `+ / <` recursion | `isqrt(10^36) = 10^18`, `isqrt(2·10^36) = 1414213562373095048` |
 
 ## Which dart recommendations this closes
 
@@ -42,6 +43,11 @@ grows around it as a library.
   rest of I-13. (They range-reduce as any fixed-term series must; see each file's header.)
 - **`%` modulo** — merged earlier; it makes `gcd.i13` and `modexp.i13` (hence Rabin–Miller,
   dart 032) run for real.
+- **Integer square root over bignum** — surfaced by dart 057 (Gauss–Legendre computes π by the
+  arithmetic–geometric mean, which needs a square root at high precision). `bignum_isqrt.i13` is
+  Newton's integer method written in I-13 over the existing `big()` value — **no compiler change**,
+  just `+ / <` and recursion — landing on `floor(sqrt(n))` exactly. It shows a "needs bignum sqrt"
+  wall clearing as a library file, not a language change.
 
 ## The one interpreter change that came with this
 
