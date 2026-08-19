@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'bench/i13_harbor_agent.py'
+      - 'bench/**'
       - '.github/workflows/benchmark-tbench-one.yml'
   workflow_dispatch:
 
@@ -88,24 +88,18 @@ jobs:
             const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-docker',description:ok?'Docker daemon ready':'Docker daemon unavailable',target_url});
 
-      - name: Sanity-check I13 instruction parser
+      - name: Sanity-check real Harbor agent import and parser
         if: ${{ steps.install.outcome == 'success' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           python - <<'PY'
-          import sys, types
-          base=types.ModuleType('harbor.agents.base')
-          class BaseAgent: pass
-          base.BaseAgent=BaseAgent
-          agents=types.ModuleType('harbor.agents')
-          harbor=types.ModuleType('harbor')
-          sys.modules['harbor']=harbor
-          sys.modules['harbor.agents']=agents
-          sys.modules['harbor.agents.base']=base
-          from bench.i13_harbor_agent import _parse
+          from bench.i13_harbor_agent import I13HarborAgent, _parse
+          assert I13HarborAgent.name() == 'i13-harbor-openssl-v0.1'
           instruction='''Generate a 2048-bit RSA private key /app/ssl/server.key. Valid for 365 days. Organization Name: "DevOps Team". Common Name: "dev-internal.company.local". Save certificate /app/ssl/server.crt, combined /app/ssl/server.pem, report /app/ssl/verification.txt, checker /app/check_cert.py.'''
           spec=_parse(instruction)
           assert spec and spec['bits']==2048 and spec['days']==365 and spec['cn']=='dev-internal.company.local'
-          print('I13_TBENCH_ADAPTER_PARSE_OK=1')
+          print('I13_TBENCH_ADAPTER_IMPORT_OK=1')
           PY
 
       - name: Prove official task environment with oracle
@@ -113,11 +107,25 @@ jobs:
         if: ${{ steps.install.outcome == 'success' && steps.cli.outcome == 'success' && steps.docker.outcome == 'success' }}
         continue-on-error: true
         run: |
+          set -euo pipefail
+          rm -rf /tmp/i13-tbench-oracle
+          mkdir -p /tmp/i13-tbench-oracle
+          cd /tmp/i13-tbench-oracle
           harbor run \
             -t terminal-bench/openssl-selfsigned-cert \
             -a oracle \
             -k 1 \
-            -y | tee /tmp/tbench-oracle.txt
+            -y | tee oracle.txt
+          python - <<'PY'
+          from pathlib import Path
+          rewards=list(Path('jobs').rglob('reward.txt'))
+          if len(rewards) != 1:
+              raise SystemExit(f'expected exactly one oracle reward, found {len(rewards)}')
+          value=float(rewards[0].read_text().strip())
+          print(f'ORACLE_TBENCH_REWARD={value}')
+          if value != 1.0:
+              raise SystemExit(f'official oracle reward={value}')
+          PY
 
       - name: Publish oracle result
         if: ${{ always() && github.event_name == 'push' }}
@@ -126,36 +134,37 @@ jobs:
           script: |
             const ok='${{ steps.oracle.outcome }}'==='success';
             const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':'official task oracle failed/skipped',target_url});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle reward 1.0':'official task oracle failed',target_url});
 
       - name: Run I13 on one official Terminal-Bench 2.1 task
         id: agent
         if: ${{ steps.oracle.outcome == 'success' }}
         continue-on-error: true
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
+          set -euo pipefail
+          rm -rf /tmp/i13-tbench-agent
+          mkdir -p /tmp/i13-tbench-agent
+          cd /tmp/i13-tbench-agent
           harbor run \
             -t terminal-bench/openssl-selfsigned-cert \
-            --agent-import-path bench.i13_harbor_agent:I13HarborAgent \
+            --agent bench.i13_harbor_agent:I13HarborAgent \
             -k 1 \
-            -y | tee /tmp/tbench-i13.txt
+            -y | tee agent.txt
 
           python - <<'PY'
           from pathlib import Path
-          roots=[Path.home()/'.harbor'/'jobs', Path('jobs')]
-          rewards=[]
-          for root in roots:
-              if not root.exists(): continue
-              for p in root.rglob('reward.txt'):
-                  try: value=float(p.read_text().strip())
-                  except Exception: continue
-                  rewards.append((p.stat().st_mtime, value, str(p)))
-          if not rewards: raise SystemExit('No Harbor reward.txt found')
-          rewards.sort()
-          _,value,path=rewards[-1]
+          rewards=list(Path('jobs').rglob('reward.txt'))
+          if len(rewards) != 1:
+              raise SystemExit(f'expected exactly one I13 reward, found {len(rewards)}')
+          value=float(rewards[0].read_text().strip())
           print(f'I13_TBENCH_REWARD={value}')
-          print(f'I13_TBENCH_REWARD_PATH={path}')
-          if value < 1.0: raise SystemExit(f'I13 benchmark task failed with reward={value}')
+          print(f'I13_TBENCH_REWARD_PATH={rewards[0]}')
+          if value != 1.0:
+              raise SystemExit(f'I13 benchmark reward={value}')
           PY
+          grep -Fq '1/1 Mean: 1.000' agent.txt
 
       - name: Publish I13 agent result
         if: ${{ always() && github.event_name == 'push' }}
@@ -164,7 +173,7 @@ jobs:
           script: |
             const ok='${{ steps.agent.outcome }}'==='success';
             const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':'I13 task/reward failed/skipped',target_url});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 isolated Terminal-Bench reward 1.0':'I13 official task failed',target_url});
 
       - name: Enforce complete benchmark pass
         id: final
@@ -182,4 +191,4 @@ jobs:
           script: |
             const ok='${{ steps.final.outcome }}'==='success';
             const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed',target_url});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 official task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed',target_url});
