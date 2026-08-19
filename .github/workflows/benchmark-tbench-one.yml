@@ -110,10 +110,10 @@ jobs:
         continue-on-error: true
         run: |
           harbor run \
-            -d terminal-bench/terminal-bench-2-1 \
+            -t terminal-bench/openssl-selfsigned-cert \
             -a oracle \
-            --include-task-name terminal-bench/openssl-selfsigned-cert \
-            -k 1 | tee /tmp/tbench-oracle.txt
+            -k 1 \
+            -y | tee /tmp/tbench-oracle.txt
 
       - name: Publish oracle result
         if: ${{ always() && github.event_name == 'push' }}
@@ -129,10 +129,10 @@ jobs:
         continue-on-error: true
         run: |
           harbor run \
-            -d terminal-bench/terminal-bench-2-1 \
+            -t terminal-bench/openssl-selfsigned-cert \
             --agent-import-path bench.i13_harbor_agent:I13HarborAgent \
-            --include-task-name terminal-bench/openssl-selfsigned-cert \
-            -k 1 | tee /tmp/tbench-i13.txt
+            -k 1 \
+            -y | tee /tmp/tbench-i13.txt
 
           python - <<'PY'
           from pathlib import Path
