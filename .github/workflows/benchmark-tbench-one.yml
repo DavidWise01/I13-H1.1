@@ -41,7 +41,7 @@ jobs:
         continue-on-error: true
         run: |
           python -m pip install --upgrade pip
-          python -m pip install 'harbor==0.17.0'
+          python -m pip install harbor
           python -m py_compile bench/i13_harbor_agent.py
 
       - name: Publish Harbor install result
@@ -50,7 +50,7 @@ jobs:
         with:
           script: |
             const ok='${{ steps.install.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-install',description:ok?'Harbor 0.17.0 installed':'Harbor pip install failed'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-install',description:ok?'current Harbor installed':'Harbor pip install failed'});
 
       - name: Verify Harbor CLI
         id: cli
@@ -112,7 +112,7 @@ jobs:
           harbor run \
             -d terminal-bench/terminal-bench-2-1 \
             -a oracle \
-            --include-task-name openssl-selfsigned-cert \
+            --include-task-name terminal-bench/openssl-selfsigned-cert \
             -k 1 | tee /tmp/tbench-oracle.txt
 
       - name: Publish oracle result
@@ -131,7 +131,7 @@ jobs:
           harbor run \
             -d terminal-bench/terminal-bench-2-1 \
             --agent-import-path bench.i13_harbor_agent:I13HarborAgent \
-            --include-task-name openssl-selfsigned-cert \
+            --include-task-name terminal-bench/openssl-selfsigned-cert \
             -k 1 | tee /tmp/tbench-i13.txt
 
           python - <<'PY'
