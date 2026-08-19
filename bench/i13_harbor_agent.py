@@ -117,7 +117,12 @@ class I13HarborAgent(BaseAgent):
             "executed": 1,
             "r0": 0,
         }, sort_keys=True))
-        await self.exec_as_agent(environment, command=command)
+        result = await environment.exec(command)
+        if result.return_code != 0:
+            raise RuntimeError(
+                f"I13 benchmark command failed rc={result.return_code}: "
+                f"{result.stderr or result.stdout or 'no output'}"
+            )
         print(json.dumps({
             "module": "E1.BENCH-001",
             "trit": "p1",
