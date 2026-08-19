@@ -27,6 +27,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             for (const [statusContext, description] of [
               ['i13/tbench-install','Harbor install pending'],
               ['i13/tbench-cli','Harbor CLI pending'],
@@ -34,7 +35,7 @@ jobs:
               ['i13/tbench-oracle','official task oracle pending'],
               ['i13/tbench-agent','I13 official task run pending'],
               ['i13/tbench-one','Terminal-Bench 2.1 one-task smoke pending'],
-            ]) await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:statusContext,description});
+            ]) await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:statusContext,description,target_url});
 
       - name: Install Harbor
         id: install
@@ -50,7 +51,8 @@ jobs:
         with:
           script: |
             const ok='${{ steps.install.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-install',description:ok?'current Harbor installed':'Harbor pip install failed'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-install',description:ok?'current Harbor installed':'Harbor pip install failed',target_url});
 
       - name: Verify Harbor CLI
         id: cli
@@ -66,7 +68,8 @@ jobs:
         with:
           script: |
             const ok='${{ steps.cli.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-cli',description:ok?'Harbor CLI ready':'Harbor CLI failed'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-cli',description:ok?'Harbor CLI ready':'Harbor CLI failed',target_url});
 
       - name: Verify Docker daemon
         id: docker
@@ -82,7 +85,8 @@ jobs:
         with:
           script: |
             const ok='${{ steps.docker.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-docker',description:ok?'Docker daemon ready':'Docker daemon unavailable'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-docker',description:ok?'Docker daemon ready':'Docker daemon unavailable',target_url});
 
       - name: Sanity-check I13 instruction parser
         if: ${{ steps.install.outcome == 'success' }}
@@ -121,7 +125,8 @@ jobs:
         with:
           script: |
             const ok='${{ steps.oracle.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':'official task oracle failed/skipped'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':'official task oracle failed/skipped',target_url});
 
       - name: Run I13 on one official Terminal-Bench 2.1 task
         id: agent
@@ -158,7 +163,8 @@ jobs:
         with:
           script: |
             const ok='${{ steps.agent.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':'I13 task/reward failed/skipped'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':'I13 task/reward failed/skipped',target_url});
 
       - name: Enforce complete benchmark pass
         id: final
@@ -175,4 +181,5 @@ jobs:
         with:
           script: |
             const ok='${{ steps.final.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed'});
+            const target_url=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed',target_url});
