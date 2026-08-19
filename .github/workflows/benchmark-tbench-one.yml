@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Publish pending benchmark statuses
         if: ${{ github.event_name == 'push' }}
@@ -31,14 +34,13 @@ jobs:
               ['i13/tbench-one','Terminal-Bench 2.1 one-task smoke pending'],
             ]) await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context,description});
 
-      - name: Install uv, Harbor, and verify Docker
+      - name: Install Harbor and verify Docker
         id: env
         continue-on-error: true
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          "$HOME/.local/bin/uv" tool install harbor
-          "$HOME/.local/bin/harbor" --help >/dev/null
+          python -m pip install --upgrade pip
+          python -m pip install harbor
+          harbor --help >/dev/null
           docker version
           python -m py_compile bench/i13_harbor_agent.py
           echo 'I13_TBENCH_ENV_OK=1'
