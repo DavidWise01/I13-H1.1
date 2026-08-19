@@ -19,24 +19,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Publish pending benchmark status
+      - name: Publish pending benchmark statuses
         if: ${{ github.event_name == 'push' }}
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context:'i13/tbench-one',description:'Terminal-Bench 2.1 one-task smoke running'})
+            for (const [context, description] of [
+              ['i13/tbench-env','Harbor + Docker environment pending'],
+              ['i13/tbench-oracle','official task oracle pending'],
+              ['i13/tbench-agent','I13 official task run pending'],
+              ['i13/tbench-one','Terminal-Bench 2.1 one-task smoke pending'],
+            ]) await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context,description});
 
-      - name: Install uv and Harbor
+      - name: Install uv, Harbor, and verify Docker
+        id: env
+        continue-on-error: true
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           "$HOME/.local/bin/uv" tool install harbor
           "$HOME/.local/bin/harbor" --help >/dev/null
           docker version
-
-      - name: Sanity-check I13 Harbor adapter
-        run: |
           python -m py_compile bench/i13_harbor_agent.py
+          echo 'I13_TBENCH_ENV_OK=1'
+
+      - name: Publish environment result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ steps.env.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-env',description:ok?'Harbor + Docker ready':'Harbor/Docker setup failed'});
+
+      - name: Sanity-check I13 instruction parser
+        if: ${{ steps.env.outcome == 'success' }}
+        run: |
           python - <<'PY'
           import sys, types
           base=types.ModuleType('harbor.agents.base')
@@ -55,6 +72,9 @@ jobs:
           PY
 
       - name: Prove official task environment with oracle
+        id: oracle
+        if: ${{ steps.env.outcome == 'success' }}
+        continue-on-error: true
         run: |
           harbor run \
             -d terminal-bench/terminal-bench-2-1 \
@@ -62,52 +82,64 @@ jobs:
             --include-task-name openssl-selfsigned-cert \
             -k 1 | tee /tmp/tbench-oracle.txt
 
+      - name: Publish oracle result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ran='${{ steps.oracle.outcome }}' !== '';
+            const ok='${{ steps.oracle.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':(ran?'official task oracle failed':'oracle skipped: env failed')});
+
       - name: Run I13 on one official Terminal-Bench 2.1 task
+        id: agent
+        if: ${{ steps.env.outcome == 'success' && steps.oracle.outcome == 'success' }}
+        continue-on-error: true
         run: |
-          set +e
           harbor run \
             -d terminal-bench/terminal-bench-2-1 \
             --agent-import-path bench.i13_harbor_agent:I13HarborAgent \
             --include-task-name openssl-selfsigned-cert \
             -k 1 | tee /tmp/tbench-i13.txt
-          harbor_code=${PIPESTATUS[0]}
-          set -e
-          echo "HARBOR_EXIT=$harbor_code" | tee -a /tmp/tbench-i13.txt
 
           python - <<'PY'
           from pathlib import Path
-          import json
           roots=[Path.home()/'.harbor'/'jobs', Path('jobs')]
           rewards=[]
           for root in roots:
-              if not root.exists():
-                  continue
+              if not root.exists(): continue
               for p in root.rglob('reward.txt'):
-                  try:
-                      value=float(p.read_text().strip())
-                  except Exception:
-                      continue
+                  try: value=float(p.read_text().strip())
+                  except Exception: continue
                   rewards.append((p.stat().st_mtime, value, str(p)))
-          if not rewards:
-              raise SystemExit('No Harbor reward.txt found')
+          if not rewards: raise SystemExit('No Harbor reward.txt found')
           rewards.sort()
-          mtime,value,path=rewards[-1]
+          _,value,path=rewards[-1]
           print(f'I13_TBENCH_REWARD={value}')
           print(f'I13_TBENCH_REWARD_PATH={path}')
-          Path('/tmp/i13-tbench-result.json').write_text(json.dumps({
-              'dataset':'terminal-bench/terminal-bench-2-1',
-              'task':'openssl-selfsigned-cert',
-              'reward':value,
-              'reward_path':path,
-          }, indent=2))
-          if value < 1.0:
-              raise SystemExit(f'I13 benchmark task failed with reward={value}')
+          if value < 1.0: raise SystemExit(f'I13 benchmark task failed with reward={value}')
           PY
+
+      - name: Publish I13 agent result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ran='${{ steps.agent.outcome }}' !== '';
+            const ok='${{ steps.agent.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':(ran?'I13 task/reward failed':'I13 skipped: earlier stage failed')});
+
+      - name: Enforce complete benchmark pass
+        id: final
+        run: |
+          test '${{ steps.env.outcome }}' = success
+          test '${{ steps.oracle.outcome }}' = success
+          test '${{ steps.agent.outcome }}' = success
 
       - name: Publish benchmark result
         if: ${{ always() && github.event_name == 'push' }}
         uses: actions/github-script@v7
         with:
           script: |
-            const ok='${{ job.status }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed'})
+            const ok='${{ steps.final.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-one',description:ok?'Terminal-Bench 2.1 task 1/1 PASS':'Terminal-Bench 2.1 one-task smoke failed'});
