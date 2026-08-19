@@ -28,33 +28,64 @@ jobs:
         with:
           script: |
             for (const [context, description] of [
-              ['i13/tbench-env','Harbor + Docker environment pending'],
+              ['i13/tbench-install','Harbor install pending'],
+              ['i13/tbench-cli','Harbor CLI pending'],
+              ['i13/tbench-docker','Docker daemon pending'],
               ['i13/tbench-oracle','official task oracle pending'],
               ['i13/tbench-agent','I13 official task run pending'],
               ['i13/tbench-one','Terminal-Bench 2.1 one-task smoke pending'],
             ]) await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'pending',context,description});
 
-      - name: Install Harbor and verify Docker
-        id: env
+      - name: Install Harbor
+        id: install
         continue-on-error: true
         run: |
           python -m pip install --upgrade pip
-          python -m pip install harbor
-          harbor --help >/dev/null
-          docker version
+          python -m pip install 'harbor==0.17.0'
           python -m py_compile bench/i13_harbor_agent.py
-          echo 'I13_TBENCH_ENV_OK=1'
 
-      - name: Publish environment result
+      - name: Publish Harbor install result
         if: ${{ always() && github.event_name == 'push' }}
         uses: actions/github-script@v7
         with:
           script: |
-            const ok='${{ steps.env.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-env',description:ok?'Harbor + Docker ready':'Harbor/Docker setup failed'});
+            const ok='${{ steps.install.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-install',description:ok?'Harbor 0.17.0 installed':'Harbor pip install failed'});
+
+      - name: Verify Harbor CLI
+        id: cli
+        if: ${{ steps.install.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          harbor --version || harbor --help
+          harbor run --help >/dev/null
+
+      - name: Publish Harbor CLI result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ steps.cli.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-cli',description:ok?'Harbor CLI ready':'Harbor CLI failed'});
+
+      - name: Verify Docker daemon
+        id: docker
+        continue-on-error: true
+        run: |
+          docker version
+          docker info >/dev/null
+          docker run --rm hello-world >/dev/null
+
+      - name: Publish Docker result
+        if: ${{ always() && github.event_name == 'push' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok='${{ steps.docker.outcome }}'==='success';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-docker',description:ok?'Docker daemon ready':'Docker daemon unavailable'});
 
       - name: Sanity-check I13 instruction parser
-        if: ${{ steps.env.outcome == 'success' }}
+        if: ${{ steps.install.outcome == 'success' }}
         run: |
           python - <<'PY'
           import sys, types
@@ -75,7 +106,7 @@ jobs:
 
       - name: Prove official task environment with oracle
         id: oracle
-        if: ${{ steps.env.outcome == 'success' }}
+        if: ${{ steps.install.outcome == 'success' && steps.cli.outcome == 'success' && steps.docker.outcome == 'success' }}
         continue-on-error: true
         run: |
           harbor run \
@@ -89,13 +120,12 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const ran='${{ steps.oracle.outcome }}' !== '';
             const ok='${{ steps.oracle.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':(ran?'official task oracle failed':'oracle skipped: env failed')});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-oracle',description:ok?'official openssl task oracle PASS':'official task oracle failed/skipped'});
 
       - name: Run I13 on one official Terminal-Bench 2.1 task
         id: agent
-        if: ${{ steps.env.outcome == 'success' && steps.oracle.outcome == 'success' }}
+        if: ${{ steps.oracle.outcome == 'success' }}
         continue-on-error: true
         run: |
           harbor run \
@@ -127,14 +157,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const ran='${{ steps.agent.outcome }}' !== '';
             const ok='${{ steps.agent.outcome }}'==='success';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':(ran?'I13 task/reward failed':'I13 skipped: earlier stage failed')});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:ok?'success':'failure',context:'i13/tbench-agent',description:ok?'I13 Terminal-Bench reward 1.0':'I13 task/reward failed/skipped'});
 
       - name: Enforce complete benchmark pass
         id: final
         run: |
-          test '${{ steps.env.outcome }}' = success
+          test '${{ steps.install.outcome }}' = success
+          test '${{ steps.cli.outcome }}' = success
+          test '${{ steps.docker.outcome }}' = success
           test '${{ steps.oracle.outcome }}' = success
           test '${{ steps.agent.outcome }}' = success
 
