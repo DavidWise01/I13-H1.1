@@ -9,10 +9,12 @@ from harbor.agents.base import BaseAgent
 
 
 ABS_PATH_RE = re.compile(r"(/(?:[A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+)")
+PATH_TRAILING_PUNCTUATION = ".,;:)]}`'\""
 
 
 def _first_path(instruction: str, suffix: str) -> str | None:
-    for path in ABS_PATH_RE.findall(instruction):
+    for raw in ABS_PATH_RE.findall(instruction):
+        path = raw.rstrip(PATH_TRAILING_PUNCTUATION)
         if path.endswith(suffix):
             return path
     return None
