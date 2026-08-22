@@ -1,0 +1,11 @@
+// N4b: 4000 clone-on-write allocations exceed the fixed 1 MiB arena cap.
+def mutate(I arr, I n) {
+    if n <= 0 { -> arr }
+    arr[n % 32] <- n
+    -> mutate(arr, n - 1)
+}
+
+I ORIGINAL <- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+I FINAL <- mutate(ORIGINAL, 4000)
+I UNREACHABLE <- FINAL[0]

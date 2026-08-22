@@ -1,0 +1,16 @@
+{
+  "schema": "i13-replay-report-v1",
+  "status": "PASS",
+  "originalAccepted": true,
+  "rejected": {
+    "exhaustionArtifactSwap": true,
+    "recoveryArtifactSwap": true,
+    "exhaustionBitCorruption": true,
+    "recoveryTruncation": true,
+    "alteredContract": true,
+    "alteredBinding": true
+  },
+  "rejectedCount": 6,
+  "totalReplays": 6,
+  "binding": "c1ffb295c41ad767a4053b38a220ba03e24035deaaa4122d8b4d661516af669b"
+}

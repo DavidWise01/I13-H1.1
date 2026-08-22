@@ -12,6 +12,7 @@ const EMPTY_BLOCK: u8 = 0x40;
 
 const KIND_NUMBER: i32 = 0;
 const KIND_FUNCTION: i32 = 1;
+const KIND_ARRAY: i32 = 2;
 
 const OP_UNREACHABLE: u8 = 0x00;
 const OP_BLOCK: u8 = 0x02;
@@ -21,29 +22,42 @@ const OP_END: u8 = 0x0b;
 const OP_RETURN: u8 = 0x0f;
 const OP_CALL_INDIRECT: u8 = 0x11;
 const OP_DROP: u8 = 0x1a;
+const OP_MISC_PREFIX: u8 = 0xfc;
 const OP_LOCAL_GET: u8 = 0x20;
 const OP_LOCAL_SET: u8 = 0x21;
 const OP_GLOBAL_GET: u8 = 0x23;
 const OP_GLOBAL_SET: u8 = 0x24;
+const OP_I32_LOAD: u8 = 0x28;
+const OP_F64_LOAD: u8 = 0x2b;
+const OP_I32_STORE: u8 = 0x36;
+const OP_F64_STORE: u8 = 0x39;
 const OP_I32_CONST: u8 = 0x41;
 const OP_F64_CONST: u8 = 0x44;
 const OP_I32_EQZ: u8 = 0x45;
+const OP_I32_EQ: u8 = 0x46;
 const OP_I32_NE: u8 = 0x47;
+const OP_I32_LT_S: u8 = 0x48;
+const OP_I32_GT_U: u8 = 0x4b;
 const OP_I32_GE_U: u8 = 0x4f;
 const OP_I32_ADD: u8 = 0x6a;
 const OP_I32_SUB: u8 = 0x6b;
+const OP_I32_MUL: u8 = 0x6c;
+const OP_I32_DIV_U: u8 = 0x6e;
 const OP_F64_EQ: u8 = 0x61;
 const OP_F64_NE: u8 = 0x62;
 const OP_F64_LT: u8 = 0x63;
 const OP_F64_GT: u8 = 0x64;
 const OP_F64_LE: u8 = 0x65;
 const OP_F64_GE: u8 = 0x66;
+const OP_F64_TRUNC: u8 = 0x9d;
 const OP_F64_ADD: u8 = 0xa0;
 const OP_F64_SUB: u8 = 0xa1;
 const OP_F64_MUL: u8 = 0xa2;
 const OP_F64_DIV: u8 = 0xa3;
 const OP_I32_TRUNC_F64_S: u8 = 0xaa;
 const OP_F64_CONVERT_I32_S: u8 = 0xb7;
+const OP_MEMORY_SIZE: u8 = 0x3f;
+const OP_MEMORY_GROW: u8 = 0x40;
 
 /// Emit a standalone WebAssembly module from validated IVM-13.
 ///
@@ -64,6 +78,7 @@ const OP_F64_CONVERT_I32_S: u8 = 0xb7;
 ///
 /// Generated modules export:
 /// - `i13_run` — resets the program globals and executes main.
+/// - `i13_reset` — restores all three global planes and private runtime counters.
 /// - `i13.global.<name>` — mutable f64 payload for each I13 global.
 /// - `i13.kind.<name>` — mutable i32 value-kind tag.
 /// - `i13.state.<name>` — mutable i32 declaration/binding state.
@@ -85,6 +100,7 @@ pub fn emit(program: &IvmProgram) -> Result<Vec<u8>, Diagnostic> {
     emit_type_section(&mut module, max_arity);
     emit_function_section(&mut module, program);
     emit_table_section(&mut module, program.functions.len());
+    emit_memory_section(&mut module);
     emit_global_section(&mut module, program.globals.len());
     emit_export_section(&mut module, program);
     emit_element_section(&mut module, program.functions.len());
@@ -132,8 +148,9 @@ fn emit_type_section(module: &mut Vec<u8>, max_arity: usize) {
 
 fn emit_function_section(module: &mut Vec<u8>, program: &IvmProgram) {
     let mut payload = Vec::new();
-    u32_leb((1 + program.functions.len()) as u32, &mut payload);
+    u32_leb((2 + program.functions.len()) as u32, &mut payload);
     u32_leb(0, &mut payload); // i13_run
+    u32_leb(0, &mut payload); // i13_reset
 
     for function in &program.functions {
         u32_leb((function.params.len() + 1) as u32, &mut payload);
@@ -151,10 +168,19 @@ fn emit_table_section(module: &mut Vec<u8>, function_count: usize) {
     section(4, payload, module);
 }
 
+fn emit_memory_section(module: &mut Vec<u8>) {
+    let mut payload = Vec::new();
+    u32_leb(1, &mut payload);
+    payload.push(0x01); // min and max
+    u32_leb(1, &mut payload); // begin at 64 KiB
+    u32_leb(16, &mut payload); // hard cap at 1 MiB
+    section(5, payload, module);
+}
+
 fn emit_global_section(module: &mut Vec<u8>, global_count: usize) {
     let mut payload = Vec::new();
-    // Three user-global planes plus one private I13 execution-frame counter.
-    u32_leb((global_count * 3 + 1) as u32, &mut payload);
+    // Three user-global planes plus private frame-depth and array-heap counters.
+    u32_leb((global_count * 3 + 2) as u32, &mut payload);
 
     // Payload plane: mutable f64.
     for _ in 0..global_count {
@@ -186,18 +212,36 @@ fn emit_global_section(module: &mut Vec<u8>, global_count: usize) {
     i32_const(1, &mut payload);
     payload.push(OP_END);
 
+    // Private byte offset for the next array allocation.
+    payload.push(I32);
+    payload.push(0x01);
+    i32_const(0, &mut payload);
+    payload.push(OP_END);
+
     section(6, payload, module);
 }
 
 fn emit_export_section(module: &mut Vec<u8>, program: &IvmProgram) {
     let mut payload = Vec::new();
-    u32_leb((1 + program.globals.len() * 3) as u32, &mut payload);
+    u32_leb((4 + program.globals.len() * 3) as u32, &mut payload);
 
     string("i13_run", &mut payload);
     payload.push(0x00); // function
     u32_leb(0, &mut payload);
 
+    string("i13_reset", &mut payload);
+    payload.push(0x00); // function
+    u32_leb(1, &mut payload);
+
     let global_count = program.globals.len();
+    string("i13.frame_depth", &mut payload);
+    payload.push(0x03);
+    u32_leb(frame_depth_index(global_count) as u32, &mut payload);
+
+    string("i13.array_heap", &mut payload);
+    payload.push(0x03);
+    u32_leb(array_heap_index(global_count) as u32, &mut payload);
+
     for (slot, name) in program.globals.iter().enumerate() {
         string(&format!("i13.global.{name}"), &mut payload);
         payload.push(0x03);
@@ -223,9 +267,9 @@ fn emit_element_section(module: &mut Vec<u8>, function_count: usize) {
     payload.push(OP_END);
     u32_leb(function_count as u32, &mut payload);
 
-    // Wasm function index 0 is i13_run. User function fid N is index N + 1.
+    // Wasm indices 0 and 1 are i13_run and i13_reset. User fid N is N + 2.
     for fid in 0..function_count {
-        u32_leb((fid + 1) as u32, &mut payload);
+        u32_leb((fid + 2) as u32, &mut payload);
     }
 
     section(9, payload, module);
@@ -233,7 +277,7 @@ fn emit_element_section(module: &mut Vec<u8>, function_count: usize) {
 
 fn emit_code_section(module: &mut Vec<u8>, program: &IvmProgram) -> Result<(), Diagnostic> {
     let mut payload = Vec::new();
-    u32_leb((1 + program.functions.len()) as u32, &mut payload);
+    u32_leb((2 + program.functions.len()) as u32, &mut payload);
 
     let main_layout = LocalLayout::new(0, 0, &program.main);
     let mut main_body = Vec::new();
@@ -242,6 +286,12 @@ fn emit_code_section(module: &mut Vec<u8>, program: &IvmProgram) -> Result<(), D
     emit_region(program, &program.main, &main_layout, true, &mut main_body)?;
     main_body.push(OP_END);
     sized(main_body, &mut payload);
+
+    let mut reset_body = Vec::new();
+    u32_leb(0, &mut reset_body); // no locals
+    emit_main_reset(program.globals.len(), &mut reset_body);
+    reset_body.push(OP_END);
+    sized(reset_body, &mut payload);
 
     for function in &program.functions {
         let layout = LocalLayout::new(function.local_count, function.params.len(), &function.code);
@@ -281,6 +331,8 @@ fn emit_main_reset(global_count: usize, out: &mut Vec<u8>) {
     // The root/main execution frame is always frame 1.
     i32_const(1, out);
     global_set(frame_depth_index(global_count) as u32, out);
+    i32_const(0, out);
+    global_set(array_heap_index(global_count) as u32, out);
 }
 
 fn emit_region(
@@ -294,12 +346,9 @@ fn emit_region(
 
     for inst in code {
         match inst.op {
-            Op::MakeArray | Op::Index | Op::ArraySet => {
-                return Err(backend_error(
-                    "arrays are not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
-                    inst.span.clone(),
-                ));
-            }
+            Op::MakeArray => emit_make_array(inst, layout, global_count, out)?,
+            Op::Index => emit_array_index(layout, out),
+            Op::ArraySet => emit_array_set(layout, global_count, out),
             Op::ToBig => {
                 return Err(backend_error(
                     "bignum (big) is not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
@@ -493,12 +542,7 @@ fn emit_numeric_bin(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Res
             out.push(OP_F64_MUL);
         }
         bin::DIV => emit_checked_div(layout, out),
-        bin::MOD => {
-            return Err(backend_error(
-                "modulo (%) is not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
-                inst.span.clone(),
-            ))
-        }
+        bin::MOD => emit_checked_mod(layout, out),
         bin::AND | bin::OR | bin::XOR | bin::SHL | bin::SHR => {
             return Err(backend_error(
                 "bitwise operators (& | ^ << >>) are not yet supported in the wasm backend; use `i13 run` (reference VM) for now",
@@ -514,6 +558,184 @@ fn emit_numeric_bin(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Res
     }
 
     Ok(())
+}
+
+fn emit_make_array(
+    inst: &Inst,
+    layout: &LocalLayout,
+    global_count: usize,
+    out: &mut Vec<u8>,
+) -> Result<(), Diagnostic> {
+    let len = nonnegative(inst.a, "MakeArray length", inst)?;
+    if len > layout.scratch_count {
+        return Err(backend_error("array literal exceeds allocated Wasm scratch locals", inst.span.clone()));
+    }
+
+    for index in (0..len).rev() {
+        local_set(layout.scratch_value(index), out);
+        local_set(layout.scratch_kind(index), out);
+        require_local_kind(layout.scratch_kind(index), KIND_NUMBER, out);
+    }
+
+    global_get(array_heap_index(global_count) as u32, out);
+    local_set(layout.target_i32, out);
+
+    local_get(layout.target_i32, out);
+    i32_const((8 + len * 8) as i32, out);
+    out.push(OP_I32_ADD);
+    local_set(layout.target_i32_2, out);
+    emit_ensure_memory(layout.target_i32_2, layout.target_i32_3, out);
+
+    local_get(layout.target_i32, out);
+    i32_const(len as i32, out);
+    memory_store(OP_I32_STORE, 2, 0, out);
+
+    for index in 0..len {
+        local_get(layout.target_i32, out);
+        local_get(layout.scratch_value(index), out);
+        memory_store(OP_F64_STORE, 3, 8 + index * 8, out);
+    }
+
+    local_get(layout.target_i32_2, out);
+    global_set(array_heap_index(global_count) as u32, out);
+
+    i32_const(KIND_ARRAY, out);
+    local_get(layout.target_i32, out);
+    out.push(OP_F64_CONVERT_I32_S);
+    Ok(())
+}
+
+fn emit_array_index(layout: &LocalLayout, out: &mut Vec<u8>) {
+    spill_binary_values(layout, out);
+    require_local_kind(layout.scratch_kind(0), KIND_NUMBER, out);
+    require_local_kind(layout.scratch_kind(1), KIND_ARRAY, out);
+
+    local_get(layout.scratch_value(0), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    local_set(layout.target_i32, out);
+
+    local_get(layout.target_i32, out);
+    i32_const(0, out);
+    out.push(OP_I32_LT_S);
+    trap_if_nonzero(out);
+
+    local_get(layout.target_i32, out);
+    local_get(layout.scratch_value(1), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    memory_load(OP_I32_LOAD, 2, 0, out);
+    out.push(OP_I32_GE_U);
+    trap_if_nonzero(out);
+
+    i32_const(KIND_NUMBER, out);
+    local_get(layout.scratch_value(1), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    local_get(layout.target_i32, out);
+    i32_const(8, out);
+    out.push(OP_I32_MUL);
+    out.push(OP_I32_ADD);
+    i32_const(8, out);
+    out.push(OP_I32_ADD);
+    memory_load(OP_F64_LOAD, 3, 0, out);
+}
+
+fn emit_array_set(layout: &LocalLayout, global_count: usize, out: &mut Vec<u8>) {
+    local_set(layout.scratch_value(0), out);
+    local_set(layout.scratch_kind(0), out);
+    local_set(layout.scratch_value(1), out);
+    local_set(layout.scratch_kind(1), out);
+    local_set(layout.scratch_value(2), out);
+    local_set(layout.scratch_kind(2), out);
+    require_local_kind(layout.scratch_kind(0), KIND_NUMBER, out);
+    require_local_kind(layout.scratch_kind(1), KIND_NUMBER, out);
+    require_local_kind(layout.scratch_kind(2), KIND_ARRAY, out);
+
+    local_get(layout.scratch_value(1), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    local_set(layout.target_i32, out);
+    local_get(layout.target_i32, out);
+    i32_const(0, out);
+    out.push(OP_I32_LT_S);
+    trap_if_nonzero(out);
+    local_get(layout.target_i32, out);
+    local_get(layout.scratch_value(2), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    memory_load(OP_I32_LOAD, 2, 0, out);
+    out.push(OP_I32_GE_U);
+    trap_if_nonzero(out);
+
+    global_get(array_heap_index(global_count) as u32, out);
+    local_set(layout.target_i32_2, out);
+
+    local_get(layout.target_i32_2, out);
+    local_get(layout.scratch_value(2), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    memory_load(OP_I32_LOAD, 2, 0, out);
+    i32_const(1, out);
+    out.push(OP_I32_ADD);
+    i32_const(8, out);
+    out.push(OP_I32_MUL);
+    out.push(OP_I32_ADD);
+    local_set(layout.target_i32_3, out);
+    emit_ensure_memory(layout.target_i32_3, layout.target_i32_4, out);
+
+    // Copy the complete [length | padding | elements] allocation.
+    local_get(layout.target_i32_2, out);
+    local_get(layout.scratch_value(2), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    local_get(layout.scratch_value(2), out);
+    out.push(OP_I32_TRUNC_F64_S);
+    memory_load(OP_I32_LOAD, 2, 0, out);
+    i32_const(1, out);
+    out.push(OP_I32_ADD);
+    i32_const(8, out);
+    out.push(OP_I32_MUL);
+    out.push(OP_MISC_PREFIX);
+    u32_leb(10, out);
+    u32_leb(0, out);
+    u32_leb(0, out);
+
+    local_get(layout.target_i32_2, out);
+    local_get(layout.target_i32, out);
+    i32_const(8, out);
+    out.push(OP_I32_MUL);
+    out.push(OP_I32_ADD);
+    i32_const(8, out);
+    out.push(OP_I32_ADD);
+    local_get(layout.scratch_value(0), out);
+    memory_store(OP_F64_STORE, 3, 0, out);
+
+    local_get(layout.target_i32_3, out);
+    global_set(array_heap_index(global_count) as u32, out);
+
+    i32_const(KIND_ARRAY, out);
+    local_get(layout.target_i32_2, out);
+    out.push(OP_F64_CONVERT_I32_S);
+}
+
+fn emit_ensure_memory(end_local: u32, pages_local: u32, out: &mut Vec<u8>) {
+    local_get(end_local, out);
+    i32_const(65_535, out);
+    out.push(OP_I32_ADD);
+    i32_const(65_536, out);
+    out.push(OP_I32_DIV_U);
+    local_set(pages_local, out);
+
+    local_get(pages_local, out);
+    out.push(OP_MEMORY_SIZE);
+    u32_leb(0, out);
+    out.push(OP_I32_GT_U);
+    out.push(OP_IF);
+    out.push(EMPTY_BLOCK);
+    local_get(pages_local, out);
+    out.push(OP_MEMORY_SIZE);
+    u32_leb(0, out);
+    out.push(OP_I32_SUB);
+    out.push(OP_MEMORY_GROW);
+    u32_leb(0, out);
+    i32_const(-1, out);
+    out.push(OP_I32_EQ);
+    trap_if_nonzero(out);
+    out.push(OP_END);
 }
 
 fn emit_numeric_cmp(inst: &Inst, layout: &LocalLayout, out: &mut Vec<u8>) -> Result<(), Diagnostic> {
@@ -564,6 +786,27 @@ fn emit_checked_div(layout: &LocalLayout, out: &mut Vec<u8>) {
     local_get(layout.scratch_value(1), out);
     local_get(layout.scratch_value(0), out);
     out.push(OP_F64_DIV);
+}
+
+fn emit_checked_mod(layout: &LocalLayout, out: &mut Vec<u8>) {
+    // Wasm has no f64.rem instruction. I13 follows numeric remainder semantics:
+    // left - trunc(left / right) * right. Trap on zero exactly as the VM does.
+    local_get(layout.scratch_value(0), out);
+    f64_const(0.0, out);
+    out.push(OP_F64_EQ);
+    out.push(OP_IF);
+    out.push(EMPTY_BLOCK);
+    out.push(OP_UNREACHABLE);
+    out.push(OP_END);
+
+    local_get(layout.scratch_value(1), out);
+    local_get(layout.scratch_value(1), out);
+    local_get(layout.scratch_value(0), out);
+    out.push(OP_F64_DIV);
+    out.push(OP_F64_TRUNC);
+    local_get(layout.scratch_value(0), out);
+    out.push(OP_F64_MUL);
+    out.push(OP_F64_SUB);
 }
 
 fn emit_call(inst: &Inst, layout: &LocalLayout, global_count: usize, out: &mut Vec<u8>) -> Result<(), Diagnostic> {
@@ -669,6 +912,10 @@ fn frame_depth_index(global_count: usize) -> usize {
     global_count * 3
 }
 
+fn array_heap_index(global_count: usize) -> usize {
+    global_count * 3 + 1
+}
+
 #[derive(Debug, Clone)]
 struct LocalLayout {
     local_count: usize,
@@ -683,19 +930,23 @@ struct LocalLayout {
     target_value: u32,
     target_kind: u32,
     target_i32: u32,
+    target_i32_2: u32,
+    target_i32_3: u32,
+    target_i32_4: u32,
 }
 
 impl LocalLayout {
     fn new(local_count: usize, param_count: usize, code: &[Inst]) -> Self {
         let call_scratch = code
             .iter()
-            .filter(|inst| inst.op == Op::Call && inst.a > 0)
+            .filter(|inst| matches!(inst.op, Op::Call | Op::MakeArray) && inst.a > 0)
             .map(|inst| inst.a as usize)
             .max()
             .unwrap_or(0);
 
-        // Binary/compare operations always need two tagged scratch values.
-        let scratch_count = call_scratch.max(2);
+        // Binary/compare operations need two tagged values; ArraySet needs three.
+        let needs_array_set = code.iter().any(|inst| inst.op == Op::ArraySet);
+        let scratch_count = call_scratch.max(if needs_array_set { 3 } else { 2 });
         let extra_count = local_count.saturating_sub(param_count);
 
         // Wasm parameters are [kind,payload] pairs, so they occupy 2 * param_count indices.
@@ -708,6 +959,9 @@ impl LocalLayout {
         let target_value = scratch_kind_base + scratch_count as u32;
         let target_kind = target_value + 1;
         let target_i32 = target_kind + 1;
+        let target_i32_2 = target_i32 + 1;
+        let target_i32_3 = target_i32_2 + 1;
+        let target_i32_4 = target_i32_3 + 1;
 
         Self {
             local_count,
@@ -722,6 +976,9 @@ impl LocalLayout {
             target_value,
             target_kind,
             target_i32,
+            target_i32_2,
+            target_i32_3,
+            target_i32_4,
         }
     }
 
@@ -771,7 +1028,7 @@ fn emit_local_decls(layout: &LocalLayout, out: &mut Vec<u8>) {
 
     groups.push((1, F64)); // target payload
     groups.push((1, I32)); // target kind
-    groups.push((1, I32)); // call target table index
+    groups.push((4, I32)); // call target / bounded array allocator scratch
 
     u32_leb(groups.len() as u32, out);
     for (count, ty) in groups {
@@ -818,6 +1075,18 @@ fn global_set(index: u32, out: &mut Vec<u8>) {
 fn i32_const(value: i32, out: &mut Vec<u8>) {
     out.push(OP_I32_CONST);
     i32_leb(value, out);
+}
+
+fn memory_load(opcode: u8, align: u32, offset: usize, out: &mut Vec<u8>) {
+    out.push(opcode);
+    u32_leb(align, out);
+    u32_leb(offset as u32, out);
+}
+
+fn memory_store(opcode: u8, align: u32, offset: usize, out: &mut Vec<u8>) {
+    out.push(opcode);
+    u32_leb(align, out);
+    u32_leb(offset as u32, out);
 }
 
 fn f64_const(value: f64, out: &mut Vec<u8>) {

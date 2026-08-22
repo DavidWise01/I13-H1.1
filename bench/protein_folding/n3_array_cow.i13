@@ -1,0 +1,20 @@
+// N3: array mutation must clone; the original handle remains unchanged.
+I ORIGINAL <- [1, 2, 3, 4]
+I UPDATED <- ORIGINAL
+UPDATED[1] <- 9
+UPDATED[3] <- 7
+
+I ORIGINAL_1 <- ORIGINAL[1]
+I ORIGINAL_3 <- ORIGINAL[3]
+I UPDATED_1 <- UPDATED[1]
+I UPDATED_3 <- UPDATED[3]
+
+def cow_verdict(I original_1, I original_3, I updated_1, I updated_3) {
+    if original_1 != 2 { -> 0 }
+    if original_3 != 4 { -> 0 }
+    if updated_1 != 9 { -> 0 }
+    if updated_3 != 7 { -> 0 }
+    -> 1
+}
+
+I VERDICT <- cow_verdict(ORIGINAL_1, ORIGINAL_3, UPDATED_1, UPDATED_3)
