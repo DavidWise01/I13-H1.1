@@ -1,0 +1,54 @@
+// N2: exact collision-pair oracle on an intentionally intersecting walk.
+// The unit square is traversed twice and returns to its origin a third time.
+
+def abs_i(I value) {
+    if value < 0 { -> 0 - value }
+    -> value
+}
+
+def same_site(I xs, I ys, I zs, I left, I right) {
+    if xs[left] != xs[right] { -> 0 }
+    if ys[left] != ys[right] { -> 0 }
+    if zs[left] != zs[right] { -> 0 }
+    -> 1
+}
+
+def lattice_distance(I xs, I ys, I zs, I left, I right) {
+    I dx <- abs_i(xs[left] - xs[right])
+    I dy <- abs_i(ys[left] - ys[right])
+    I dz <- abs_i(zs[left] - zs[right])
+    -> dx + dy + dz
+}
+
+def collision_row(I xs, I ys, I zs, I left, I right, I length) {
+    if right >= length { -> 0 }
+    -> same_site(xs, ys, zs, left, right) + collision_row(xs, ys, zs, left, right + 1, length)
+}
+
+def collision_pairs(I xs, I ys, I zs, I left, I length) {
+    if left >= length - 1 { -> 0 }
+    -> collision_row(xs, ys, zs, left, left + 1, length) + collision_pairs(xs, ys, zs, left + 1, length)
+}
+
+def broken_bonds(I xs, I ys, I zs, I index, I length) {
+    if index >= length - 1 { -> 0 }
+    I broken <- 0
+    if lattice_distance(xs, ys, zs, index, index + 1) != 1 { broken <- 1 }
+    -> broken + broken_bonds(xs, ys, zs, index + 1, length)
+}
+
+def collision_verdict(I pairs, I broken, I energy) {
+    if pairs != 6 { -> 0 }
+    if broken != 0 { -> 0 }
+    if energy != 60000 { -> 0 }
+    -> 1
+}
+
+I XS <- [0, 1, 1, 0, 0, 1, 1, 0, 0]
+I YS <- [0, 0, 1, 1, 0, 0, 1, 1, 0]
+I ZS <- [0, 0, 0, 0, 0, 0, 0, 0, 0]
+I RESIDUES <- 9
+I COLLISION_PAIRS <- collision_pairs(XS, YS, ZS, 0, RESIDUES)
+I BROKEN_BONDS <- broken_bonds(XS, YS, ZS, 0, RESIDUES)
+I ENERGY <- 10000 * COLLISION_PAIRS + 10000 * BROKEN_BONDS
+I VERDICT <- collision_verdict(COLLISION_PAIRS, BROKEN_BONDS, ENERGY)

@@ -1,0 +1,113 @@
+// N1: deterministic 731-residue hydrophobic-contact oracle.
+// Coordinates are reconstructed from the residue index; no stored walk.
+
+def abs_i(I value) {
+    if value < 0 { -> 0 - value }
+    -> value
+}
+
+def coord_z(I index) { -> (index - index % 81) / 81 }
+
+def coord_y(I index) {
+    I z <- (index - index % 81) / 81
+    I within <- index % 81
+    I row <- (within - within % 9) / 9
+    if z % 2 == 0 { -> row }
+    -> 8 - row
+}
+
+def coord_x(I index) {
+    I z <- (index - index % 81) / 81
+    I within <- index % 81
+    I row <- (within - within % 9) / 9
+    I col <- index % 9
+    if (row + z) % 2 == 0 { -> col }
+    -> 8 - col
+}
+
+def is_hydrophobic(I index) {
+    I groups_of_three <- (index - index % 3) / 3
+    I marker <- (index * 17 + groups_of_three + 5) % 11
+    if marker < 6 { -> 1 }
+    -> 0
+}
+
+def lattice_distance(I left, I right) {
+    I dx <- abs_i(coord_x(left) - coord_x(right))
+    I dy <- abs_i(coord_y(left) - coord_y(right))
+    I dz <- abs_i(coord_z(left) - coord_z(right))
+    -> dx + dy + dz
+}
+
+def coord_index(I x, I y, I z) {
+    I row <- y
+    if z % 2 != 0 { row <- 8 - y }
+    I col <- x
+    if (row + z) % 2 != 0 { col <- 8 - x }
+    -> z * 81 + row * 9 + col
+}
+
+def neighbor_contact(I left, I x, I y, I z, I length) {
+    if x < 0 { -> 0 }
+    if x > 8 { -> 0 }
+    if y < 0 { -> 0 }
+    if y > 8 { -> 0 }
+    if z < 0 { -> 0 }
+    I right <- coord_index(x, y, z)
+    if right >= length { -> 0 }
+    if right == left + 1 { -> 0 }
+    if left == right + 1 { -> 0 }
+    if is_hydrophobic(right) == 0 { -> 0 }
+    -> 1
+}
+
+def residue_contacts(I index, I length) {
+    if is_hydrophobic(index) == 0 { -> 0 }
+    I x <- coord_x(index)
+    I y <- coord_y(index)
+    I z <- coord_z(index)
+    I along_x <- neighbor_contact(index, x + 1, y, z, length)
+    I along_y <- neighbor_contact(index, x, y + 1, z, length)
+    I along_z <- neighbor_contact(index, x, y, z + 1, length)
+    -> along_x + along_y + along_z
+}
+
+def scan_contacts(I index, I length) {
+    if index >= length { -> 0 }
+    -> residue_contacts(index, length) + scan_contacts(index + 1, length)
+}
+
+def count_hydrophobic(I index, I length) {
+    if index >= length { -> 0 }
+    -> is_hydrophobic(index) + count_hydrophobic(index + 1, length)
+}
+
+def count_broken_bonds(I index, I length) {
+    if index >= length - 1 { -> 0 }
+    I broken <- 0
+    if lattice_distance(index, index + 1) != 1 { broken <- 1 }
+    -> broken + count_broken_bonds(index + 1, length)
+}
+
+def valid_fold(I collisions, I broken_bonds) {
+    if collisions != 0 { -> 0 }
+    if broken_bonds != 0 { -> 0 }
+    -> 1
+}
+
+def oracle_verdict(I energy, I hydrophobic_residues, I valid) {
+    if energy != 0 - 365 { -> 0 }
+    if hydrophobic_residues != 399 { -> 0 }
+    if valid != 1 { -> 0 }
+    -> 1
+}
+
+I RESIDUES <- 731
+I MOVES <- RESIDUES - 1
+I HYDROPHOBIC_RESIDUES <- count_hydrophobic(0, RESIDUES)
+I HYDROPHOBIC_CONTACTS <- scan_contacts(0, RESIDUES)
+I BROKEN_BONDS <- count_broken_bonds(0, RESIDUES)
+I COLLISIONS <- 0
+I ENERGY <- 10000 * COLLISIONS + 10000 * BROKEN_BONDS - HYDROPHOBIC_CONTACTS
+I VALID <- valid_fold(COLLISIONS, BROKEN_BONDS)
+I VERDICT <- oracle_verdict(ENERGY, HYDROPHOBIC_RESIDUES, VALID)

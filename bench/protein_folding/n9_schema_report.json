@@ -1,0 +1,20 @@
+{
+  "schema": "i13-schema-report-v1",
+  "status": "PASS",
+  "originalAccepted": true,
+  "rejected": {
+    "missingField": true,
+    "extraField": true,
+    "wrongSchema": true,
+    "wrongStatusType": true,
+    "reorderedAxes": true,
+    "duplicateGlobal": true,
+    "unsortedGlobals": true,
+    "nonIntegerFrame": true,
+    "malformedHash": true,
+    "expandedMemoryContract": true
+  },
+  "rejectedCount": 10,
+  "totalMalformed": 10,
+  "binding": "c1ffb295c41ad767a4053b38a220ba03e24035deaaa4122d8b4d661516af669b"
+}

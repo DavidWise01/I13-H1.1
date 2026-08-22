@@ -1,0 +1,145 @@
+{
+  "schema": "i13-state-receipt-v1",
+  "status": "PASS",
+  "entanglement": "[a1,b1,c1]~>[a2,b2,c2]~>[a3,b3,c3]",
+  "axes": [
+    "payload",
+    "kind",
+    "bound"
+  ],
+  "states": {
+    "initial": {
+      "globals": [
+        [
+          "FINAL",
+          0,
+          0,
+          0
+        ],
+        [
+          "mutate",
+          0,
+          0,
+          0
+        ],
+        [
+          "ORIGINAL",
+          0,
+          0,
+          0
+        ],
+        [
+          "UNREACHABLE",
+          0,
+          0,
+          0
+        ]
+      ],
+      "frame": 1,
+      "heap": 0
+    },
+    "trapped": {
+      "globals": [
+        [
+          "FINAL",
+          0,
+          0,
+          0
+        ],
+        [
+          "mutate",
+          0,
+          1,
+          1
+        ],
+        [
+          "ORIGINAL",
+          0,
+          2,
+          1
+        ],
+        [
+          "UNREACHABLE",
+          0,
+          0,
+          0
+        ]
+      ],
+      "frame": 3972,
+      "heap": 1048344
+    },
+    "recovered": {
+      "globals": [
+        [
+          "FINAL",
+          0,
+          0,
+          0
+        ],
+        [
+          "mutate",
+          0,
+          0,
+          0
+        ],
+        [
+          "ORIGINAL",
+          0,
+          0,
+          0
+        ],
+        [
+          "UNREACHABLE",
+          0,
+          0,
+          0
+        ]
+      ],
+      "frame": 1,
+      "heap": 0
+    }
+  },
+  "hashes": {
+    "initial": "6d87d68fe584e53800fe3f7715485f9c2d1df42a6bafeaabecadafdc20cc7c91",
+    "trapped": "c206792a8d3d333df58b0d8f18df03659f4f3c087cbadebf41744e9409725664",
+    "recovered": "6d87d68fe584e53800fe3f7715485f9c2d1df42a6bafeaabecadafdc20cc7c91",
+    "chain": "f58f23a586b9ce3251a688d137cad61b8f4d83d366e3c0e22fce8bea19d3737e"
+  },
+  "replayFence": {
+    "artifacts": {
+      "exhaustionSha256": "751910df7bc383ada2f054192fdda17c43144f3353e9cd0065a8d03171980160",
+      "recoverySha256": "8a4b346c8b9b2e371b06fe4e27db09b1afa1230b1db590b3a4ad8bd362220c88"
+    },
+    "contract": {
+      "benchmark": "protein-folding-arena",
+      "version": 1,
+      "axes": [
+        "payload",
+        "kind",
+        "bound"
+      ],
+      "initialPages": 1,
+      "maximumPages": 16,
+      "resetFrame": 1,
+      "resetHeap": 0
+    },
+    "contractHash": "0df49362adec3118539421263f73b8d1f7a4635da5b0e23cf3ddc4845a4e4ced",
+    "binding": "c1ffb295c41ad767a4053b38a220ba03e24035deaaa4122d8b4d661516af669b"
+  },
+  "deterministicAcrossInstances": true,
+  "trapped": {
+    "trap": "unreachable",
+    "frame": 3972,
+    "heap": 1048344
+  },
+  "recovered": {
+    "frame": 1,
+    "heap": 0
+  },
+  "repeat": {
+    "trap2": "unreachable",
+    "frame": 1,
+    "heap": 0
+  },
+  "freshInstance": "VERDICT_1"
+}

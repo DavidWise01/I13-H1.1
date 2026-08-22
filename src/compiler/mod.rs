@@ -180,6 +180,19 @@ mod tests {
     }
 
     #[test]
+    fn protein_folding_n2_counts_all_collision_pairs() {
+        let source = SourceFile::new(
+            "bench/protein_folding/n2_collision_oracle.i13",
+            include_str!("../../bench/protein_folding/n2_collision_oracle.i13"),
+        );
+        let (output, result) = run(source, vm::VmConfig::default()).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "COLLISION_PAIRS"), Some(6.0));
+        assert_eq!(result.global_number(&output.ivm, "BROKEN_BONDS"), Some(0.0));
+        assert_eq!(result.global_number(&output.ivm, "ENERGY"), Some(60_000.0));
+        assert_eq!(result.global_number(&output.ivm, "VERDICT"), Some(1.0));
+    }
+
+    #[test]
     fn spot_log_nests_dominant_frames_and_subordinate_spots() {
         // I = dominant frame (outside); i = subordinate spot (inside). A call opens a deeper I.
         let output = compile(SourceFile::new(
@@ -207,6 +220,57 @@ mod tests {
         assert_eq!(&bytes[4..8], &[1, 0, 0, 0]);
         assert!(bytes.windows(b"i13_run".len()).any(|w| w == b"i13_run"));
         assert!(bytes.windows(b"i13.global.x".len()).any(|w| w == b"i13.global.x"));
+    }
+
+    #[test]
+    fn wasm_backend_emits_numeric_modulo() {
+        let source = SourceFile::new("modulo.i13", "I x <- 731 % 81\n");
+        let (output, bytes) = build_wasm(source).unwrap();
+        assert_eq!(output.ivm.globals, vec!["x"]);
+        assert!(bytes.starts_with(b"\0asm"));
+    }
+
+    #[test]
+    fn wasm_backend_emits_array_construction_and_reads() {
+        let source = SourceFile::new("array.i13", "I a <- [3, 5, 8]\nI x <- a[1]\n");
+        let (output, bytes) = build_wasm(source).unwrap();
+        assert_eq!(output.ivm.globals, vec!["a", "x"]);
+        assert!(bytes.starts_with(b"\0asm"));
+    }
+
+    #[test]
+    fn wasm_backend_emits_array_set_with_reference_value_semantics() {
+        let source = SourceFile::new(
+            "bench/protein_folding/n3_array_cow.i13",
+            include_str!("../../bench/protein_folding/n3_array_cow.i13"),
+        );
+        let (output, result) = run(source.clone(), vm::VmConfig::default()).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "ORIGINAL_1"), Some(2.0));
+        assert_eq!(result.global_number(&output.ivm, "ORIGINAL_3"), Some(4.0));
+        assert_eq!(result.global_number(&output.ivm, "UPDATED_1"), Some(9.0));
+        assert_eq!(result.global_number(&output.ivm, "UPDATED_3"), Some(7.0));
+        assert_eq!(result.global_number(&output.ivm, "VERDICT"), Some(1.0));
+        let (_, bytes) = build_wasm(source).unwrap();
+        assert!(bytes.starts_with(b"\0asm"));
+    }
+
+    #[test]
+    fn wasm_backend_emits_bounded_array_arena_growth() {
+        let source = SourceFile::new(
+            "bench/protein_folding/n4_arena_growth.i13",
+            include_str!("../../bench/protein_folding/n4_arena_growth.i13"),
+        );
+        let (output, result) = run(source.clone(), vm::VmConfig::default()).unwrap();
+        assert_eq!(result.global_number(&output.ivm, "ORIGINAL_0"), Some(0.0));
+        assert_eq!(result.global_number(&output.ivm, "FINAL_0"), Some(32.0));
+        assert_eq!(result.global_number(&output.ivm, "FINAL_1"), Some(1.0));
+        assert_eq!(result.global_number(&output.ivm, "FINAL_31"), Some(31.0));
+        assert_eq!(result.global_number(&output.ivm, "VERDICT"), Some(1.0));
+        let (_, bytes) = build_wasm(source).unwrap();
+        assert!(bytes.starts_with(b"\0asm"));
+        assert!(bytes.windows(b"i13_reset".len()).any(|w| w == b"i13_reset"));
+        assert!(bytes.windows(b"i13.frame_depth".len()).any(|w| w == b"i13.frame_depth"));
+        assert!(bytes.windows(b"i13.array_heap".len()).any(|w| w == b"i13.array_heap"));
     }
 
     #[test]

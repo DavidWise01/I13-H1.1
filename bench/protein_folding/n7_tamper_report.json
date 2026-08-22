@@ -1,0 +1,19 @@
+{
+  "schema": "i13-tamper-report-v1",
+  "status": "PASS",
+  "originalAccepted": true,
+  "rejected": {
+    "payload": true,
+    "kind": true,
+    "bound": true,
+    "frame": true,
+    "heap": true,
+    "initial_hash_bit": true,
+    "trapped_hash_bit": true,
+    "recovered_hash_bit": true,
+    "chain_hash_bit": true
+  },
+  "rejectedCount": 9,
+  "totalMutations": 9,
+  "receiptChain": "f58f23a586b9ce3251a688d137cad61b8f4d83d366e3c0e22fce8bea19d3737e"
+}

@@ -1,0 +1,23 @@
+// N4a: cross multiple 64 KiB pages while remaining below the 1 MiB cap.
+def mutate(I arr, I n) {
+    if n <= 0 { -> arr }
+    arr[n % 32] <- n
+    -> mutate(arr, n - 1)
+}
+
+def growth_verdict(I original_0, I final_0, I final_1, I final_31) {
+    if original_0 != 0 { -> 0 }
+    if final_0 != 32 { -> 0 }
+    if final_1 != 1 { -> 0 }
+    if final_31 != 31 { -> 0 }
+    -> 1
+}
+
+I ORIGINAL <- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+I FINAL <- mutate(ORIGINAL, 1000)
+I ORIGINAL_0 <- ORIGINAL[0]
+I FINAL_0 <- FINAL[0]
+I FINAL_1 <- FINAL[1]
+I FINAL_31 <- FINAL[31]
+I VERDICT <- growth_verdict(ORIGINAL_0, FINAL_0, FINAL_1, FINAL_31)
