@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070d">
+  <title>I13 · Protein Folding Playground</title>
+  <style>
+    :root {
+      --ink:#f3f7ff; --muted:#8d9bb3; --cyan:#62f5ff; --violet:#9c72ff;
+      --amber:#ffca68; --green:#76ffb1; --red:#ff6688; --panel:rgba(12,17,29,.72);
+      --line:rgba(160,190,255,.16); --glow:0 0 32px rgba(98,245,255,.16);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);background:#05070d;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;z-index:-2;background:
+      radial-gradient(circle at 15% 0%,rgba(109,70,255,.18),transparent 34%),
+      radial-gradient(circle at 90% 25%,rgba(0,224,255,.12),transparent 30%),
+      linear-gradient(180deg,#05070d,#090d18 55%,#05070d)}
+    body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.22;background-image:linear-gradient(rgba(130,180,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(130,180,255,.06) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1180px,calc(100% - 36px));margin:auto}
+    nav{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.16em}.mark{width:34px;height:34px;border:1px solid var(--cyan);display:grid;place-items:center;transform:rotate(45deg);box-shadow:var(--glow)}.mark b{transform:rotate(-45deg);color:var(--cyan)}
+    .navlinks{display:flex;gap:22px;color:var(--muted);font-size:13px}.navlinks a:hover{color:var(--cyan)}
+    .hero{min-height:calc(100vh - 76px);display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:50px;padding:70px 0}
+    .eyebrow{font:700 12px ui-monospace,SFMono-Regular,monospace;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase}
+    h1{font-size:clamp(52px,8vw,100px);line-height:.88;letter-spacing:-.065em;margin:22px 0 28px;max-width:720px}
+    h1 span{display:block;color:transparent;-webkit-text-stroke:1px rgba(220,235,255,.62)}
+    .lead{font-size:clamp(17px,2vw,21px);line-height:1.65;color:#b9c5d9;max-width:620px}.lead strong{color:var(--ink)}
+    .actions{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}.button{padding:13px 18px;border:1px solid var(--line);border-radius:8px;font:700 12px ui-monospace,monospace;letter-spacing:.08em;background:rgba(255,255,255,.03)}.button.primary{color:#031013;background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 30px rgba(98,245,255,.22)}
+    .visual{position:relative;min-height:600px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:radial-gradient(circle,rgba(98,245,255,.08),transparent 48%),rgba(3,6,12,.54);box-shadow:0 32px 100px rgba(0,0,0,.4)}
+    #lattice{width:100%;height:600px;display:block}.hud{position:absolute;inset:20px;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between}.hudrow{display:flex;justify-content:space-between;align-items:flex-start}.badge{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:rgba(5,8,14,.7);font:11px ui-monospace,monospace;color:var(--muted)}.badge b{color:var(--green)}
+    .section{padding:110px 0}.sectionhead{display:grid;grid-template-columns:.7fr 1.3fr;gap:40px;margin-bottom:42px}.section h2{font-size:clamp(34px,5vw,64px);line-height:1;margin:0;letter-spacing:-.045em}.sectioncopy{color:var(--muted);line-height:1.7;max-width:660px;margin:0}
+    .lab{display:grid;grid-template-columns:330px 1fr;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--panel);backdrop-filter:blur(18px)}
+    .controls{padding:28px;border-right:1px solid var(--line)}.control{margin-bottom:27px}.control label{display:flex;justify-content:space-between;font:700 11px ui-monospace,monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}.control output{color:var(--cyan)}
+    input[type=range]{width:100%;accent-color:var(--cyan)}.seg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.seg button{border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--muted);border-radius:7px;padding:11px;font-weight:800;cursor:pointer}.seg button.on{color:#061014;background:var(--cyan);border-color:var(--cyan)}
+    .readout{border-top:1px solid var(--line);padding-top:20px;display:grid;gap:10px}.metric{display:flex;justify-content:space-between;font:12px ui-monospace,monospace}.metric span{color:var(--muted)}.metric b{color:var(--green)}
+    .stage{min-height:520px;position:relative;display:grid;place-items:center;overflow:hidden}.field{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 42px,rgba(98,245,255,.04) 43px 44px);transform:translateX(var(--shift,0px))}.systems{position:relative;width:min(700px,90%);display:grid;grid-template-columns:1fr 1fr;gap:80px}.system{text-align:center}.orb{width:220px;aspect-ratio:1;margin:auto;border:1px solid currentColor;border-radius:50%;position:relative;display:grid;place-items:center;color:var(--cyan);box-shadow:inset 0 0 50px rgba(98,245,255,.08),0 0 45px rgba(98,245,255,.08);transform:scale(var(--breath,1))}.system.twin .orb{color:var(--violet)}
+    .ring{position:absolute;border:1px solid currentColor;border-radius:50%;inset:18%;opacity:.55;animation:orbit 9s linear infinite}.ring:after{content:"";position:absolute;width:10px;height:10px;background:currentColor;border-radius:50%;top:-5px;left:50%;box-shadow:0 0 18px currentColor}.ring.r2{inset:32%;animation-direction:reverse;animation-duration:5s}.core{font:800 42px ui-monospace,monospace}.system h3{font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin:24px 0 6px}.system p{font:12px ui-monospace,monospace;color:var(--muted)}
+    @keyframes orbit{to{transform:rotate(360deg)}}
+    .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.fact{border:1px solid var(--line);border-radius:14px;padding:24px;background:rgba(255,255,255,.025)}.fact small{font:11px ui-monospace,monospace;color:var(--muted);text-transform:uppercase}.fact strong{display:block;font-size:31px;margin:14px 0 6px}.fact p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+    .note{margin-top:22px;padding:20px;border-left:2px solid var(--amber);background:rgba(255,202,104,.05);color:#c7b993;font-size:13px;line-height:1.65}.note b{color:var(--amber)}
+    footer{padding:35px 0 50px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font:11px ui-monospace,monospace;gap:20px}
+    @media(max-width:850px){.hero,.sectionhead{grid-template-columns:1fr}.hero{padding-top:45px}.visual{min-height:480px}#lattice{height:480px}.lab{grid-template-columns:1fr}.controls{border-right:0;border-bottom:1px solid var(--line)}.facts{grid-template-columns:1fr 1fr}.systems{gap:18px}.orb{width:160px}.navlinks{display:none}}
+    @media(max-width:520px){.facts{grid-template-columns:1fr}.systems{grid-template-columns:1fr}.system.twin{display:none}.stage{min-height:420px}footer{flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><a class="brand" href="#top"><span class="mark"><b>13</b></span>I13</a><div class="navlinks"><a href="#model">MODEL</a><a href="#lab">LAB</a><a href="#proof">BENCHMARK</a><a href="https://github.com/DavidWise01/I13-H1.1">SOURCE ↗</a></div></nav>
+  </div>
+  <main id="top">
+    <section class="hero wrap">
+      <div>
+        <div class="eyebrow">Protein folding playground · deterministic Wasm</div>
+        <h1>Life in a <span>27-cell universe.</span></h1>
+        <p class="lead">A visual exploration of David Lee Wise’s <strong>{3×3}³ systems hypothesis</strong>: three axes, twenty-seven positions, a shared pulse, and a neighboring system modeled as a fourth transitional capacity.</p>
+        <div class="actions"><a class="button primary" href="#lab">ENTER THE LAB</a><a class="button" href="#proof">VIEW MEASURED PROOF</a></div>
+      </div>
+      <div class="visual">
+        <canvas id="lattice" aria-label="Rotating 3 by 3 by 3 lattice visualization"></canvas>
+        <div class="hud"><div class="hudrow"><span class="badge">LATTICE <b>3 × 3 × 3</b></span><span class="badge">NODES <b>27</b></span></div><div class="hudrow"><span class="badge">PULSE <b id="pulseLabel">COHERENT</b></span><span class="badge">AXES <b>X · Y · Z</b></span></div></div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="model">
+      <div class="sectionhead"><div><div class="eyebrow">The proposed topology</div><h2>Three within.<br>Four between.</h2></div><p class="sectioncopy">Each local system is represented by a 3 × 3 × 3 lattice. Capacity three is the stable interior; capacity four is visualized as a transition toward a twin system—a transitive plenum. The electron path is shown as bounded orbital motion responding to pulse and directional pressure.</p></div>
+      <div class="facts">
+        <article class="fact"><small>Local volume</small><strong>27</strong><p>Three positions across each of three spatial axes.</p></article>
+        <article class="fact"><small>Stable capacity</small><strong>[ 3 ]</strong><p>The interior operating state in the conceptual model.</p></article>
+        <article class="fact"><small>Transition</small><strong>[ 4 ]</strong><p>A bridge state connecting the local and twin systems.</p></article>
+        <article class="fact"><small>Ground rule</small><strong>0 ↔ 1</strong><p>Pulse remains tethered to a shared reference plane.</p></article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="lab">
+      <div class="sectionhead"><div><div class="eyebrow">Interactive hypothesis</div><h2>Pressure becomes motion.</h2></div><p class="sectioncopy">Change the proposed system capacity, rightward pressure, and breathing coherence. The display is a conceptual simulator: it visualizes relationships in the hypothesis rather than asserting experimental particle physics.</p></div>
+      <div class="lab">
+        <aside class="controls">
+          <div class="control"><label>Capacity <output id="capacityOut">3 · LOCAL</output></label><div class="seg"><button id="cap3" class="on">3</button><button id="cap4">4</button></div></div>
+          <div class="control"><label for="pressure">Right pressure <output id="pressureOut">35%</output></label><input id="pressure" type="range" min="0" max="100" value="35"></div>
+          <div class="control"><label for="coherence">Shared breath <output id="coherenceOut">72%</output></label><input id="coherence" type="range" min="0" max="100" value="72"></div>
+          <div class="control"><label for="rate">Pulse rate <output id="rateOut">1.0×</output></label><input id="rate" type="range" min="25" max="200" value="100"></div>
+          <div class="readout"><div class="metric"><span>ACTIVE CELLS</span><b id="cells">27 / 27</b></div><div class="metric"><span>BOUNDARY MODE</span><b id="boundary">CLOSED</b></div><div class="metric"><span>FRICTION</span><b id="friction">0.10</b></div><div class="metric"><span>PHASE</span><b id="phase">0.00π</b></div></div>
+        </aside>
+        <div class="stage" id="stage"><div class="field" id="field"></div><div class="systems"><div class="system"><div class="orb" id="orbA"><i class="ring"></i><i class="ring r2"></i><b class="core">3³</b></div><h3>Local universe</h3><p>27 cells · capacity 3</p></div><div class="system twin"><div class="orb" id="orbB"><i class="ring"></i><i class="ring r2"></i><b class="core">4</b></div><h3>Twin plenum</h3><p>transitive boundary · capacity 4</p></div></div></div>
+      </div>
+      <div class="note"><b>Model boundary:</b> the lattice, twin-plenum, shared-breath, and directional-friction relationships are presented as the Wise hypothesis. Electron behavior in established physics is described by quantum mechanics; this page does not claim experimental validation.</div>
+    </section>
+
+    <section class="section wrap" id="proof">
+      <div class="sectionhead"><div><div class="eyebrow">What is measured</div><h2>Logic, locked.</h2></div><p class="sectioncopy">The visual theory is exploratory. The software evidence is concrete: the I13 compiler generates deterministic WebAssembly and the benchmark suite grades lattice walks, collisions, clone-on-write arrays, bounded memory, recovery, and cryptographic receipts.</p></div>
+      <div class="facts">
+        <article class="fact"><small>Residues</small><strong>731</strong><p>Connected deterministic lattice walk.</p></article>
+        <article class="fact"><small>Contacts</small><strong>365</strong><p>Hydrophobic noncovalent contacts counted once.</p></article>
+        <article class="fact"><small>Attack gates</small><strong>25 / 25</strong><p>Tamper, replay, corruption, and malformed schema rejected.</p></article>
+        <article class="fact"><small>Memory terminus</small><strong>1 MiB</strong><p>Deterministic exhaustion at the fixed 16-page cap.</p></article>
+      </div>
+      <div class="actions"><a class="button primary" href="https://github.com/DavidWise01/I13-H1.1/blob/codex/protein-folding-bench/bench/protein_folding/n10_suite_manifest.json">OPEN SUITE MANIFEST ↗</a><a class="button" href="https://github.com/DavidWise01/I13-H1.1/tree/codex/protein-folding-bench/bench/protein_folding">INSPECT BENCHMARK ↗</a></div>
+    </section>
+  </main>
+  <footer class="wrap"><span>I13 · PROTEIN FOLDING PLAYGROUND</span><span>CONCEPTUAL MODEL + DETERMINISTIC SOFTWARE EVIDENCE</span></footer>
+
+  <script>
+    const canvas=document.querySelector('#lattice'),ctx=canvas.getContext('2d');let w,h,t=0;
+    function resize(){const d=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();w=r.width;h=r.height;canvas.width=w*d;canvas.height=h*d;ctx.setTransform(d,0,0,d,0,0)}
+    addEventListener('resize',resize);resize();
+    const pts=[];for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++)pts.push({x,y,z});
+    function project(p,a,b){let x=p.x*Math.cos(a)-p.z*Math.sin(a),z=p.x*Math.sin(a)+p.z*Math.cos(a),y=p.y*Math.cos(b)-z*Math.sin(b);z=p.y*Math.sin(b)+z*Math.cos(b);const s=82*(1+z*.09);return{x:w/2+x*s,y:h/2+y*s,z}}
+    function draw(){ctx.clearRect(0,0,w,h);const breath=1+Math.sin(t*1.6)*.055,ps=pts.map(p=>project({x:p.x*breath,y:p.y*breath,z:p.z*breath},t*.18,-.52));
+      ctx.lineWidth=1;for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const d=Math.abs(pts[i].x-pts[j].x)+Math.abs(pts[i].y-pts[j].y)+Math.abs(pts[i].z-pts[j].z);if(d===1){ctx.strokeStyle='rgba(120,190,255,.16)';ctx.beginPath();ctx.moveTo(ps[i].x,ps[i].y);ctx.lineTo(ps[j].x,ps[j].y);ctx.stroke()}}
+      [...ps].sort((a,b)=>a.z-b.z).forEach((p,i)=>{const r=3.5+(p.z+1.5)*1.4,hot=(i+Math.floor(t*4))%9===0;ctx.fillStyle=hot?'#76ffb1':'#62f5ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=hot?20:10;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill()});ctx.shadowBlur=0;t+=.012;requestAnimationFrame(draw)}draw();
+    const pressure=document.querySelector('#pressure'),coherence=document.querySelector('#coherence'),rate=document.querySelector('#rate'),stage=document.querySelector('#stage');let cap=3,phase=0;
+    function update(){const p=+pressure.value/100,c=+coherence.value/100,r=+rate.value/100;document.querySelector('#pressureOut').value=Math.round(p*100)+'%';document.querySelector('#coherenceOut').value=Math.round(c*100)+'%';document.querySelector('#rateOut').value=r.toFixed(2)+'×';document.querySelector('#friction').textContent=(p*(1-c)).toFixed(2);document.querySelector('#boundary').textContent=cap===4?'TRANSITIVE':'CLOSED';document.querySelector('#capacityOut').value=cap+(cap===4?' · BRIDGE':' · LOCAL');document.querySelector('#cells').textContent=cap===4?'27 + 1':'27 / 27';stage.style.setProperty('--shift',(p*42)+'px');document.querySelector('#orbB').style.opacity=cap===4?'1':'.42';document.querySelector('#cap3').classList.toggle('on',cap===3);document.querySelector('#cap4').classList.toggle('on',cap===4);window.simRate=r;window.simC=c}
+    [pressure,coherence,rate].forEach(x=>x.addEventListener('input',update));document.querySelector('#cap3').onclick=()=>{cap=3;update()};document.querySelector('#cap4').onclick=()=>{cap=4;update()};update();
+    function pulse(){phase=(phase+.012*(window.simRate||1))%(Math.PI*2);const b=1+Math.sin(phase)*.045*(window.simC||.7);document.querySelector('#orbA').style.setProperty('--breath',b);document.querySelector('#orbB').style.setProperty('--breath',1+(b-1)*(window.simC||.7));document.querySelector('#phase').textContent=(phase/Math.PI).toFixed(2)+'π';document.querySelector('#pulseLabel').textContent=(window.simC||0)>.55?'COHERENT':'DRIFT';requestAnimationFrame(pulse)}pulse();
+  </script>
+</body>
+</html>
