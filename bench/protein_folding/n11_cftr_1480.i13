@@ -1,0 +1,129 @@
+// N11: CFTR-1480 multidomain compression surrogate.
+// This is a deterministic structural logic oracle, not an all-atom simulation.
+// Five regions: TMD1 | NBD1 | R | TMD2 | NBD2.
+// 3/2/1: domain inputs -> closed/open witnesses -> one recognition.
+
+def domain_of(I index) {
+    if index < 380 { -> 0 }
+    if index < 650 { -> 1 }
+    if index < 830 { -> 2 }
+    if index < 1170 { -> 3 }
+    -> 4
+}
+
+def local_index(I index) {
+    if index < 380 { -> index }
+    if index < 650 { -> index - 380 }
+    if index < 830 { -> index - 650 }
+    if index < 1170 { -> index - 830 }
+    -> index - 1170
+}
+
+def is_transmembrane_helix(I index) {
+    I domain <- domain_of(index)
+    if domain != 0 {
+        if domain != 3 { -> 0 }
+    }
+    I local <- local_index(index)
+    if domain == 0 {
+        if local >= 360 { -> 0 }
+    }
+    I slot <- local % 60
+    if slot < 21 { -> 1 }
+    -> 0
+}
+
+def residue_hydrophobic(I index, I delta_f508) {
+    // Phe508 is residue 508, zero-based index 507.
+    if index == 507 {
+        if delta_f508 == 1 { -> 0 }
+        -> 1
+    }
+    I marker <- (index * 17 + domain_of(index) * 7 + index % 13 + 5) % 19
+    if marker < 9 { -> 1 }
+    -> 0
+}
+
+def count_domain(I index, I length, I wanted) {
+    if index >= length { -> 0 }
+    I hit <- 0
+    if domain_of(index) == wanted { hit <- 1 }
+    -> hit + count_domain(index + 1, length, wanted)
+}
+
+def count_helices(I index, I length) {
+    if index >= length { -> 0 }
+    -> is_transmembrane_helix(index) + count_helices(index + 1, length)
+}
+
+def count_hydrophobic(I index, I length, I delta_f508) {
+    if index >= length { -> 0 }
+    -> residue_hydrophobic(index, delta_f508) + count_hydrophobic(index + 1, length, delta_f508)
+}
+
+def membrane_fit(I index, I length, I delta_f508) {
+    if index >= length { -> 0 }
+    I fit <- is_transmembrane_helix(index) * residue_hydrophobic(index, delta_f508)
+    -> fit + membrane_fit(index + 1, length, delta_f508)
+}
+
+def fold_signature(I index, I length, I delta_f508) {
+    if index >= length { -> 0 }
+    I domain_weight <- (domain_of(index) + 1) * 31
+    I helix_weight <- is_transmembrane_helix(index) * 17
+    I hydro_weight <- residue_hydrophobic(index, delta_f508) * 13
+    I phase_weight <- (index % 3) + 1
+    -> domain_weight + helix_weight + hydro_weight + phase_weight + fold_signature(index + 1, length, delta_f508)
+}
+
+def structural_verdict(I residues, I tmd1, I nbd1, I regulatory, I tmd2, I nbd2, I helices) {
+    if residues != 1480 { -> 0 }
+    if tmd1 != 380 { -> 0 }
+    if nbd1 != 270 { -> 0 }
+    if regulatory != 180 { -> 0 }
+    if tmd2 != 340 { -> 0 }
+    if nbd2 != 310 { -> 0 }
+    if helices != 252 { -> 0 }
+    -> 1
+}
+
+def recognition(I structure_ok, I native_signature, I delta_signature,
+                I native_hydrophobic, I delta_hydrophobic,
+                I closed_witness, I open_witness) {
+    if structure_ok != 1 { -> 0 }
+    if native_signature - delta_signature != 13 { -> 0 }
+    if native_hydrophobic - delta_hydrophobic != 1 { -> 0 }
+    if native_signature != 151813 { -> 0 }
+    if delta_signature != 151800 { -> 0 }
+    if native_hydrophobic != 700 { -> 0 }
+    if delta_hydrophobic != 699 { -> 0 }
+    if closed_witness != 152443 { -> 0 }
+    if open_witness != 152483 { -> 0 }
+    -> 1
+}
+
+I RESIDUES <- 1480
+I TMD1_RESIDUES <- count_domain(0, RESIDUES, 0)
+I NBD1_RESIDUES <- count_domain(0, RESIDUES, 1)
+I REGULATORY_RESIDUES <- count_domain(0, RESIDUES, 2)
+I TMD2_RESIDUES <- count_domain(0, RESIDUES, 3)
+I NBD2_RESIDUES <- count_domain(0, RESIDUES, 4)
+I HELIX_RESIDUES <- count_helices(0, RESIDUES)
+
+I NATIVE_HYDROPHOBIC <- count_hydrophobic(0, RESIDUES, 0)
+I DELTA_F508_HYDROPHOBIC <- count_hydrophobic(0, RESIDUES, 1)
+I NATIVE_MEMBRANE_FIT <- membrane_fit(0, RESIDUES, 0)
+I DELTA_F508_MEMBRANE_FIT <- membrane_fit(0, RESIDUES, 1)
+I NATIVE_SIGNATURE <- fold_signature(0, RESIDUES, 0)
+I DELTA_F508_SIGNATURE <- fold_signature(0, RESIDUES, 1)
+
+// Two state witnesses over the same five-domain identity.
+I CLOSED_WITNESS <- NATIVE_SIGNATURE + NATIVE_MEMBRANE_FIT * 3 + NBD1_RESIDUES
+I OPEN_WITNESS <- NATIVE_SIGNATURE + NATIVE_MEMBRANE_FIT * 3 + NBD2_RESIDUES
+I STRUCTURE_OK <- structural_verdict(RESIDUES, TMD1_RESIDUES, NBD1_RESIDUES,
+                                    REGULATORY_RESIDUES, TMD2_RESIDUES,
+                                    NBD2_RESIDUES, HELIX_RESIDUES)
+I RECOGNITION <- recognition(STRUCTURE_OK, NATIVE_SIGNATURE, DELTA_F508_SIGNATURE,
+                            NATIVE_HYDROPHOBIC, DELTA_F508_HYDROPHOBIC,
+                            CLOSED_WITNESS, OPEN_WITNESS)
+I VERDICT <- RECOGNITION

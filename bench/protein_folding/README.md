@@ -86,11 +86,23 @@ N9 applies an exact receipt schema and rejects missing or extra fields, wrong
 types, reordered axes, duplicate or unsorted globals, fractional counters,
 malformed hashes, and attempts to expand the memory contract.
 
-N10 is the complete one-command finish line. It rebuilds all five Wasm modules,
-grades the four successful workloads, drives arena exhaustion to the fixed
+N10 is the complete one-command finish line. It rebuilds every Wasm module,
+grades every successful workload, drives arena exhaustion to the fixed
 1 MiB cap, runs every negative gate, and writes a deterministic SHA-256
 manifest over every source, binary, receipt, and report:
 
 ```sh
 node bench/protein_folding/run_full_suite.mjs target/debug/i13
 ```
+
+## N11 — CFTR-1480 multidomain compression
+
+`n11_cftr_1480.i13` maps the complete 1,480-residue CFTR chain into five
+deterministic regions: TMD1 (380), NBD1 (270), regulatory (180), TMD2 (340),
+and NBD2 (310). Twelve membrane helices occupy 252 positions. Native and
+ΔF508 paths traverse the same domain map; removal of residue 508 changes the
+hydrophobic count by one and the locked fold signature by 13.
+
+The 3/2/1 compression is executable: region, helix, and hydrophobic inputs
+produce closed/open witnesses `152443` and `152483`, then compress to one
+`RECOGNITION=1`. Reference VM and Wasm must agree on all 18 locked globals.
