@@ -1,0 +1,68 @@
+// N12: CFTR 3/2/1 permutation-invariance and mutation-locality oracle.
+// All six orderings must compress to one recognition without topology drift.
+
+def compress3(I a, I b, I c) {
+    // Elementary symmetric terms make input ordering irrelevant.
+    -> a + b + c + a*b + b*c + a*c + a*b*c
+}
+
+def six_equal(I a, I b, I c, I d, I e, I f) {
+    if a != b { -> 0 }
+    if a != c { -> 0 }
+    if a != d { -> 0 }
+    if a != e { -> 0 }
+    if a != f { -> 0 }
+    -> 1
+}
+
+def locality(I native_value, I delta_value, I domain_before, I domain_after,
+             I helix_before, I helix_after, I expected_delta) {
+    if native_value - delta_value != expected_delta { -> 0 }
+    if domain_before != domain_after { -> 0 }
+    if helix_before != helix_after { -> 0 }
+    -> 1
+}
+
+def recognition(I native_invariant, I delta_invariant, I locality_ok,
+                I native_value, I delta_value) {
+    if native_invariant != 1 { -> 0 }
+    if delta_invariant != 1 { -> 0 }
+    if locality_ok != 1 { -> 0 }
+    if native_value != 1064117 { -> 0 }
+    if delta_value != 1062599 { -> 0 }
+    -> 1
+}
+
+// Three compressed inputs inherited from N11.
+I DOMAINS_NATIVE <- 5
+I HELICES_NATIVE <- 252
+I HYDROPHOBIC_NATIVE <- 700
+I DOMAINS_DELTA_F508 <- 5
+I HELICES_DELTA_F508 <- 252
+I HYDROPHOBIC_DELTA_F508 <- 699
+
+// Six permutations: 123, 132, 213, 231, 312, 321.
+I NATIVE_123 <- compress3(DOMAINS_NATIVE, HELICES_NATIVE, HYDROPHOBIC_NATIVE)
+I NATIVE_132 <- compress3(DOMAINS_NATIVE, HYDROPHOBIC_NATIVE, HELICES_NATIVE)
+I NATIVE_213 <- compress3(HELICES_NATIVE, DOMAINS_NATIVE, HYDROPHOBIC_NATIVE)
+I NATIVE_231 <- compress3(HELICES_NATIVE, HYDROPHOBIC_NATIVE, DOMAINS_NATIVE)
+I NATIVE_312 <- compress3(HYDROPHOBIC_NATIVE, DOMAINS_NATIVE, HELICES_NATIVE)
+I NATIVE_321 <- compress3(HYDROPHOBIC_NATIVE, HELICES_NATIVE, DOMAINS_NATIVE)
+
+I DELTA_123 <- compress3(DOMAINS_DELTA_F508, HELICES_DELTA_F508, HYDROPHOBIC_DELTA_F508)
+I DELTA_132 <- compress3(DOMAINS_DELTA_F508, HYDROPHOBIC_DELTA_F508, HELICES_DELTA_F508)
+I DELTA_213 <- compress3(HELICES_DELTA_F508, DOMAINS_DELTA_F508, HYDROPHOBIC_DELTA_F508)
+I DELTA_231 <- compress3(HELICES_DELTA_F508, HYDROPHOBIC_DELTA_F508, DOMAINS_DELTA_F508)
+I DELTA_312 <- compress3(HYDROPHOBIC_DELTA_F508, DOMAINS_DELTA_F508, HELICES_DELTA_F508)
+I DELTA_321 <- compress3(HYDROPHOBIC_DELTA_F508, HELICES_DELTA_F508, DOMAINS_DELTA_F508)
+
+I NATIVE_INVARIANT <- six_equal(NATIVE_123, NATIVE_132, NATIVE_213, NATIVE_231, NATIVE_312, NATIVE_321)
+I DELTA_INVARIANT <- six_equal(DELTA_123, DELTA_132, DELTA_213, DELTA_231, DELTA_312, DELTA_321)
+I EXPECTED_MUTATION_DELTA <- 1518
+I LOCALITY_OK <- locality(NATIVE_123, DELTA_123,
+                         DOMAINS_NATIVE, DOMAINS_DELTA_F508,
+                         HELICES_NATIVE, HELICES_DELTA_F508,
+                         EXPECTED_MUTATION_DELTA)
+I RECOGNITION <- recognition(NATIVE_INVARIANT, DELTA_INVARIANT, LOCALITY_OK,
+                            NATIVE_123, DELTA_123)
+I VERDICT <- RECOGNITION

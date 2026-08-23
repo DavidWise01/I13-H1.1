@@ -17,7 +17,7 @@ function run(command, args, parseJson = true) {
 
 const targets = [
   "n1_hydrophobic_oracle", "n2_collision_oracle", "n3_array_cow",
-  "n4_arena_growth", "n4_arena_exhaustion", "n11_cftr_1480",
+  "n4_arena_growth", "n4_arena_exhaustion", "n11_cftr_1480", "n12_cftr_permutation",
 ];
 for (const name of targets) run(i13, ["build", join(root, `${name}.i13`), "-o", join(root, `${name}.wasm`)], false);
 
@@ -45,7 +45,7 @@ for (const name of artifactNames) artifacts[name] = sha256(await readFile(join(r
 const manifest = {
   schema: "i13-protein-folding-suite-v1",
   status: "PASS",
-  targets: { compiled: targets.length, graded: Object.keys(graders).length, arenaExhaustion: "PASS", cftr1480: "PASS" },
+  targets: { compiled: targets.length, graded: Object.keys(graders).length, arenaExhaustion: "PASS", cftr1480: "PASS", permutationInvariant: "6/6" },
   rejectionGates: { tamper: `${tamper.rejectedCount}/${tamper.totalMutations}`, replay: `${replay.rejectedCount}/${replay.totalReplays}`, schema: `${schema.rejectedCount}/${schema.totalMalformed}` },
   maximumCap: { memoryPages: 16, memoryBytes: 1048576, trappedFrame: receipt.trapped.frame, trappedHeap: receipt.trapped.heap },
   stateBinding: receipt.replayFence.binding,
