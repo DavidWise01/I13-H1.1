@@ -1,0 +1,30 @@
+{
+  "schema": "i13-tensor40-single-universe-v1",
+  "universe": "U000",
+  "dimensions": 40,
+  "distinctions": {
+    "DIRECT": 10,
+    "INVERSE": 10,
+    "MIRROR": 10,
+    "INVERSE_MIRROR": 10
+  },
+  "amplitudes": [0, 2],
+  "boundaries": ["IN", "OUT"],
+  "observer": "YOU_0D",
+  "controlledStates": 160,
+  "uniqueReceipts": 160,
+  "gatesPassed": 8,
+  "gatesTotal": 8,
+  "status": "PASS",
+  "gates": {
+    "fortyDimensions": true,
+    "uniqueDimensionIds": true,
+    "fourBanksOfTen": true,
+    "rankUnrankBijection": true,
+    "controlsDoNotInflateDimensions": true,
+    "uniqueControlledStates": true,
+    "observerZeroDimensional": true,
+    "singleUniverseClosure": true
+  },
+  "sha256": "de1c44b9ec4f58f1feb8fe97bec19d1948119d99365ef07168561606843871b6"
+}
