@@ -1,0 +1,37 @@
+{
+  "schema": "i13-physical-spiral-timing-v1",
+  "physicalSites": 4,
+  "timing": [1, 4, 3, 2],
+  "chronologicalOrder": ["P0", "P3", "P2", "P1"],
+  "permutationOnce": ["P0", "P3", "P2", "P1"],
+  "permutationTwice": ["P0", "P1", "P2", "P3"],
+  "logicalOutputs": 1,
+  "logicalIdentity": "L0",
+  "gatesPassed": 7,
+  "gatesTotal": 7,
+  "status": "PASS",
+  "trace": [
+    {"time": 1, "site": "P0"},
+    {"time": 2, "site": "P3"},
+    {"time": 3, "site": "P2"},
+    {"time": 4, "site": "P1"}
+  ],
+  "rejections": {
+    "earlyT1": true,
+    "earlyT2": true,
+    "earlyT3": true,
+    "duplicate": true,
+    "missing": true,
+    "outOfOrder": true
+  },
+  "gates": {
+    "uniqueTiming": true,
+    "chronology": true,
+    "firesOnce": true,
+    "selfInverse": true,
+    "oneLogicalOutput": true,
+    "earlyDecodeRejected": true,
+    "malformedSchedulesRejected": true
+  },
+  "sha256": "948c2bcd7637225bb602570228fb044ab9b7bb376b95f9595624f3e23cffac1a"
+}
