@@ -87,7 +87,32 @@ const n12 = {
   VERDICT: 1,
 };
 
-const expected = path.includes("n12_cftr") ? n12 : path.includes("n11_cftr") ? n11 : path.includes("n4_arena_growth") ? n4 : path.includes("n3_array") ? n3 : path.includes("n2_collision") ? n2 : n1;
+const n13 = {
+  RESIDUES: 140,
+  NTERM_RESIDUES: 60,
+  NAC_RESIDUES: 35,
+  CTERM_RESIDUES: 45,
+  SOLUTION_0: 34,
+  SOLUTION_1: 35,
+  SOLUTION_2: 35,
+  SOLUTION_3: 36,
+  MEMBRANE_0: 35,
+  MEMBRANE_1: 34,
+  MEMBRANE_2: 35,
+  MEMBRANE_3: 36,
+  SOLUTION_DIVERSITY: 7349,
+  MEMBRANE_DIVERSITY: 7349,
+  NATIVE_CHARGE: 18,
+  E46K_CHARGE: 20,
+  TOPOLOGY_OK: 1,
+  SOLUTION_ENSEMBLE_OK: 1,
+  MEMBRANE_ENSEMBLE_OK: 1,
+  COLLAPSED_REJECTED: 1,
+  RECOGNITION: 1,
+  VERDICT: 1,
+};
+
+const expected = path.includes("n13_asyn") ? n13 : path.includes("n12_cftr") ? n12 : path.includes("n11_cftr") ? n11 : path.includes("n4_arena_growth") ? n4 : path.includes("n3_array") ? n3 : path.includes("n2_collision") ? n2 : n1;
 
 const actual = {};
 for (const [name, wanted] of Object.entries(expected)) {
