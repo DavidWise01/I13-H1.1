@@ -1,0 +1,28 @@
+{
+  "id": "TWO-UNIVERSE-M-GATE",
+  "version": "1.0.0",
+  "status": "LOCKED",
+  "resource": {"supply_per_generation": 1.0, "conserved": true},
+  "universes": {
+    "left": {"word": "60406040", "commanders": 3},
+    "right": {"word": "04060406", "commanders": 3}
+  },
+  "gate": {"operator": "M6040", "ports": ["in", "occupied", "out", "vacant"], "witness": "verify"},
+  "communication": {
+    "carrier": "three distinguishable dots",
+    "symbols": ["A", "B", "C"],
+    "valid_words": ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"],
+    "alphabet_size": 6,
+    "cross_universe_alternatives_allowed": false
+  },
+  "rebellion": {
+    "effect": ["bid amplification", "allocation diversion"],
+    "resource_creation_allowed": false,
+    "resource_destruction_allowed": false
+  },
+  "invariants": [
+    "allocation_l + allocation_r + vacant == 1",
+    "delivered_l + delivered_r + diverted + vacant == 1",
+    "imbalance == abs(delivered_l - delivered_r)"
+  ]
+}
