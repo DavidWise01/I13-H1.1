@@ -1,0 +1,30 @@
+{
+  "id": "DIAMOND-PRISM-NONIDEAL-WITNESS",
+  "version": "1.0.0",
+  "model": "row gain, static phase, and differential delay applied to ideal P3",
+  "frequency_sweep_hz": {
+    "start": 2200000000,
+    "stop": 2700000000,
+    "points": 201
+  },
+  "reference_errors": {
+    "insertion_loss_db_per_prism": 0.2,
+    "amplitude_imbalance_db": 0.2,
+    "static_phase_error_degrees": 2,
+    "lane_delay_skew_ps": 5
+  },
+  "reference_results": {
+    "center_energy_residual": 0.06674569920300887,
+    "center_reconstruction_residual": 0.04826517382837356,
+    "maximum_energy_residual": 0.06674569920300907,
+    "maximum_reconstruction_residual": 0.05402466965707582,
+    "passing_points": 201,
+    "passing_bandwidth_hz": 500000000,
+    "result": "PASS"
+  },
+  "acceptance": {
+    "energy_residual_max": 0.1,
+    "reconstruction_residual_max": 0.1
+  },
+  "scope": "Parametric system-level tolerance model, not a PCB electromagnetic simulation."
+}
