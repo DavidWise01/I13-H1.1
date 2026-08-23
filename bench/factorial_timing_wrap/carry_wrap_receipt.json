@@ -1,0 +1,34 @@
+{
+  "schema": "i13-factorial-timing-carry-wrap-v1",
+  "base": "362880",
+  "lanes": 5,
+  "capacity": "6292383221978976013516800000",
+  "carrySurfaces": 5,
+  "carryPass": 5,
+  "reversePass": 5,
+  "fullWraps": 1,
+  "shellSamples": 9,
+  "shellPass": 9,
+  "uniqueReceipts": 14,
+  "gatesPassed": 8,
+  "gatesTotal": 8,
+  "status": "PASS",
+  "surfaces": [
+    {"depth":1,"before":"362879","after":"362880","carry":1,"wrap":false},
+    {"depth":2,"before":"131681894399","after":"131681894400","carry":2,"wrap":false},
+    {"depth":3,"before":"47784725839871999","after":"47784725839872000","carry":3,"wrap":false},
+    {"depth":4,"before":"17340121312772751359999","after":"17340121312772751360000","carry":4,"wrap":false},
+    {"depth":5,"before":"6292383221978976013516799999","after":"0","carry":5,"wrap":true}
+  ],
+  "gates": {
+    "allCarryDepths": true,
+    "allReverse": true,
+    "fullWrap": true,
+    "allInRange": true,
+    "shellClosure": true,
+    "rankUnrankAtSurfaces": true,
+    "uniqueReceipts": true,
+    "capacityPreserved": true
+  },
+  "sha256": "3551cca8eb3a4f7a0313f233d84b3f6b5c2bf155e09e3af324db7a6fa052b5ba"
+}
