@@ -1,0 +1,4 @@
+const uleb=value=>{const bytes=[];do{let byte=value&127;value>>>=7;if(value)byte|=128;bytes.push(byte)}while(value);return bytes};
+const section=(id,payload)=>[id,...uleb(payload.length),...payload];
+export function gateBinary(){const type=[1,0x60,3,0x7f,0x7f,0x7f,1,0x7f],funcs=[1,0],name=[...new TextEncoder().encode('resolve')],exports=[1,name.length,...name,0,0],instructions=[0,0x20,0,0x45,0x20,1,0x45,0x72,0x04,0x7f,0x41,2,0x05,0x20,0,0x20,1,0x4a,0x04,0x7f,0x41,0,0x05,0x20,1,0x20,0,0x4a,0x04,0x7f,0x41,1,0x05,0x20,2,0x41,1,0x71,0x0b,0x0b,0x0b,0x0b],body=[...uleb(instructions.length),...instructions];return new Uint8Array([0,0x61,0x73,0x6d,1,0,0,0,...section(1,type),...section(3,funcs),...section(7,exports),...section(10,[1,...body])])}
+export async function instantiateGate(){const binary=gateBinary();const {instance}=await WebAssembly.instantiate(binary);return{resolve:instance.exports.resolve,binary}}
