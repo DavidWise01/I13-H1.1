@@ -1,0 +1,31 @@
+{
+  "id": "ZERO-POINT-SEED",
+  "version": "1.0.0",
+  "status": "FROZEN",
+  "canonical_symbol": "[0x0.=]",
+  "container": {
+    "external_addresses": 1,
+    "lobes": 2,
+    "geometry": "connected toroidal pair",
+    "internal_axes": ["N+/S-", "E+/W-", "radial-in/radial-out"]
+  },
+  "seed_register": {
+    "universal_seeds": ["N", "S", "E", "W"],
+    "cardinal_addresses": ["N", "S", "E", "W"],
+    "composition": "cartesian product",
+    "dimension": 16
+  },
+  "activation": {
+    "initial_state": "vacuum/unoccupied",
+    "local_entropy_change": "negative relative to local baseline",
+    "environment_entropy_change": "greater than or equal to magnitude of local decrease",
+    "total_entropy_change": "nonnegative"
+  },
+  "recursion": "Z[n+1] = [0L[Z[n]] x S16[n] x 0R[dagger(Z[n])] . =]",
+  "invariants": [
+    "one external zero-point address",
+    "4*4 == 16 seed addresses",
+    "left and right lobes are conjugate mirrors",
+    "total entropy change is nonnegative"
+  ]
+}
