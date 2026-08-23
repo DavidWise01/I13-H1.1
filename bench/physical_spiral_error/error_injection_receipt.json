@@ -1,0 +1,122 @@
+{
+  "schema": "i13-physical-spiral-error-injection-v1",
+  "injections": 16,
+  "detected": 16,
+  "falseDecodes": 0,
+  "localized": 16,
+  "recovered": 0,
+  "safetyStatus": "PASS",
+  "correctionStatus": "FAIL_NO_REDUNDANCY",
+  "limitFound": true,
+  "status": "LIMIT_FOUND",
+  "safety": {
+    "baselineDecodes": true,
+    "allDetected": true,
+    "noFalseLogicalOutput": true,
+    "allLocalized": true
+  },
+  "correction": {
+    "corrected": 0,
+    "total": 16,
+    "status": "FAIL_NO_REDUNDANCY"
+  },
+  "matrix": [
+    {
+      "phase": 1,
+      "site": "P0",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 1,
+      "site": "P1",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 1,
+      "site": "P2",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 1,
+      "site": "P3",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 2,
+      "site": "P0",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 2,
+      "site": "P1",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 2,
+      "site": "P2",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 2,
+      "site": "P3",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 3,
+      "site": "P0",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 3,
+      "site": "P1",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 3,
+      "site": "P2",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 3,
+      "site": "P3",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 4,
+      "site": "P0",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 4,
+      "site": "P1",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 4,
+      "site": "P2",
+      "outcome": "REJECT",
+      "localized": true
+    },
+    {
+      "phase": 4,
+      "site": "P3",
+      "outcome": "REJECT",
+      "localized": true
+    }
+  ],
+  "sha256": "5efec84077d7c1d05d00962b459e9ebfa4403c04d86850fd2b8271166073c110"
+}
