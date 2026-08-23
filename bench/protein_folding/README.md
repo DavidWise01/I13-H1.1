@@ -118,3 +118,16 @@ The mutation-locality gate requires the difference `1518` while domain and
 helix topology remain unchanged. Six native witnesses and six mutant witnesses
 must each converge to one recognition; any permutation or exterior topology
 drift returns `VERDICT=0`.
+
+## N13 — unresolved α-synuclein ensemble
+
+`n13_asyn_ensemble.i13` changes the oracle shape for a 140-residue
+intrinsically disordered protein. It preserves three regions—N-terminal (60),
+NAC (35), and C-terminal (45)—but refuses to claim one native conformation.
+Solution and membrane contexts must each retain four populated state bins.
+
+The solution witness is `[34,35,35,36]`; the membrane witness is
+`[35,34,35,36]`. Both have diversity score `7349`. E46K may change the signed
+charge surrogate from `18` to `20`, but region topology stays fixed. A
+`[140,0,0,0]` single-fold answer is explicitly rejected. This is an ensemble
+preservation benchmark, not a claim to solve α-synuclein aggregation dynamics.

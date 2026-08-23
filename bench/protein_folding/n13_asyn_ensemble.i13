@@ -1,0 +1,126 @@
+// N13: alpha-synuclein dynamic-ensemble preservation oracle.
+// The unresolved biological ensemble is not replaced with a fake single fold.
+// Three regions -> two contexts -> one non-collapse recognition.
+
+def region_of(I index) {
+    if index < 60 { -> 0 }
+    if index < 95 { -> 1 }
+    -> 2
+}
+
+def state_of(I index, I context) {
+    I region <- region_of(index)
+    I state <- (index * 7 + region * 3) % 4
+    // Membrane context redistributes the aggregation-prone NAC ensemble.
+    if context == 1 {
+        if region == 1 { state <- (state + 1) % 4 }
+    }
+    -> state
+}
+
+def charge_of(I index, I e46k) {
+    // Glu46 -> Lys changes the signed charge surrogate by exactly +2.
+    if index == 45 {
+        if e46k == 1 { -> 1 }
+        -> 0 - 1
+    }
+    I marker <- (index * 5 + region_of(index)) % 7
+    if marker < 3 { -> 1 }
+    if marker > 4 { -> 0 - 1 }
+    -> 0
+}
+
+def count_region(I index, I length, I wanted) {
+    if index >= length { -> 0 }
+    I hit <- 0
+    if region_of(index) == wanted { hit <- 1 }
+    -> hit + count_region(index + 1, length, wanted)
+}
+
+def count_state(I index, I length, I context, I wanted) {
+    if index >= length { -> 0 }
+    I hit <- 0
+    if state_of(index, context) == wanted { hit <- 1 }
+    -> hit + count_state(index + 1, length, context, wanted)
+}
+
+def charge_sum(I index, I length, I e46k) {
+    if index >= length { -> 0 }
+    -> charge_of(index, e46k) + charge_sum(index + 1, length, e46k)
+}
+
+def max4(I a, I b, I c, I d) {
+    I value <- a
+    if b > value { value <- b }
+    if c > value { value <- c }
+    if d > value { value <- d }
+    -> value
+}
+
+def occupied4(I a, I b, I c, I d) {
+    I occupied <- 0
+    if a > 0 { occupied <- occupied + 1 }
+    if b > 0 { occupied <- occupied + 1 }
+    if c > 0 { occupied <- occupied + 1 }
+    if d > 0 { occupied <- occupied + 1 }
+    -> occupied
+}
+
+def diversity4(I a, I b, I c, I d) {
+    -> a*b + a*c + a*d + b*c + b*d + c*d
+}
+
+def topology_ok(I nterm, I nac, I cterm) {
+    if nterm != 60 { -> 0 }
+    if nac != 35 { -> 0 }
+    if cterm != 45 { -> 0 }
+    -> 1
+}
+
+def ensemble_ok(I a, I b, I c, I d) {
+    if a + b + c + d != 140 { -> 0 }
+    if occupied4(a, b, c, d) != 4 { -> 0 }
+    if max4(a, b, c, d) >= 140 { -> 0 }
+    -> 1
+}
+
+def recognition(I topology, I solution_ok, I membrane_ok,
+                I native_charge, I e46k_charge,
+                I solution_diversity, I membrane_diversity) {
+    if topology != 1 { -> 0 }
+    if solution_ok != 1 { -> 0 }
+    if membrane_ok != 1 { -> 0 }
+    if e46k_charge - native_charge != 2 { -> 0 }
+    if solution_diversity <= 0 { -> 0 }
+    if membrane_diversity <= 0 { -> 0 }
+    -> 1
+}
+
+I RESIDUES <- 140
+I NTERM_RESIDUES <- count_region(0, RESIDUES, 0)
+I NAC_RESIDUES <- count_region(0, RESIDUES, 1)
+I CTERM_RESIDUES <- count_region(0, RESIDUES, 2)
+
+I SOLUTION_0 <- count_state(0, RESIDUES, 0, 0)
+I SOLUTION_1 <- count_state(0, RESIDUES, 0, 1)
+I SOLUTION_2 <- count_state(0, RESIDUES, 0, 2)
+I SOLUTION_3 <- count_state(0, RESIDUES, 0, 3)
+I MEMBRANE_0 <- count_state(0, RESIDUES, 1, 0)
+I MEMBRANE_1 <- count_state(0, RESIDUES, 1, 1)
+I MEMBRANE_2 <- count_state(0, RESIDUES, 1, 2)
+I MEMBRANE_3 <- count_state(0, RESIDUES, 1, 3)
+
+I SOLUTION_DIVERSITY <- diversity4(SOLUTION_0, SOLUTION_1, SOLUTION_2, SOLUTION_3)
+I MEMBRANE_DIVERSITY <- diversity4(MEMBRANE_0, MEMBRANE_1, MEMBRANE_2, MEMBRANE_3)
+I NATIVE_CHARGE <- charge_sum(0, RESIDUES, 0)
+I E46K_CHARGE <- charge_sum(0, RESIDUES, 1)
+I TOPOLOGY_OK <- topology_ok(NTERM_RESIDUES, NAC_RESIDUES, CTERM_RESIDUES)
+I SOLUTION_ENSEMBLE_OK <- ensemble_ok(SOLUTION_0, SOLUTION_1, SOLUTION_2, SOLUTION_3)
+I MEMBRANE_ENSEMBLE_OK <- ensemble_ok(MEMBRANE_0, MEMBRANE_1, MEMBRANE_2, MEMBRANE_3)
+
+// A one-state answer must fail the same gate.
+I COLLAPSED_REJECTED <- 1 - ensemble_ok(140, 0, 0, 0)
+I RECOGNITION <- recognition(TOPOLOGY_OK, SOLUTION_ENSEMBLE_OK,
+                            MEMBRANE_ENSEMBLE_OK, NATIVE_CHARGE, E46K_CHARGE,
+                            SOLUTION_DIVERSITY, MEMBRANE_DIVERSITY)
+I VERDICT <- RECOGNITION * COLLAPSED_REJECTED
