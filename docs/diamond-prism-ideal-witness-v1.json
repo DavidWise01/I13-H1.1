@@ -1,0 +1,32 @@
+{
+  "id": "DIAMOND-PRISM-IDEAL-ORACLE",
+  "version": "1.0.0",
+  "frequency_hz": 2450000000,
+  "reference_impedance_ohm": 50,
+  "artifacts": [
+    "diamond-prism-p3-ideal.s6p",
+    "diamond-prism-p3dagger-ideal.s6p"
+  ],
+  "precision": {
+    "touchstone_decimal_places": 9,
+    "analytic_unitarity_residual": 5.003624423889038e-16,
+    "rounded_touchstone_unitarity_residual": 1.0795327020965186e-9,
+    "rounded_cascade_residual": 1.0795327020965186e-9
+  },
+  "basis_reconstruction": {
+    "A0": "PASS",
+    "A1": "PASS",
+    "A2": "PASS"
+  },
+  "network_tests": {
+    "splitter_symmetric": "PASS",
+    "splitter_unitary": "PASS",
+    "recombiner_symmetric": "PASS",
+    "recombiner_unitary": "PASS",
+    "cascade_identity": "PASS",
+    "matched_same_side_blocks": "PASS"
+  },
+  "acceptance_threshold": 1e-8,
+  "result": "PASS",
+  "scope": "Ideal single-frequency S-parameter oracle; no bandwidth, conductor loss, dielectric loss, connector or manufacturing effects."
+}
