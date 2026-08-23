@@ -1,0 +1,42 @@
+{
+  "id": "DIAMOND-TORUS-BENCHMARK",
+  "version": "1.0.0",
+  "date": "2026-08-23",
+  "operator": "-+ [ (60406040) L | || diamond_4^0 || | R (04060406) ] +-",
+  "environment": "Node.js reference runner",
+  "tests": {
+    "html_inline_scripts_parse": "PASS",
+    "inverse_word": {
+      "status": "PASS",
+      "left": "60406040",
+      "right": "04060406",
+      "rule": "reverse(left) == right"
+    },
+    "closed_word_indexing": {
+      "status": "PASS",
+      "rule": "index modulo 8"
+    },
+    "paired_active_tokens": {
+      "status": "PASS",
+      "expected": 16,
+      "actual": 16
+    },
+    "static_route_iterations": {
+      "status": "PASS",
+      "iterations_per_run": 100000,
+      "runs": 9,
+      "median_ms": 0.951,
+      "min_ms": 0.892,
+      "max_ms": 3.510,
+      "checksum": 161600000
+    }
+  },
+  "acceptance": {
+    "exact_inverse_required": true,
+    "closed_modular_index_required": true,
+    "no_missing_tokens": true,
+    "javascript_parse_required": true
+  },
+  "result": "PASS",
+  "note": "Timing is an implementation reference from one runtime, not a hardware or cross-device performance guarantee."
+}
