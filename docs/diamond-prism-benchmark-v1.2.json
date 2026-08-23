@@ -1,0 +1,32 @@
+{
+  "id": "DIAMOND-PRISM-TORUS-BENCHMARK",
+  "version": "1.2.0",
+  "date": "2026-08-23",
+  "prism": {
+    "transform": "normalized DFT3",
+    "channels": ["a", "b", "c"],
+    "omega": "exp(2*pi*i/3)",
+    "split": "P3",
+    "recombine": "P3_dagger",
+    "identity_rule": "P3_dagger * P3 == I3",
+    "unitary_residual": 1.3343220141622404e-16,
+    "acceptance_threshold": 1e-12,
+    "result": "PASS"
+  },
+  "integration": {
+    "operator": "-+ [ ))))!(((( . P3(60406040)_L | || diamond_4^0 || | P3_dagger(04060406)_R ] +-",
+    "iterations": 100000,
+    "elapsed_ms": 123.221,
+    "checksum": 165566668,
+    "mirror_involution": "PASS",
+    "hinge_fixed": "PASS",
+    "signal_word_inverse": "PASS",
+    "overall": "PASS"
+  },
+  "rendering": {
+    "three_phase_rays": true,
+    "holographic_interference": true,
+    "prism_toggle": true
+  },
+  "scope": "Unitary software transform and visualization; not a measured optical prism."
+}
