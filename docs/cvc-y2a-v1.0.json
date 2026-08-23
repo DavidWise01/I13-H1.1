@@ -1,0 +1,35 @@
+{
+  "id": "CVC-Y2A",
+  "version": "1.0.0",
+  "status": "LOCKED",
+  "body": {
+    "arity": 3,
+    "canonical_symbols": ["a", "b", "c"]
+  },
+  "gate": {
+    "arity": 5,
+    "diamond_boundary": ["in", "out", "vacant", "occupied"],
+    "witness": "verify",
+    "center": 0
+  },
+  "recursion": {
+    "plane": "3x3",
+    "exponent": "n + 2 - 1",
+    "simplified_exponent": "n + 1",
+    "one_side_dimension": "9^(n+1)",
+    "total_dimension": "2*9^(n+1)+4",
+    "minimum_n": 0
+  },
+  "symmetry": {
+    "left": "[a,b,c] tensor (3x3)^(n+1)",
+    "right": "((3x3)^(n+1))^dagger tensor [c,b,a]",
+    "closure": "Hermitian conjugate mirror"
+  },
+  "canonical_equation": "-+ [ L | [a,b,c] tensor {3x3}^(n+2-1) || diamond_4^0 || {3x3}^dagger^(n+2-1) tensor [c,b,a] | R ] +-",
+  "acceptance": {
+    "exponent_identity": "n+2-1 == n+1",
+    "finite_implementation_required": true,
+    "witness_required": true,
+    "inverse_mirror_required": true
+  }
+}
