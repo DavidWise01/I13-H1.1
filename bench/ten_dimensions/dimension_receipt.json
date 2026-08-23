@@ -1,0 +1,32 @@
+{
+  "schema": "i13-ten-dimensional-nested-address-v1",
+  "dimensions": 10,
+  "boundary": "-++-",
+  "layers": {
+    "universe": "150094635296999121",
+    "galaxy": "729",
+    "planet": "16",
+    "local": "1",
+    "selfMagnitude": "1"
+  },
+  "oneDimensionAddresses": "1750703826104197747344",
+  "tenDimensionAddresses": "270474800303148073152059321311165683904997414173847460077823910600664718680259023786463116089530741938287790289073888004841546064836938103643578221749959243437393969695023147037904322236875530850927604873010610176",
+  "digits": 213,
+  "selfPhasePerDimension": -1,
+  "selfPhaseAfterTen": 1,
+  "gatesPassed": 9,
+  "gatesTotal": 9,
+  "status": "PASS",
+  "gates": {
+    "universeNormalization": true,
+    "galaxyNormalization": true,
+    "planetNormalization": true,
+    "oneDimensionNormalization": true,
+    "tenDimensionNormalization": true,
+    "tenDimensionsIndependent": true,
+    "selfPhaseClosure": true,
+    "boundaryBalanced": true,
+    "exactDigits": true
+  },
+  "sha256": "19a003983d5ac51894e024a75e0e046fb5aaa864414ad42f7ecbf78852622c6c"
+}
