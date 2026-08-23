@@ -1,0 +1,36 @@
+{
+  "id": "DIAMOND-TORUS-MIRROR-BENCHMARK",
+  "version": "1.1.0",
+  "date": "2026-08-23",
+  "operator": "))))!(((( . =",
+  "mirror_definition": "swap_parentheses(reverse(x))",
+  "reference_runtime": "Node.js",
+  "iterations": 1000000,
+  "elapsed_ms": 864.317,
+  "checksum": 90166668,
+  "tests": {
+    "html_inline_scripts_parse": "PASS",
+    "mirror_involution": {
+      "rule": "M(M(x)) == x",
+      "result": "PASS"
+    },
+    "surface_fixed_point": {
+      "rule": "M('))))!((((') == '))))!(((('",
+      "result": "PASS"
+    },
+    "hinge_fixed": {
+      "rule": "x[4] == '!' before and after mirror",
+      "result": "PASS"
+    },
+    "signal_word_inverse": {
+      "rule": "reverse('60406040') == '04060406'",
+      "result": "PASS"
+    },
+    "holographic_interference_layer": {
+      "rule": "phase rings enabled by default and user-switchable",
+      "result": "PASS"
+    }
+  },
+  "result": "PASS",
+  "scope": "Software topology and rendering controls; not an optical hologram or physical-device measurement."
+}
