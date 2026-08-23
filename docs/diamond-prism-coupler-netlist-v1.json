@@ -1,0 +1,52 @@
+{
+  "id": "DIAMOND-PRISM-COUPLER-DECOMPOSITION",
+  "version": "1.0.0",
+  "target": "normalized DFT3",
+  "propagation_order": [
+    {
+      "id": "D",
+      "type": "phase_bank",
+      "lane_phases_degrees": [0, 180, 90]
+    },
+    {
+      "id": "C3",
+      "type": "two_mode_coupler",
+      "modes": [1, 2],
+      "mixing_angle_degrees": 45,
+      "power_coupling": 0.5,
+      "internal_phase_degrees": -90
+    },
+    {
+      "id": "C2",
+      "type": "two_mode_coupler",
+      "modes": [0, 1],
+      "mixing_angle_degrees": 54.735610317245346,
+      "power_coupling": 0.6666666666666667,
+      "internal_phase_degrees": 0
+    },
+    {
+      "id": "C1",
+      "type": "two_mode_coupler",
+      "modes": [1, 2],
+      "mixing_angle_degrees": 45,
+      "power_coupling": 0.5,
+      "internal_phase_degrees": 0
+    }
+  ],
+  "factorization": "P3 = C1 * C2 * C3 * D",
+  "verification": {
+    "factorization_residual_2norm": 3.8493184508737955e-16,
+    "diagonalization_off_diagonal_residual": 3.082451238166979e-16,
+    "result": "PASS"
+  },
+  "physical_mapping": {
+    "couplers": 3,
+    "fixed_input_phase_lines": 3,
+    "reference_impedance_ohm": 50,
+    "center_frequency_hz": 2450000000
+  },
+  "advance_gate": {
+    "matrix_residual_max": 0.1,
+    "next_phase": "schematic S-parameter realization"
+  }
+}
