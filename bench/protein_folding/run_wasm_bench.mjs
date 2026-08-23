@@ -66,7 +66,28 @@ const n11 = {
   VERDICT: 1,
 };
 
-const expected = path.includes("n11_cftr") ? n11 : path.includes("n4_arena_growth") ? n4 : path.includes("n3_array") ? n3 : path.includes("n2_collision") ? n2 : n1;
+const n12 = {
+  NATIVE_123: 1064117,
+  NATIVE_132: 1064117,
+  NATIVE_213: 1064117,
+  NATIVE_231: 1064117,
+  NATIVE_312: 1064117,
+  NATIVE_321: 1064117,
+  DELTA_123: 1062599,
+  DELTA_132: 1062599,
+  DELTA_213: 1062599,
+  DELTA_231: 1062599,
+  DELTA_312: 1062599,
+  DELTA_321: 1062599,
+  NATIVE_INVARIANT: 1,
+  DELTA_INVARIANT: 1,
+  EXPECTED_MUTATION_DELTA: 1518,
+  LOCALITY_OK: 1,
+  RECOGNITION: 1,
+  VERDICT: 1,
+};
+
+const expected = path.includes("n12_cftr") ? n12 : path.includes("n11_cftr") ? n11 : path.includes("n4_arena_growth") ? n4 : path.includes("n3_array") ? n3 : path.includes("n2_collision") ? n2 : n1;
 
 const actual = {};
 for (const [name, wanted] of Object.entries(expected)) {

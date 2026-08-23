@@ -2,10 +2,11 @@
   "schema": "i13-protein-folding-suite-v1",
   "status": "PASS",
   "targets": {
-    "compiled": 6,
-    "graded": 5,
+    "compiled": 7,
+    "graded": 6,
     "arenaExhaustion": "PASS",
-    "cftr1480": "PASS"
+    "cftr1480": "PASS",
+    "permutationInvariant": "6/6"
   },
   "rejectionGates": {
     "tamper": "9/9",
@@ -26,12 +27,14 @@
     "n4_arena_growth.i13": "0785f1c27d25c1ff2214aae7992d99f195abb4b1078fbff3087066b4c01603e1",
     "n4_arena_exhaustion.i13": "2a30c11a8a4a828e9e23514d8e027b4af3ff97e489e3e9a6adb93c6744fdceed",
     "n11_cftr_1480.i13": "c14da879924073ca1874d540201bcf99e125d85d4ab573c8352effe0a6a6c171",
+    "n12_cftr_permutation.i13": "8d97f11c9166813be4b05bd9d2f33c08d3991bb5fe56045a5761a340826d6aeb",
     "n1_hydrophobic_oracle.wasm": "748bc5fa7042655e5e2df8efa88934c38a81e7344db94324b4d89275dea25e53",
     "n2_collision_oracle.wasm": "38672685cf2ea85d027bc193f9f0926dbbeaaa5aee663dd31192b0c7f66b9ad8",
     "n3_array_cow.wasm": "8a4b346c8b9b2e371b06fe4e27db09b1afa1230b1db590b3a4ad8bd362220c88",
     "n4_arena_growth.wasm": "3dc1e801d9429a83ea1009f34b193920d440886a6c4a60062e08c453e1170ea3",
     "n4_arena_exhaustion.wasm": "751910df7bc383ada2f054192fdda17c43144f3353e9cd0065a8d03171980160",
     "n11_cftr_1480.wasm": "a0b0552026a39acc259707d385c5ba38f8cf57d4e27c87929e17535887923b01",
+    "n12_cftr_permutation.wasm": "cc39493eb0bb43bd09b321f53dba8b1427a991ce3602b06981397a7ec474c606",
     "n6_state_receipt.json": "0b3b853d6170bff3b0cfa46ddcc0251cecb8b91eacb10718235e33586b77e12e",
     "n7_tamper_report.json": "215ad0a7b583086e247bc799e968a774333edb412e8947cf0ab4caa4355d61d2",
     "n8_replay_report.json": "454d9d8214924aa3e67e6b7e126abfa1a3243be8a1d2b0ea4e85718486b461e3",

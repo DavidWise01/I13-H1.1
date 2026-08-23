@@ -106,3 +106,15 @@ hydrophobic count by one and the locked fold signature by 13.
 The 3/2/1 compression is executable: region, helix, and hydrophobic inputs
 produce closed/open witnesses `152443` and `152483`, then compress to one
 `RECOGNITION=1`. Reference VM and Wasm must agree on all 18 locked globals.
+
+## N12 — permutation invariance and mutation locality
+
+`n12_cftr_permutation.i13` evaluates all six orderings `123, 132, 213, 231,
+312, 321` of domain, helix, and hydrophobic inputs. Elementary symmetric terms
+make the compression independent of presentation order: all native paths lock
+to `1064117`, and all ΔF508 paths lock to `1062599`.
+
+The mutation-locality gate requires the difference `1518` while domain and
+helix topology remain unchanged. Six native witnesses and six mutant witnesses
+must each converge to one recognition; any permutation or exterior topology
+drift returns `VERDICT=0`.
