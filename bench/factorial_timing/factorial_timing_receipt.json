@@ -1,0 +1,26 @@
+{
+  "schema": "i13-five-lane-9factorial-timing-v1",
+  "lanes": 5,
+  "eventsPerLane": 9,
+  "permutationsPerLane": "362880",
+  "exactCycles": "6292383221978976013516800000",
+  "primeForm": "2^35 * 3^20 * 5^5 * 7^5",
+  "digits": 28,
+  "boundary": "-++-",
+  "rankSamples": 8,
+  "lanePermutationSamples": 40,
+  "gatesPassed": 8,
+  "gatesTotal": 8,
+  "status": "PASS",
+  "gates": {
+    "factorial9": true,
+    "exactCapacity": true,
+    "primeNormalization": true,
+    "exactDigits": true,
+    "boundaryBalanced": true,
+    "cycleRankUnrank": true,
+    "lanePermutationRankUnrank": true,
+    "maximumAddress": true
+  },
+  "sha256": "fec3245797a9564db24d0f894d9750c4ec8b94d3ad26e8cb32bb31adf9bed52c"
+}

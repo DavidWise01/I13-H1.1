@@ -1,0 +1,29 @@
+{
+  "schema": "i13-four-physical-one-logical-repetition-v1",
+  "initialHarness": "FAIL_NUMERIC_ZERO_BOOLEAN_GATE",
+  "physicalSites": 4,
+  "logicalQubits": 1,
+  "timing": [1, 4, 3, 2],
+  "singleFlipInjections": 32,
+  "singleFlipCorrected": 32,
+  "singleFlipLocalized": 32,
+  "doubleFlipCases": 12,
+  "doubleFlipTiesRejected": 12,
+  "falseLogicalOutputs": 0,
+  "uniqueReceipts": 32,
+  "witnessAuthorityDecisions": 0,
+  "gatesPassed": 8,
+  "gatesTotal": 8,
+  "status": "PASS",
+  "gates": {
+    "allSingleFlipsCorrected": true,
+    "allSingleFlipsLocalized": true,
+    "noFalseLogicalOutput": true,
+    "uniqueReceipts": true,
+    "allDoubleFlipsReject": true,
+    "malformedTimingRejects": true,
+    "oneLogicalOutput": true,
+    "witnessHasNoAuthority": true
+  },
+  "sha256": "e1664479979c34564389cebd8f1f32e74afd8fe49e0e65c7ab0e1f4825c30ba8"
+}

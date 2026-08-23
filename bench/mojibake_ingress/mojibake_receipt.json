@@ -1,0 +1,13 @@
+{
+  "schema": "i13-mojibake-ingress-v1",
+  "repairVectors": 8,
+  "repaired": 8,
+  "preserveVectors": 5,
+  "preserved": 5,
+  "rejectVectors": 2,
+  "rejected": 2,
+  "idempotent": 8,
+  "falseModifications": 0,
+  "status": "PASS",
+  "sha256": "6f2c2fd46a96b2566c6cf3ef92f79cbe0bd4aeac5eedfc5d4f3ba1fb912f1bf4"
+}

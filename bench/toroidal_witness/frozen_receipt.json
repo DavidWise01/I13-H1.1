@@ -1,0 +1,15 @@
+{
+  "schema": "i13-toroidal-witness-freeze-v1",
+  "physicalStates": 4,
+  "positions": 5,
+  "witnessStates": 2,
+  "orientationChoices": 3,
+  "orientationAxes": 3,
+  "expected": 55296,
+  "observed": 55296,
+  "unverified": 27648,
+  "verified": 27648,
+  "mutationFailures": 0,
+  "status": "PASS",
+  "sha256": "f0dbbdba8fa760562e4df783f34b7e25e64cd595ec2e4dbcfce913b1baea9b76"
+}

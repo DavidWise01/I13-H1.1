@@ -1,0 +1,23 @@
+{
+  "schema": "i13-four-physical-phase-error-surface-v1",
+  "state": "|+_L>=(|0000>+|1111>)/sqrt(2)",
+  "physicalSites": 4,
+  "timingPhases": 4,
+  "phaseFlipInjections": 16,
+  "undetectedPhaseFlips": 16,
+  "falseAcceptedLogicalStates": 16,
+  "orthogonalLogicalOutputs": 16,
+  "normFailures": 0,
+  "uniqueReceipts": 16,
+  "passedGates": 3,
+  "totalGates": 5,
+  "status": "LIMIT_FOUND",
+  "gates": {
+    "baselineNormalized": true,
+    "allPhaseFlipsPreserveNorm": true,
+    "receiptsUnique": true,
+    "phaseDetection": false,
+    "logicalFidelityPreserved": false
+  },
+  "sha256": "a43a9fefa8799829db4d5438b860b10069681bb6510d31768a5146475cc62f05"
+}

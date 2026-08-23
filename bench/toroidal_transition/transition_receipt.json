@@ -1,0 +1,23 @@
+{
+  "schema": "i13-toroidal-transition-witness-v1",
+  "nodes": 5,
+  "legalTransitions": 10,
+  "seamCrossings": 2,
+  "uniqueReceipts": 10,
+  "occupancyConserved": true,
+  "witnessMutationFailures": 0,
+  "negativeGatesPassed": 8,
+  "negativeGatesTotal": 8,
+  "status": "PASS",
+  "rejections": {
+    "nonadjacent": true,
+    "same-node": true,
+    "vacant-source": true,
+    "occupied-destination": true,
+    "negative-index": true,
+    "overflow-index": true,
+    "forged-receipt": true,
+    "tampered-after": true
+  },
+  "sha256": "73cbd8a4ed72dfbde2318bb3b2753d4661aa248ef18261e38389f067576f6767"
+}
