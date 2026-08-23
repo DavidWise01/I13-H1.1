@@ -1,0 +1,36 @@
+{
+  "schema": "i13.diamond-prism.pcb-geometry.v1",
+  "status": "em-start-not-fabrication-release",
+  "network": "normalized DFT3 P3; propagation D -> C3 -> C2 -> C1",
+  "center_frequency_hz": 2450000000,
+  "reference_impedance_ohm": 50,
+  "stackup": {
+    "laminate": "Rogers RO4350B",
+    "relative_permittivity_nominal": 3.48,
+    "core_thickness_mm": 0.508,
+    "copper_thickness_um": 35,
+    "layers": ["L1 RF copper", "dielectric", "L2 continuous ground"]
+  },
+  "model": "Hammerstad-Jensen zero-thickness first pass; copper thickness and dispersion deferred to field solver",
+  "microstrip": {
+    "z50": {"width_mm": 1.1618, "effective_permittivity": 2.73612, "guided_wavelength_mm": 73.9754, "quarter_wave_mm": 18.4939},
+    "z35_35": {"width_mm": 1.9389, "effective_permittivity": 2.84913, "guided_wavelength_mm": 72.4934, "quarter_wave_mm": 18.1234}
+  },
+  "coupler_synthesis": {
+    "C1": {"power_coupling": 0.5, "implementation": "3 dB branch-line hybrid", "internal_phase_deg": 0},
+    "C2": {"power_coupling": 0.6666666666666666, "implementation": "two 3 dB branch-line hybrids as Mach-Zehnder coupler", "differential_phase_deg": 109.471220634, "differential_50ohm_length_mm": 22.4949},
+    "C3": {"power_coupling": 0.5, "implementation": "3 dB branch-line hybrid", "internal_phase_deg": -90}
+  },
+  "phase_bank_50ohm": {
+    "zero_deg_mm": 0,
+    "ninety_deg_mm": 18.4939,
+    "one_eighty_deg_mm": 36.9877
+  },
+  "board": {"outline_mm": [150, 100], "external_ports": 6, "connector_type": "edge-launch SMA, footprint selected after vendor model"},
+  "release_gates": [
+    "Import actual laminate lot and copper roughness into a 2.5D or 3D field solver",
+    "Tune bends, tees, launches, and hybrid junction discontinuities",
+    "At 2.45 GHz: insertion loss <= 1.5 dB, amplitude imbalance <= 0.5 dB, phase error <= 5 deg, return loss >= 15 dB, isolation >= 15 dB",
+    "Cascade P3dagger * P3 reconstruction spectral-norm residual <= 0.10 across retained band"
+  ]
+}
