@@ -17,7 +17,7 @@
 <script>
 (() => {try {const q = new URLSearchParams(location.search);const suite = q.get('suite');const view = q.get('view');if (!suite && !view) return;const key = 'i13.stage15.main-suite';let saved = {};try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch (_) {}if (suite) saved.suite = suite;if (view) saved.corpusView = view;localStorage.setItem(key, JSON.stringify(saved));} catch (_) {}})();
 </script>
-<script src="stages/stage15-wasm-main-suite.js"></script>
+<script src="stages/stage15-wasm-main-suite.js"></script>\n<script src="generative-neon-wasm.js"></script>
 <script src="stages/stage15-3-e1-handoff.js"></script>
 </body>
 </html>
