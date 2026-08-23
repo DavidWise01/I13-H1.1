@@ -8,7 +8,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '15.0.0';
+  const VERSION = '15.0.1';
   const STORAGE_KEY = 'i13.stage15.main-suite';
   const FRAME_ID = 'i13-suite-runtime';
   const OBJECT_ID = 'i13';
@@ -252,21 +252,21 @@
         #i13-main-suite-shell{
           position:sticky;top:0;z-index:1000;display:flex;align-items:center;gap:10px;
           min-height:54px;padding:7px 12px;border-bottom:1px solid #94a3b8;
-          background:rgba(248,250,252,.97);backdrop-filter:blur(12px);
-          font:12px/1.2 "Cascadia Code",Consolas,Menlo,monospace;color:#334155;
-          box-shadow:0 4px 18px rgba(15,23,42,.08)
+          background:linear-gradient(90deg,rgba(3,15,24,.97),rgba(14,26,48,.96),rgba(3,15,24,.97));backdrop-filter:blur(16px) saturate(145%);
+          font:12px/1.2 "Cascadia Code",Consolas,Menlo,monospace;color:#d9fbff;
+          box-shadow:0 4px 24px rgba(0,0,0,.42),inset 0 -1px rgba(87,239,255,.22)
         }
-        #i13-main-suite-shell .suite-mark{font-weight:900;color:#0e7490;white-space:nowrap}
-        #i13-main-suite-shell .suite-breadcrumb{font-weight:800;color:#475569;min-width:260px;flex:1}
-        #i13-main-suite-shell label{font-size:10px;font-weight:900;letter-spacing:.08em;color:#64748b}
+        #i13-main-suite-shell .suite-mark{font-weight:900;color:#5cf4ff;white-space:nowrap;text-shadow:0 0 14px #5cf4ff}
+        #i13-main-suite-shell .suite-breadcrumb{font-weight:800;color:#bfeaf2;min-width:260px;flex:1}
+        #i13-main-suite-shell label{font-size:10px;font-weight:900;letter-spacing:.08em;color:#80aeb8}
         #i13-main-suite-shell select,#i13-main-suite-shell button{
-          font:inherit;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#18212b;
+          font:inherit;border:1px solid rgba(94,244,255,.34);border-radius:8px;background:#071722;color:#eaffff;
           padding:7px 9px
         }
         #i13-main-suite-shell select{min-width:170px}
-        #i13-main-suite-shell button{cursor:pointer;font-weight:900;color:#0e7490;border-color:#67a7b3}
-        #i13-main-suite-shell button:hover{background:#ecfeff}
-        #i13-main-suite-shell .suite-note{font-size:10px;color:#64748b;white-space:nowrap}
+        #i13-main-suite-shell button{cursor:pointer;font-weight:900;color:#64f5ff;border-color:#4fb6c5}
+        #i13-main-suite-shell button:hover{background:#102c38;box-shadow:0 0 16px rgba(94,244,255,.18)}
+        #i13-main-suite-shell .suite-note{font-size:10px;color:#82aab5;white-space:nowrap}
         @media (max-width:900px){
           #i13-main-suite-shell{position:relative;flex-wrap:wrap}
           #i13-main-suite-shell .suite-breadcrumb{order:4;flex-basis:100%;min-width:0}
