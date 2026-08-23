@@ -1,0 +1,35 @@
+{
+  "schema": "i13-toroidal-collision-arbitration-v1",
+  "initialOracle": "FAIL_EQUAL_BUCKET_ASSUMPTION",
+  "correctedOracle": {
+    "ACCEPT": 20,
+    "REJECT_SHARED_DESTINATION": 5,
+    "REJECT_HEAD_ON_SWAP": 5,
+    "REJECT_OCCUPIED_SNAPSHOT": 10
+  },
+  "initialPairs": 10,
+  "directionPairsPerState": 4,
+  "totalBatches": 40,
+  "counts": {
+    "ACCEPT": 20,
+    "REJECT_SHARED_DESTINATION": 5,
+    "REJECT_HEAD_ON_SWAP": 5,
+    "REJECT_OCCUPIED_SNAPSHOT": 10
+  },
+  "seamBatches": 15,
+  "uniqueReceipts": 40,
+  "conservationFailures": 0,
+  "partialRejects": 0,
+  "witnessAuthorityDecisions": 0,
+  "negativeGatesPassed": 5,
+  "negativeGatesTotal": 5,
+  "status": "PASS",
+  "gates": {
+    "forgedReceipt": true,
+    "tamperedVerdict": true,
+    "tamperedAfter": true,
+    "witnessWinnerInjection": true,
+    "partialCommitRejected": true
+  },
+  "sha256": "0d0d85da03b6a90069b5a3dfdd09740fbb389acea5e707f631ad0ddb0b00d003"
+}
