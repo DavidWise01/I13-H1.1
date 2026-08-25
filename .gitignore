@@ -1,3 +1,15 @@
 /target/
 *.wasm
 .DS_Store
+Thumbs.db
+*.bak
+*.tmp
+*.orig
+*.rej
+*.py[cod]
+*.class
+*.o
+*.obj
+*.sw?
+*~
+extension-witness.json

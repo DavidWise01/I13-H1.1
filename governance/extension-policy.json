@@ -1,0 +1,91 @@
+{
+  "schema": "0root.extension-policy/v1",
+  "allowed_extensions": [
+    "(none)",
+    ".b64",
+    ".c",
+    ".cjs",
+    ".css",
+    ".csv",
+    ".html",
+    ".i13",
+    ".imvc",
+    ".js",
+    ".json",
+    ".jsonl",
+    ".lock",
+    ".md",
+    ".mjs",
+    ".mp3",
+    ".pdf",
+    ".png",
+    ".pulse",
+    ".py",
+    ".pyz",
+    ".rs",
+    ".s6p",
+    ".sh",
+    ".srt",
+    ".stnp",
+    ".svg",
+    ".toml",
+    ".trom",
+    ".txt",
+    ".webp",
+    ".yml"
+  ],
+  "prunable_extensions": [
+    ".bak",
+    ".class",
+    ".log",
+    ".o",
+    ".obj",
+    ".old",
+    ".orig",
+    ".pyc",
+    ".pyo",
+    ".rej",
+    ".swo",
+    ".swp",
+    ".tmp"
+  ],
+  "prunable_names": [
+    ".DS_Store",
+    "Thumbs.db"
+  ],
+  "excluded_directories": [
+    ".git",
+    ".pytest_cache",
+    "__pycache__",
+    "node_modules",
+    "target"
+  ],
+  "canonical_path_priority": [
+    "src/",
+    "tests/",
+    "std/",
+    "scripts/",
+    "docs/",
+    ".github/",
+    "bench/",
+    "governance/",
+    "reference/",
+    "corpus/"
+  ],
+  "expected_media": {
+    ".html": ["text/html", "text/plain"],
+    ".mp3": ["audio/mpeg"],
+    ".pdf": ["application/pdf"],
+    ".png": ["image/png"],
+    ".pyz": ["application/zip"],
+    ".svg": ["image/svg+xml", "text/plain"],
+    ".webp": ["image/webp"]
+  },
+  "decisions": {
+    "rare_is_unused": false,
+    "delete_archive_duplicates": false,
+    "exact_identity": "sha256+byte-length",
+    "unknown_extension": "review",
+    "prunable_residue": "reject"
+  }
+}
