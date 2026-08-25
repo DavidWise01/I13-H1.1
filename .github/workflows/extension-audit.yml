@@ -1,0 +1,34 @@
+name: 0root extension witness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l9-extension-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest tests/test_root_extension_audit.py -v
+      - name: Root-to-L9 audit and eight-edge return
+        run: |
+          python scripts/root_extension_audit.py \
+            --root . \
+            --policy governance/extension-policy.json \
+            --output extension-witness.json \
+            --strict
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: extension-witness
+          path: extension-witness.json
+          if-no-files-found: error
