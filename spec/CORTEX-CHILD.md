@@ -25,3 +25,14 @@ Invariants:
 - explicit result/receipt/provenance may survive;
 - child does not directly commit outside Cortex;
 - `(isa, decoder, module)` is execution context, not a persistent agent identity.
+
+### TOROID-5 timing extension
+
+Child lifecycle commits are now additionally time-gated by the shared Cortex cell:
+
+```text
+{{ . | | | | . }}
+0/5 -> 1/5 -> 2/5 -> 3/5 -> 4/5 -> 5/5
+```
+
+`5/5` is the closure witness and identifies with the next-cycle `0/5`. This timing gate does not expand child authority; all existing authority, depth, receipt, witness, and termination invariants remain intact.
